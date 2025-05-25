@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- strings.xml is like a dictionary for your app
+     It stores all the text that users will see, making it easy to:
+     1. Change text in one place instead of hunting through code
+     2. Translate your app to other languages
+     3. Keep your code clean and maintainable -->
+<resources>
+    <!-- The app name that appears on the device -->
+    <string name="app_name">Tutor Billing</string>
+
+    <!-- Common action strings -->
+    <string name="add">Add</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+
+    <!-- Student-related strings -->
+    <string name="add_student">Add Student</string>
+    <string name="edit_student">Edit Student</string>
+    <string name="student_name">Student Name</string>
+    <string name="hourly_rate">Hourly Rate</string>
+    <string name="per_lesson_rate">Per Lesson Rate</string>
+    <string name="no_students">No students yet. Tap + to add your first student!</string>
+
+    <!-- Lesson-related strings -->
+    <string name="add_lesson">Add Lesson</string>
+    <string name="edit_lesson">Edit Lesson</string>
+    <string name="lesson_date">Date</string>
+    <string name="lesson_time">Start Time</string>
+    <string name="lesson_duration">Duration (minutes)</string>
+    <string name="lesson_note">Note (optional)</string>
+    <string name="no_lessons">No lessons recorded yet</string>
+
+    <!-- Financial summary strings -->
+    <string name="week_total">This Week</string>
+    <string name="month_total">This Month</string>
+    <string name="currency_format">€ %1$.2f</string>
+
+    <!-- Dialog messages -->
+    <string name="delete_student_confirmation">Delete this student and all their lessons?</string>
+    <string name="delete_lesson_confirmation">Delete this lesson?</string>
+    <string name="validation_error_empty_name">Please enter a student name</string>
+    <string name="validation_error_invalid_rate">Please enter a valid rate</string>
+    <string name="validation_error_invalid_duration">Please enter a valid duration</string>
+</resources>

@@ -1,0 +1,17 @@
+C:\Users\dimit\Documents\Android\TutorBillingApp\app\src\main\java\gr\tsambala\tutorbilling\ui\lesson\LessonScreen.kt
+C:\Users\dimit\Documents\Android\TutorBillingApp\app\src\main\java\gr\tsambala\tutorbilling\data\model\Lesson.kt
+C:\Users\dimit\Documents\Android\TutorBillingApp\app\src\main\java\gr\tsambala\tutorbilling\di\DatabaseModule.kt
+C:\Users\dimit\Documents\Android\TutorBillingApp\app\src\main\java\gr\tsambala\tutorbilling\data\database\DateTimeConverters.kt
+C:\Users\dimit\Documents\Android\TutorBillingApp\app\src\main\java\gr\tsambala\tutorbilling\data\model\Student.kt
+C:\Users\dimit\Documents\Android\TutorBillingApp\app\src\main\java\gr\tsambala\tutorbilling\ui\home\HomeViewModel.kt
+C:\Users\dimit\Documents\Android\TutorBillingApp\app\src\main\java\gr\tsambala\tutorbilling\ui\lesson\LessonViewModel.kt
+C:\Users\dimit\Documents\Android\TutorBillingApp\app\src\main\java\gr\tsambala\tutorbilling\data\repository\TutorBillingRepository.kt
+C:\Users\dimit\Documents\Android\TutorBillingApp\app\src\main\java\gr\tsambala\tutorbilling\ui\home\HomeScreen.kt
+C:\Users\dimit\Documents\Android\TutorBillingApp\app\src\main\java\gr\tsambala\tutorbilling\TutorBillingApplication.kt
+C:\Users\dimit\Documents\Android\TutorBillingApp\app\src\main\java\gr\tsambala\tutorbilling\utils\AppUtils.kt
+C:\Users\dimit\Documents\Android\TutorBillingApp\app\src\main\java\gr\tsambala\tutorbilling\data\database\TutorBillingDatabase.kt
+C:\Users\dimit\Documents\Android\TutorBillingApp\app\src\main\java\gr\tsambala\tutorbilling\ui\student\StudentViewModel.kt
+C:\Users\dimit\Documents\Android\TutorBillingApp\app\src\main\java\gr\tsambala\tutorbilling\data\dao\StudentDao.kt
+C:\Users\dimit\Documents\Android\TutorBillingApp\app\src\main\java\gr\tsambala\tutorbilling\ui\student\StudentScreen.kt
+C:\Users\dimit\Documents\Android\TutorBillingApp\app\src\main\java\gr\tsambala\tutorbilling\MainActivity.kt
+C:\Users\dimit\Documents\Android\TutorBillingApp\app\src\main\java\gr\tsambala\tutorbilling\data\dao\LessonDao.kt
