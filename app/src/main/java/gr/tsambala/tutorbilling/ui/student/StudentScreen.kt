@@ -238,13 +238,9 @@ private fun StudentDetailView(
         } else {
             items(
                 items = uiState.lessons,
-                key = { it.lesson.id }
-            ) { lessonDisplay ->
-                LessonCard(
-                    lessonDisplay = lessonDisplay,
-                    onEdit = { onEditLesson(lessonDisplay.lesson.id) },
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-                )
+                key = { it.id }
+            ) { lesson ->
+                // Use 'lesson' instead of 'it' in the content
             }
         }
     }

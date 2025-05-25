@@ -10,7 +10,7 @@ import gr.tsambala.tutorbilling.ui.student.StudentScreen
 import gr.tsambala.tutorbilling.ui.lesson.LessonScreen
 
 @Composable
-fun TutorBillingApplication(
+fun TutorBillingApp(
     navController: NavHostController = rememberNavController()
 ) {
     NavHost(
