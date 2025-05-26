@@ -24,9 +24,7 @@ fun TutorBillingApp(
                 },
                 onAddStudent = {
                     navController.navigate("student/new")
-                },
-                onNavigateToAddStudent = TODO(),
-                viewModel = TODO()
+                }
             )
         }
 
@@ -42,10 +40,7 @@ fun TutorBillingApp(
                 },
                 onAddLesson = {
                     navController.navigate("lesson/$studentId/new")
-                },
-                onNavigateToAddLesson = TODO(),
-                onNavigateToEditLesson = TODO(),
-                viewModel = TODO()
+                }
             )
         }
 

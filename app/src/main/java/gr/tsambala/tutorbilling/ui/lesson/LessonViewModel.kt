@@ -35,7 +35,7 @@ class LessonViewModel @Inject constructor(
             _uiState.update {
                 it.copy(
                     date = LocalDate.now().toString(),
-                    startTime = LocalTime.now().toString()
+                    startTime = LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"))
                 )
             }
         }
@@ -95,10 +95,6 @@ class LessonViewModel @Inject constructor(
         _uiState.update { it.copy(notes = notes) }
     }
 
-    fun toggleEditMode() {
-        _uiState.update { it.copy(isEditMode = !it.isEditMode) }
-    }
-
     fun saveLesson() {
         viewModelScope.launch {
             val state = _uiState.value
@@ -127,17 +123,6 @@ class LessonViewModel @Inject constructor(
                         lessonDao.update(lesson)
                     }
                 }
-            }
-
-            _uiState.update { it.copy(isEditMode = false) }
-        }
-    }
-
-    fun deleteLesson(onDeleted: () -> Unit) {
-        viewModelScope.launch {
-            lessonId?.toLongOrNull()?.let { id ->
-                lessonDao.deleteById(id)
-                onDeleted()
             }
         }
     }

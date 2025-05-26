@@ -47,7 +47,13 @@ class HomeViewModel @Inject constructor(
                             lessonDate.year == currentYear &&
                                     lessonDate.get(weekFields.weekOfWeekBasedYear()) == currentWeek
                         }
-                        .sumOf { it.calculateFee() }
+                        .sumOf { lesson ->
+                            // Calculate fee based on student rate
+                            when (student.rateType) {
+                                "hourly" -> (lesson.durationMinutes / 60.0) * student.rate
+                                else -> student.rate
+                            }
+                        }
 
                     val monthEarnings = studentLessons
                         .filter { lesson ->
@@ -55,7 +61,13 @@ class HomeViewModel @Inject constructor(
                             lessonDate.year == currentYear &&
                                     lessonDate.monthValue == currentMonth
                         }
-                        .sumOf { it.calculateFee() }
+                        .sumOf { lesson ->
+                            // Calculate fee based on student rate
+                            when (student.rateType) {
+                                "hourly" -> (lesson.durationMinutes / 60.0) * student.rate
+                                else -> student.rate
+                            }
+                        }
 
                     StudentWithEarnings(
                         student = student,
