@@ -10,7 +10,7 @@ import gr.tsambala.tutorbilling.data.database.TutorBillingDatabase;
 import javax.annotation.processing.Generated;
 import javax.inject.Provider;
 
-@ScopeMetadata("javax.inject.Singleton")
+@ScopeMetadata
 @QualifierMetadata
 @DaggerGenerated
 @Generated(

@@ -2,15 +2,13 @@ package gr.tsambala.tutorbilling.data.repository
 
 import gr.tsambala.tutorbilling.data.dao.LessonDao
 import gr.tsambala.tutorbilling.data.dao.StudentDao
-import gr.tsambala.tutorbilling.data.dao.LessonWithStudent
-import gr.tsambala.tutorbilling.data.dao.StudentWithLessonCount
+import gr.tsambala.tutorbilling.data.database.LessonWithStudent
 import gr.tsambala.tutorbilling.data.model.Lesson
 import gr.tsambala.tutorbilling.data.model.Student
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.flowOf
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
@@ -22,19 +20,12 @@ import javax.inject.Singleton
  * TutorBillingRepository is the single source of truth for all data operations.
  *
  * This class sits between the UI layer (ViewModels) and the data layer (DAOs),
- * providing a clean API that hides the complexity of data operations. It's like
- * having a skilled assistant who knows exactly where to find information and
- * how to present it in the most useful way.
+ * providing a clean API that hides the complexity of data operations.
+ * It offers methods to add, update, delete, and query students and lessons,
+ * as well as utility functions for financial calculations.
  *
- * Benefits of the Repository pattern:
- * 1. Single source of truth - all data flows through here
- * 2. Abstraction - ViewModels don't need to know about DAOs or database details
- * 3. Business logic - complex calculations and data combinations happen here
- * 4. Testability - easy to mock for testing
- * 5. Future flexibility - could add caching, API calls, etc. without changing ViewModels
- *
- * @Inject tells Hilt to automatically provide the DAOs when creating this repository
- * @Singleton ensures we only have one repository instance in the app
+ * @Inject tells Hilt to automatically provide the DAOs when creating this repository.
+ * @Singleton ensures a single instance is used throughout the app.
  */
 @Singleton
 class TutorBillingRepository @Inject constructor(
@@ -53,26 +44,30 @@ class TutorBillingRepository @Inject constructor(
      */
     suspend fun addStudent(student: Student): Long {
         require(student.name.isNotBlank()) { "Student name cannot be empty" }
-        require(student.hasValidRate()) { "Student must have either hourly or per-lesson rate" }
-
+        require(student.hourlyRate != null || student.ratePerLesson != null) {
+            "Student must have either an hourly rate or a per-lesson rate"
+        }
         return studentDao.insertStudent(student)
     }
 
     /**
      * Updates an existing student's information.
-     * Automatically updates the timestamp.
+     * Automatically updates the 'updatedAt' timestamp.
      */
     suspend fun updateStudent(student: Student) {
-        val updatedStudent = student.copy(updatedAt = Instant.now())
+        val now = Instant.now()
+        val updatedStudent = student.copy(updatedAt = now)
         studentDao.updateStudent(updatedStudent)
     }
 
     /**
-     * Soft deletes a student (marks as inactive).
-     * Preserves the data for historical records.
+     * Soft deletes a student by setting 'isActive' to false.
      */
     suspend fun deleteStudent(studentId: Long) {
-        studentDao.softDeleteStudent(studentId, Instant.now())
+        val existing = studentDao.getStudentById(studentId) ?: return
+        val now = Instant.now()
+        val softDeleted = existing.copy(isActive = false, updatedAt = now)
+        studentDao.updateStudent(softDeleted)
     }
 
     /**
@@ -84,18 +79,9 @@ class TutorBillingRepository @Inject constructor(
 
     /**
      * Gets all active students as a Flow.
-     * The UI will automatically update when students are added/edited/deleted.
      */
     fun getAllActiveStudents(): Flow<List<Student>> {
         return studentDao.getAllActiveStudents()
-    }
-
-    /**
-     * Gets students with their lesson count.
-     * Useful for showing statistics on the home screen.
-     */
-    fun getStudentsWithLessonCount(): Flow<List<StudentWithLessonCount>> {
-        return studentDao.getStudentsWithLessonCount()
     }
 
     // ===== Lesson Operations =====
@@ -110,32 +96,31 @@ class TutorBillingRepository @Inject constructor(
      */
     suspend fun addLesson(lesson: Lesson): Long {
         require(lesson.durationMinutes > 0) { "Lesson duration must be positive" }
-
         val student = studentDao.getStudentById(lesson.studentId)
-        checkNotNull(student) { "Cannot add lesson for non-existent student" }
-        check(student.isActive) { "Cannot add lesson for inactive student" }
-
+        checkNotNull(student) { "Cannot add lesson for a non-existent student" }
+        check(student.isActive) { "Cannot add lesson for an inactive student" }
         return lessonDao.insertLesson(lesson)
     }
 
     /**
      * Updates an existing lesson.
-     * Automatically updates the timestamp.
+     * Automatically updates the 'updatedAt' timestamp.
      */
     suspend fun updateLesson(lesson: Lesson) {
-        val updatedLesson = lesson.copy(updatedAt = Instant.now())
+        val now = Instant.now()
+        val updatedLesson = lesson.copy(updatedAt = now)
         lessonDao.updateLesson(updatedLesson)
     }
 
     /**
-     * Deletes a lesson permanently.
+     * Deletes a lesson permanently by its ID.
      */
     suspend fun deleteLesson(lessonId: Long) {
         lessonDao.deleteLessonById(lessonId)
     }
 
     /**
-     * Gets lessons for a specific student.
+     * Gets all lessons for a specific student as a Flow.
      */
     fun getLessonsForStudent(studentId: Long): Flow<List<Lesson>> {
         return lessonDao.getLessonsForStudent(studentId)
@@ -143,7 +128,6 @@ class TutorBillingRepository @Inject constructor(
 
     /**
      * Gets lessons with full student data for a specific student.
-     * This is more efficient than loading them separately when you need both.
      */
     fun getLessonsWithStudentData(studentId: Long): Flow<List<LessonWithStudent>> {
         return lessonDao.getLessonsWithStudentForStudent(studentId)
@@ -152,8 +136,7 @@ class TutorBillingRepository @Inject constructor(
     // ===== Financial Calculations =====
 
     /**
-     * Data class to hold financial summary information.
-     * This bundles all the calculations needed for the home screen.
+     * Holds weekly/monthly totals (plus lesson count) for a given student.
      */
     data class StudentFinancialSummary(
         val student: Student,
@@ -163,37 +146,25 @@ class TutorBillingRepository @Inject constructor(
     )
 
     /**
-     * Gets financial summaries for all active students.
-     * This is the main data source for the home screen, showing each student
-     * with their weekly and monthly earnings.
-     *
-     * This method demonstrates the power of the repository pattern - it combines
-     * data from multiple sources and performs complex calculations, but presents
-     * a simple interface to the ViewModel.
+     * Emits a list of [StudentFinancialSummary], one per active student.
      */
     fun getStudentFinancialSummaries(): Flow<List<StudentFinancialSummary>> {
-        // Get the date ranges for calculations
         val today = LocalDate.now()
         val weekStart = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
         val weekEnd = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
         val monthStart = today.withDayOfMonth(1)
         val monthEnd = today.withDayOfMonth(today.lengthOfMonth())
 
-        // Combine multiple data streams to create summaries
         return combine(
             studentDao.getAllActiveStudents(),
             lessonDao.getLessonsWithStudentsInDateRange(weekStart, weekEnd),
             lessonDao.getLessonsWithStudentsInDateRange(monthStart, monthEnd)
         ) { students, weekLessons, monthLessons ->
             students.map { student ->
-                // Filter lessons for this student
                 val studentWeekLessons = weekLessons.filter { it.student.id == student.id }
                 val studentMonthLessons = monthLessons.filter { it.student.id == student.id }
-
-                // Calculate totals
                 val weekTotal = studentWeekLessons.sumOf { it.calculateFee() }
                 val monthTotal = studentMonthLessons.sumOf { it.calculateFee() }
-
                 StudentFinancialSummary(
                     student = student,
                     weekTotal = weekTotal,
@@ -205,16 +176,15 @@ class TutorBillingRepository @Inject constructor(
     }
 
     /**
-     * Gets total earnings for a date range across all students.
-     * Useful for reports and analytics.
+     * Gets total earnings across all students for a given date range.
      */
     fun getTotalEarningsForDateRange(startDate: LocalDate, endDate: LocalDate): Flow<Double> {
         return lessonDao.getLessonsWithStudentsInDateRange(startDate, endDate)
-            .map { lessons -> lessons.sumOf { it.calculateFee() } }
+            .map { lessonList -> lessonList.sumOf { it.calculateFee() } }
     }
 
     /**
-     * Gets detailed financial report for a specific student.
+     * Detailed report structure for a single student.
      */
     data class StudentDetailedReport(
         val student: Student,
@@ -226,57 +196,19 @@ class TutorBillingRepository @Inject constructor(
     )
 
     /**
-     * Generates a detailed report for a student.
-     * This kind of complex data aggregation is perfect for the repository layer.
+     * Generates a detailed report for a single student.
      */
     suspend fun getStudentDetailedReport(studentId: Long): StudentDetailedReport? {
         val student = studentDao.getStudentById(studentId) ?: return null
-
-        // Get the first emission from the flow
-        val lessons = lessonDao.getLessonsForStudent(studentId).first()
-
+        val lessons: List<Lesson> = lessonDao.getLessonsForStudent(studentId).first()
         val totalMinutes = lessons.sumOf { it.durationMinutes }
         val totalHours = totalMinutes / 60.0
         val totalEarnings = lessons.sumOf { it.calculateFee(student) }
-        val averageDuration = if (lessons.isNotEmpty()) {
-            totalMinutes.toDouble() / lessons.size
-        } else 0.0
-
+        val averageDuration = if (lessons.isNotEmpty()) totalMinutes.toDouble() / lessons.size else 0.0
+        val lastLessonDate = lessons.maxOfOrNull { it.date }
         return StudentDetailedReport(
             student = student,
             totalLessons = lessons.size,
             totalHours = totalHours,
             totalEarnings = totalEarnings,
             averageLessonDuration = averageDuration,
-            lastLessonDate = lessons.maxOfOrNull { it.date }
-        )
-    }
-
-    // ===== Utility Functions =====
-
-    /**
-     * Gets a single lesson by ID.
-     */
-    suspend fun getLessonById(lessonId: Long): Lesson? {
-        return lessonDao.getLessonById(lessonId)
-    }
-
-    /**
-     * Checks if a student can be safely deleted.
-     * A student can be deleted if they have no lessons.
-     */
-    suspend fun canDeleteStudent(studentId: Long): Boolean {
-        return !studentDao.studentHasLessons(studentId)
-    }
-
-    /**
-     * Searches for students by name.
-     */
-    fun searchStudents(query: String): Flow<List<Student>> {
-        return if (query.isBlank()) {
-            studentDao.getAllActiveStudents()
-        } else {
-            studentDao.searchStudentsByName(query.trim())
-        }
-    }
-}

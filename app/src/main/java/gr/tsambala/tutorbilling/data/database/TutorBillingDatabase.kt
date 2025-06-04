@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import gr.tsambala.tutorbilling.data.dao.StudentDao
 import gr.tsambala.tutorbilling.data.dao.LessonDao
+import gr.tsambala.tutorbilling.data.model.Student
 import gr.tsambala.tutorbilling.data.model.Lesson
 
 @Database(
@@ -16,8 +17,4 @@ import gr.tsambala.tutorbilling.data.model.Lesson
 abstract class TutorBillingDatabase : RoomDatabase() {
     abstract fun studentDao(): StudentDao
     abstract fun lessonDao(): LessonDao
-
-    companion object {
-        const val DATABASE_NAME = "tutor_billing_database"
-    }
 }

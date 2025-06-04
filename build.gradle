@@ -1,21 +1,15 @@
-// Root build.gradle with Kotlin 1.9.24 - the latest stable version that works with kapt
-// This configuration ensures full compatibility with Hilt and other annotation processors
-
 buildscript {
     repositories {
         google()
         mavenCentral()
     }
-
     dependencies {
         classpath 'com.android.tools.build:gradle:8.4.0'
-        // Using Kotlin 1.9.24 - the latest 1.9.x version with full kapt support
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.24'
-        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.48'  // Updated Hilt version
+        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.48'
     }
 }
 
-// Clean task to remove build artifacts
 task clean(type: Delete) {
     delete rootProject.buildDir
 }

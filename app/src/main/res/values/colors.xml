@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- colors.xml is your app's color palette
+<resources>
+    <!-- colors.xml is your app's color palette
      Professional tip: Use meaningful names and follow Material Design color guidelines
      Colors are in hexadecimal format: #AARRGGBB (Alpha, Red, Green, Blue) -->
-<resources>
     <!-- Light Theme Colors -->
     <!-- Primary: Main brand color - think of it as your app's signature color -->
     <color name="primary">#FF6750A4</color> <!-- Material You Purple -->

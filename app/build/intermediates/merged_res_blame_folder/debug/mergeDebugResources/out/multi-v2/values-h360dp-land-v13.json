@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "gr.tsambala.tutorbilling.app-mergeDebugResources-72:/values-h360dp-land-v13/values-h360dp-land-v13.xml",
+            "outputFile": "gr.tsambala.tutorbilling.app-mergeDebugResources-69:/values-h360dp-land-v13/values-h360dp-land-v13.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\dimit\\.gradle\\caches\\8.11.1\\transforms\\49ecb7a3d87ea9494018853e94e3e421\\transformed\\material-1.12.0\\res\\values-h360dp-land-v13\\values-h360dp-land-v13.xml",
+                    "source": "C:\\Users\\dimit\\.gradle\\caches\\8.11.1\\transforms\\bee91b5fce18f064d7a9c3d8662a2dca\\transformed\\material-1.11.0\\res\\values-h360dp-land-v13\\values-h360dp-land-v13.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10",
                         "startColumns": "4,4,4,4,4,4,4,4,4",

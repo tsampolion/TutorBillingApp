@@ -28,33 +28,53 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Tutor Billing") }
+                title = { Text("Tutor Billing") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
             )
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = onAddStudent
+                onClick = onAddStudent,
+                containerColor = MaterialTheme.colorScheme.primary
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add Student")
             }
         }
     ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(
-                items = uiState.students,
-                key = { it.student.id }
-            ) { studentWithEarnings ->
-                StudentCard(
-                    studentWithEarnings = studentWithEarnings,
-                    onStudentClick = { onNavigateToStudent(studentWithEarnings.student.id) },
-                    onDeleteClick = { viewModel.deleteStudent(studentWithEarnings.student.id) }
+        if (uiState.students.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "No students yet.\nTap + to add your first student.",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentPadding = PaddingValues(vertical = 8.dp)
+            ) {
+                items(
+                    items = uiState.students,
+                    key = { it.student.id }
+                ) { studentWithEarnings ->
+                    StudentCard(
+                        studentWithEarnings = studentWithEarnings,
+                        onStudentClick = { onNavigateToStudent(studentWithEarnings.student.id) },
+                        onDeleteClick = { viewModel.deleteStudent(studentWithEarnings.student.id) }
+                    )
+                    HorizontalDivider()
+                }
             }
         }
     }
@@ -72,7 +92,11 @@ fun StudentCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onStudentClick() }
+            .clickable { onStudentClick() },
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
             modifier = Modifier
@@ -89,39 +113,51 @@ fun StudentCard(
                     fontWeight = FontWeight.Bold
                 )
 
+                Text(
+                    text = studentWithEarnings.student.getFormattedRate(),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Row {
-                    Column(
-                        modifier = Modifier.weight(1f)
-                    ) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(24.dp)
+                ) {
+                    Column {
                         Text(
                             text = "This week",
-                            style = MaterialTheme.typography.labelSmall
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
-                            text = "€ %.2f".format(studentWithEarnings.weekEarnings),
-                            style = MaterialTheme.typography.bodyMedium
+                            text = "€%.2f".format(studentWithEarnings.weekEarnings),
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Medium
                         )
                     }
 
-                    Column(
-                        modifier = Modifier.weight(1f)
-                    ) {
+                    Column {
                         Text(
                             text = "This month",
-                            style = MaterialTheme.typography.labelSmall
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
-                            text = "€ %.2f".format(studentWithEarnings.monthEarnings),
-                            style = MaterialTheme.typography.bodyMedium
+                            text = "€%.2f".format(studentWithEarnings.monthEarnings),
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Medium
                         )
                     }
                 }
             }
 
             IconButton(onClick = { showDeleteDialog = true }) {
-                Icon(Icons.Default.Delete, contentDescription = "Delete")
+                Icon(
+                    Icons.Default.Delete,
+                    contentDescription = "Delete",
+                    tint = MaterialTheme.colorScheme.error
+                )
             }
         }
     }
@@ -138,7 +174,7 @@ fun StudentCard(
                         showDeleteDialog = false
                     }
                 ) {
-                    Text("Delete")
+                    Text("Delete", color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {

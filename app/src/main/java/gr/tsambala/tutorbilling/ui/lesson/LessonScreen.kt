@@ -6,7 +6,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -29,11 +31,23 @@ fun LessonScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(if (lessonId == "new") "Add Lesson" else "Edit Lesson")
+                    Text(
+                        text = if (lessonId == "new") "Add Lesson" else "Edit Lesson"
+                    )
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    TextButton(
+                        onClick = {
+                            viewModel.saveLesson()
+                            onNavigateBack()
+                        }
+                    ) {
+                        Text("Save")
                     }
                 }
             )
@@ -49,20 +63,24 @@ fun LessonScreen(
             // Student info (read-only)
             if (uiState.studentName.isNotEmpty()) {
                 Card(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
                 ) {
                     Column(
                         modifier = Modifier.padding(16.dp)
                     ) {
                         Text(
-                            text = "Student: ${uiState.studentName}",
-                            style = MaterialTheme.typography.titleMedium
+                            text = uiState.studentName,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
                         )
                         Text(
                             text = if (uiState.studentRateType == "hourly") {
-                                "Rate: €${uiState.studentRate}/hour"
+                                "€${uiState.studentRate}/hour"
                             } else {
-                                "Rate: €${uiState.studentRate}/lesson"
+                                "€${uiState.studentRate}/lesson"
                             },
                             style = MaterialTheme.typography.bodyMedium
                         )
@@ -75,7 +93,8 @@ fun LessonScreen(
                 value = uiState.date,
                 onValueChange = viewModel::updateDate,
                 label = { Text("Date (YYYY-MM-DD)") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
             )
 
             // Time input
@@ -83,7 +102,8 @@ fun LessonScreen(
                 value = uiState.startTime,
                 onValueChange = viewModel::updateStartTime,
                 label = { Text("Start Time (HH:MM)") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
             )
 
             // Duration input
@@ -92,19 +112,11 @@ fun LessonScreen(
                 onValueChange = viewModel::updateDuration,
                 label = { Text("Duration (minutes)") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            // Notes input
-            OutlinedTextField(
-                value = uiState.notes,
-                onValueChange = viewModel::updateNotes,
-                label = { Text("Notes (optional)") },
                 modifier = Modifier.fillMaxWidth(),
-                minLines = 3
+                singleLine = true
             )
 
-            // Fee calculation display
+            // Fee calculation
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -115,7 +127,8 @@ fun LessonScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = "Lesson Fee",
@@ -123,23 +136,21 @@ fun LessonScreen(
                     )
                     Text(
                         text = "€%.2f".format(viewModel.calculateFee()),
-                        style = MaterialTheme.typography.headlineSmall
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.weight(1f))
-
-            // Save button
-            Button(
-                onClick = {
-                    viewModel.saveLesson()
-                    onNavigateBack()
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Save Lesson")
-            }
+            // Notes
+            OutlinedTextField(
+                value = uiState.notes,
+                onValueChange = viewModel::updateNotes,
+                label = { Text("Notes (optional)") },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 3,
+                maxLines = 5
+            )
         }
     }
 }

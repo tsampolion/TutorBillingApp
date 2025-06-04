@@ -41,12 +41,11 @@ public final class TutorBillingDatabase_Impl extends TutorBillingDatabase {
     final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(1) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS `students` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `hourlyRate` REAL, `perLessonRate` REAL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, `isActive` INTEGER NOT NULL)");
-        db.execSQL("CREATE TABLE IF NOT EXISTS `lessons` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `studentId` INTEGER NOT NULL, `date` INTEGER NOT NULL, `startTime` INTEGER NOT NULL, `durationMinutes` INTEGER NOT NULL, `notes` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, FOREIGN KEY(`studentId`) REFERENCES `students`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT )");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `students` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `rateType` TEXT NOT NULL, `rate` REAL NOT NULL, `isActive` INTEGER NOT NULL)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `lessons` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `studentId` INTEGER NOT NULL, `date` TEXT NOT NULL, `startTime` TEXT NOT NULL, `durationMinutes` INTEGER NOT NULL, `notes` TEXT, `rateType` TEXT NOT NULL, `rateAmount` REAL NOT NULL, FOREIGN KEY(`studentId`) REFERENCES `students`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_lessons_studentId` ON `lessons` (`studentId`)");
-        db.execSQL("CREATE INDEX IF NOT EXISTS `index_lessons_date` ON `lessons` (`date`)");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e42d99274eda44f575d0d4fb5a5a152a')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5f0d35b0bc3cd5d5f5f4844f31f3bca3')");
       }
 
       @Override
@@ -97,13 +96,11 @@ public final class TutorBillingDatabase_Impl extends TutorBillingDatabase {
       @NonNull
       public RoomOpenHelper.ValidationResult onValidateSchema(
           @NonNull final SupportSQLiteDatabase db) {
-        final HashMap<String, TableInfo.Column> _columnsStudents = new HashMap<String, TableInfo.Column>(7);
+        final HashMap<String, TableInfo.Column> _columnsStudents = new HashMap<String, TableInfo.Column>(5);
         _columnsStudents.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsStudents.put("name", new TableInfo.Column("name", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsStudents.put("hourlyRate", new TableInfo.Column("hourlyRate", "REAL", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsStudents.put("perLessonRate", new TableInfo.Column("perLessonRate", "REAL", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsStudents.put("createdAt", new TableInfo.Column("createdAt", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsStudents.put("updatedAt", new TableInfo.Column("updatedAt", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsStudents.put("rateType", new TableInfo.Column("rateType", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsStudents.put("rate", new TableInfo.Column("rate", "REAL", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsStudents.put("isActive", new TableInfo.Column("isActive", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysStudents = new HashSet<TableInfo.ForeignKey>(0);
         final HashSet<TableInfo.Index> _indicesStudents = new HashSet<TableInfo.Index>(0);
@@ -117,17 +114,16 @@ public final class TutorBillingDatabase_Impl extends TutorBillingDatabase {
         final HashMap<String, TableInfo.Column> _columnsLessons = new HashMap<String, TableInfo.Column>(8);
         _columnsLessons.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsLessons.put("studentId", new TableInfo.Column("studentId", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsLessons.put("date", new TableInfo.Column("date", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsLessons.put("startTime", new TableInfo.Column("startTime", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsLessons.put("date", new TableInfo.Column("date", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsLessons.put("startTime", new TableInfo.Column("startTime", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsLessons.put("durationMinutes", new TableInfo.Column("durationMinutes", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsLessons.put("notes", new TableInfo.Column("notes", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsLessons.put("createdAt", new TableInfo.Column("createdAt", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsLessons.put("updatedAt", new TableInfo.Column("updatedAt", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsLessons.put("rateType", new TableInfo.Column("rateType", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsLessons.put("rateAmount", new TableInfo.Column("rateAmount", "REAL", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysLessons = new HashSet<TableInfo.ForeignKey>(1);
-        _foreignKeysLessons.add(new TableInfo.ForeignKey("students", "RESTRICT", "NO ACTION", Arrays.asList("studentId"), Arrays.asList("id")));
-        final HashSet<TableInfo.Index> _indicesLessons = new HashSet<TableInfo.Index>(2);
+        _foreignKeysLessons.add(new TableInfo.ForeignKey("students", "CASCADE", "NO ACTION", Arrays.asList("studentId"), Arrays.asList("id")));
+        final HashSet<TableInfo.Index> _indicesLessons = new HashSet<TableInfo.Index>(1);
         _indicesLessons.add(new TableInfo.Index("index_lessons_studentId", false, Arrays.asList("studentId"), Arrays.asList("ASC")));
-        _indicesLessons.add(new TableInfo.Index("index_lessons_date", false, Arrays.asList("date"), Arrays.asList("ASC")));
         final TableInfo _infoLessons = new TableInfo("lessons", _columnsLessons, _foreignKeysLessons, _indicesLessons);
         final TableInfo _existingLessons = TableInfo.read(db, "lessons");
         if (!_infoLessons.equals(_existingLessons)) {
@@ -137,7 +133,7 @@ public final class TutorBillingDatabase_Impl extends TutorBillingDatabase {
         }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "e42d99274eda44f575d0d4fb5a5a152a", "2b6f897f1d6674dc5202efc97859e4b0");
+    }, "5f0d35b0bc3cd5d5f5f4844f31f3bca3", "ddd6b991dfb811eba472af0d1fa02de1");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;
@@ -164,8 +160,8 @@ public final class TutorBillingDatabase_Impl extends TutorBillingDatabase {
       if (_supportsDeferForeignKeys) {
         _db.execSQL("PRAGMA defer_foreign_keys = TRUE");
       }
-      _db.execSQL("DELETE FROM `lessons`");
       _db.execSQL("DELETE FROM `students`");
+      _db.execSQL("DELETE FROM `lessons`");
       super.setTransactionSuccessful();
     } finally {
       super.endTransaction();

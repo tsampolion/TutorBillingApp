@@ -1,23 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- themes.xml defines your app's visual style
-     Think of it as your app's dress code - it determines colors, fonts, and overall appearance
-     We're using Material Design 3 (Material You) for a modern, adaptive look -->
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base theme for light mode (when device is in light theme) -->
     <style name="Theme.TutorBillingApp" parent="Theme.Material3.Light.NoActionBar">
         <!-- Primary brand color - used for key UI elements like app bars -->
         <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryVariant">@color/primary_variant</item>
         <item name="colorOnPrimary">@color/on_primary</item>
 
         <!-- Secondary brand color - used for less prominent UI elements -->
         <item name="colorSecondary">@color/secondary</item>
-        <item name="colorSecondaryVariant">@color/secondary_variant</item>
         <item name="colorOnSecondary">@color/on_secondary</item>
 
         <!-- Status bar color -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor">?attr/colorPrimary</item>
 
         <!-- Enable edge-to-edge display for modern Android -->
         <item name="android:windowTranslucentStatus">false</item>
@@ -31,15 +25,13 @@
     <style name="Theme.TutorBillingApp.Dark" parent="Theme.Material3.Dark.NoActionBar">
         <!-- Dark theme colors -->
         <item name="colorPrimary">@color/primary_dark</item>
-        <item name="colorPrimaryVariant">@color/primary_variant_dark</item>
         <item name="colorOnPrimary">@color/on_primary_dark</item>
 
         <item name="colorSecondary">@color/secondary_dark</item>
-        <item name="colorSecondaryVariant">@color/secondary_variant_dark</item>
         <item name="colorOnSecondary">@color/on_secondary_dark</item>
 
         <!-- Dark status bar -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor">?attr/colorPrimary</item>
 
         <!-- Edge-to-edge for dark mode too -->
         <item name="android:windowTranslucentStatus">false</item>

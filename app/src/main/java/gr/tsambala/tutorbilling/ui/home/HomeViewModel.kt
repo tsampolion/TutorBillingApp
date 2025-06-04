@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import gr.tsambala.tutorbilling.data.model.Student
+import gr.tsambala.tutorbilling.data.model.calculateFee
 import gr.tsambala.tutorbilling.data.dao.StudentDao
 import gr.tsambala.tutorbilling.data.dao.LessonDao
 import kotlinx.coroutines.flow.*
@@ -47,13 +48,7 @@ class HomeViewModel @Inject constructor(
                             lessonDate.year == currentYear &&
                                     lessonDate.get(weekFields.weekOfWeekBasedYear()) == currentWeek
                         }
-                        .sumOf { lesson ->
-                            // Calculate fee based on student rate
-                            when (student.rateType) {
-                                "hourly" -> (lesson.durationMinutes / 60.0) * student.rate
-                                else -> student.rate
-                            }
-                        }
+                        .sumOf { lesson -> lesson.calculateFee(student) }
 
                     val monthEarnings = studentLessons
                         .filter { lesson ->
@@ -61,13 +56,7 @@ class HomeViewModel @Inject constructor(
                             lessonDate.year == currentYear &&
                                     lessonDate.monthValue == currentMonth
                         }
-                        .sumOf { lesson ->
-                            // Calculate fee based on student rate
-                            when (student.rateType) {
-                                "hourly" -> (lesson.durationMinutes / 60.0) * student.rate
-                                else -> student.rate
-                            }
-                        }
+                        .sumOf { lesson -> lesson.calculateFee(student) }
 
                     StudentWithEarnings(
                         student = student,

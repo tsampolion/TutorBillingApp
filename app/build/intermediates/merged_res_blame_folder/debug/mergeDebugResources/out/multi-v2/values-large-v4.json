@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "gr.tsambala.tutorbilling.app-mergeDebugResources-72:/values-large-v4/values-large-v4.xml",
+            "outputFile": "gr.tsambala.tutorbilling.app-mergeDebugResources-69:/values-large-v4/values-large-v4.xml",
             "map": [
                 {
                     "source": "C:\\Users\\dimit\\.gradle\\caches\\8.11.1\\transforms\\49bdc86e14cbe67e18e39a4fc96d9dd9\\transformed\\appcompat-1.6.1\\res\\values-large-v4\\values-large-v4.xml",
@@ -14,7 +14,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\dimit\\.gradle\\caches\\8.11.1\\transforms\\49ecb7a3d87ea9494018853e94e3e421\\transformed\\material-1.12.0\\res\\values-large-v4\\values-large-v4.xml",
+                    "source": "C:\\Users\\dimit\\.gradle\\caches\\8.11.1\\transforms\\bee91b5fce18f064d7a9c3d8662a2dca\\transformed\\material-1.11.0\\res\\values-large-v4\\values-large-v4.xml",
                     "from": {
                         "startLines": "2,3,4,5",
                         "startColumns": "4,4,4,4",

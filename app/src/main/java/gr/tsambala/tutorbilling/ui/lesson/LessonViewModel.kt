@@ -35,7 +35,7 @@ class LessonViewModel @Inject constructor(
             _uiState.update {
                 it.copy(
                     date = LocalDate.now().toString(),
-                    startTime = LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"))
+                    startTime = LocalTime.now().withSecond(0).withNano(0).toString()
                 )
             }
         }
@@ -95,6 +95,10 @@ class LessonViewModel @Inject constructor(
         _uiState.update { it.copy(notes = notes) }
     }
 
+    fun toggleEditMode() {
+        _uiState.update { it.copy(isEditMode = !it.isEditMode) }
+    }
+
     fun saveLesson() {
         viewModelScope.launch {
             val state = _uiState.value
@@ -107,7 +111,9 @@ class LessonViewModel @Inject constructor(
                         date = state.date,
                         startTime = state.startTime,
                         durationMinutes = duration,
-                        notes = state.notes.ifBlank { null }
+                        notes = state.notes.ifBlank { null },
+                        rateType = state.studentRateType,
+                        rateAmount = state.studentRate
                     )
                     lessonDao.insert(lesson)
                 } else {
@@ -118,11 +124,24 @@ class LessonViewModel @Inject constructor(
                             date = state.date,
                             startTime = state.startTime,
                             durationMinutes = duration,
-                            notes = state.notes.ifBlank { null }
+                            notes = state.notes.ifBlank { null },
+                            rateType = state.studentRateType,
+                            rateAmount = state.studentRate
                         )
                         lessonDao.update(lesson)
                     }
                 }
+            }
+
+            _uiState.update { it.copy(isEditMode = false) }
+        }
+    }
+
+    fun deleteLesson(onDeleted: () -> Unit) {
+        viewModelScope.launch {
+            lessonId?.toLongOrNull()?.let { id ->
+                lessonDao.deleteById(id)
+                onDeleted()
             }
         }
     }
@@ -133,6 +152,7 @@ class LessonViewModel @Inject constructor(
 
         return when (state.studentRateType) {
             "hourly" -> (duration / 60.0) * state.studentRate
+            "per_lesson" -> state.studentRate
             else -> state.studentRate
         }
     }
