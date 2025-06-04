@@ -104,3 +104,30 @@ celerybeat-schedule.*
 *.bak
 *.swp
 *.swo
+
+# Gradle files
+.gradle/
+build/
+# local.properties is often used for SDK location or sensitive keys in Android
+local.properties
+
+# IntelliJ IDEA specific
+.idea/
+*.iml
+*.ipr
+*.iws
+out/ # Default output directory for IntelliJ
+
+# Kotlin specific (if applicable beyond Android/Gradle)
+.kotlin/
+# Or more specifically if only sessions:
+# .kotlin/sessions/
+
+# Android Studio / Mobile specific (if it's an Android app)
+*.apk
+*.aab
+*.ap_
+*.aar
+*.dex
+captures/
+.DS_Store # if you're on macOS
