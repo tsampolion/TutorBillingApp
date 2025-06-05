@@ -10,6 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import gr.tsambala.tutorbilling.data.dao.LessonDao
 import gr.tsambala.tutorbilling.data.dao.StudentDao
 import gr.tsambala.tutorbilling.data.database.TutorBillingDatabase
+import gr.tsambala.tutorbilling.data.database.MIGRATION_1_2
 import javax.inject.Singleton
 
 @Module
@@ -26,7 +27,7 @@ object DatabaseModule {
             TutorBillingDatabase::class.java,
             "tutor_billing_database"
         )
-            .fallbackToDestructiveMigration()
+            .addMigrations(MIGRATION_1_2)
             .build()
     }
 

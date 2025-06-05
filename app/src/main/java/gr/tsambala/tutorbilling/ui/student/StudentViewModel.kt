@@ -45,6 +45,7 @@ class StudentViewModel @Inject constructor(
                                 name = s.name,
                                 rateType = s.rateType,
                                 rate = s.rate.toString(),
+                                className = s.className,
                                 isEditMode = false
                             )
                         }
@@ -112,6 +113,10 @@ class StudentViewModel @Inject constructor(
         _uiState.update { it.copy(rate = rate) }
     }
 
+    fun updateClassName(className: String) {
+        _uiState.update { it.copy(className = className) }
+    }
+
     fun toggleEditMode() {
         _uiState.update { it.copy(isEditMode = !it.isEditMode) }
     }
@@ -125,7 +130,8 @@ class StudentViewModel @Inject constructor(
                 val student = Student(
                     name = state.name,
                     rateType = state.rateType,
-                    rate = rate
+                    rate = rate,
+                    className = state.className
                 )
                 studentDao.insert(student)
             } else {
@@ -134,7 +140,8 @@ class StudentViewModel @Inject constructor(
                         id = id,
                         name = state.name,
                         rateType = state.rateType,
-                        rate = rate
+                        rate = rate,
+                        className = state.className
                     )
                     studentDao.update(student)
                 }
@@ -164,6 +171,7 @@ data class StudentUiState(
     val name: String = "",
     val rateType: String = RateTypes.HOURLY,
     val rate: String = "",
+    val className: String = "Unassigned",
     val lessons: List<Lesson> = emptyList(),
     val weekEarnings: Double = 0.0,
     val monthEarnings: Double = 0.0,
