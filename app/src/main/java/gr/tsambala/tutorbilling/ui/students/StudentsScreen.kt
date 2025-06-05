@@ -130,7 +130,7 @@ fun StudentCard(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = studentWithEarnings.student.name,
+                    text = "${studentWithEarnings.student.name} ${studentWithEarnings.student.surname}".trim(),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -188,7 +188,7 @@ fun StudentCard(
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
             title = { Text("Delete Student") },
-            text = { Text("Are you sure you want to delete ${studentWithEarnings.student.name}? This will also delete all lessons.") },
+            text = { Text("Are you sure you want to delete ${studentWithEarnings.student.name} ${studentWithEarnings.student.surname}? This will also delete all lessons.") },
             confirmButton = {
                 TextButton(
                     onClick = {

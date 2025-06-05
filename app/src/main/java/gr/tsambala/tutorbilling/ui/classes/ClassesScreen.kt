@@ -52,7 +52,8 @@ fun ClassesScreen(
                 }
                 items(students) { student ->
                     Text(
-                        text = student.name,
+                        text = "${student.name} ${student.surname}".trim(),
+
                         modifier = Modifier.padding(horizontal = 32.dp, vertical = 8.dp)
                     )
                 }

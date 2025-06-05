@@ -9,6 +9,9 @@ data class Student(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val name: String,
+    val surname: String,
+    val parentMobile: String,
+    val parentEmail: String,
     val rateType: String = RateTypes.HOURLY, // "hourly" or "per_lesson"
     val rate: Double,
     val className: String = "Unassigned",
@@ -20,5 +23,9 @@ data class Student(
         } else {
             "€%.2f/lesson".format(rate)
         }
+    }
+
+    fun getFullName(): String {
+        return "$name $surname".trim()
     }
 }

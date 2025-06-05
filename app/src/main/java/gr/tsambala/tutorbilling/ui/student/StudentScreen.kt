@@ -43,7 +43,7 @@ fun StudentScreen(
                         text = when {
                             uiState.isEditMode && studentId == "new" -> "Add Student"
                             uiState.isEditMode -> "Edit Student"
-                            else -> uiState.name
+                            else -> "${uiState.name} ${uiState.surname}".trim()
                         }
                     )
                 },
@@ -109,7 +109,7 @@ fun StudentScreen(
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
             title = { Text("Delete Student") },
-            text = { Text("Are you sure you want to delete ${uiState.name}? This will also delete all lessons.") },
+            text = { Text("Are you sure you want to delete ${uiState.name} ${uiState.surname}? This will also delete all lessons.") },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -153,7 +153,7 @@ private fun StudentDetailView(
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Text(
-                        text = uiState.name,
+                        text = "${uiState.name} ${uiState.surname}".trim(),
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -393,7 +393,33 @@ private fun StudentEditForm(
         OutlinedTextField(
             value = uiState.name,
             onValueChange = viewModel::updateName,
-            label = { Text("Student Name") },
+            label = { Text("First Name") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+
+        OutlinedTextField(
+            value = uiState.surname,
+            onValueChange = viewModel::updateSurname,
+            label = { Text("Last Name") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+
+        OutlinedTextField(
+            value = uiState.parentMobile,
+            onValueChange = viewModel::updateParentMobile,
+            label = { Text("Parent Mobile") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+
+        OutlinedTextField(
+            value = uiState.parentEmail,
+            onValueChange = viewModel::updateParentEmail,
+            label = { Text("Parent Email") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
@@ -487,7 +513,7 @@ private fun StudentEditForm(
             Button(
                 onClick = onSave,
                 modifier = Modifier.weight(1f),
-                enabled = uiState.name.isNotBlank() && uiState.rate.toDoubleOrNull() != null
+                enabled = viewModel.isFormValid()
             ) {
                 Text("Save")
             }
