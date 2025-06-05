@@ -42,10 +42,10 @@ public final class TutorBillingDatabase_Impl extends TutorBillingDatabase {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS `students` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `rateType` TEXT NOT NULL, `rate` REAL NOT NULL, `isActive` INTEGER NOT NULL)");
-        db.execSQL("CREATE TABLE IF NOT EXISTS `lessons` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `studentId` INTEGER NOT NULL, `date` TEXT NOT NULL, `startTime` TEXT NOT NULL, `durationMinutes` INTEGER NOT NULL, `notes` TEXT, `rateType` TEXT NOT NULL, `rateAmount` REAL NOT NULL, FOREIGN KEY(`studentId`) REFERENCES `students`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `lessons` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `studentId` INTEGER NOT NULL, `date` TEXT NOT NULL, `startTime` TEXT NOT NULL, `durationMinutes` INTEGER NOT NULL, `notes` TEXT, FOREIGN KEY(`studentId`) REFERENCES `students`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_lessons_studentId` ON `lessons` (`studentId`)");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5f0d35b0bc3cd5d5f5f4844f31f3bca3')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7e7bf1bc92dbfcd77bdc57dbade10bfc')");
       }
 
       @Override
@@ -111,15 +111,13 @@ public final class TutorBillingDatabase_Impl extends TutorBillingDatabase {
                   + " Expected:\n" + _infoStudents + "\n"
                   + " Found:\n" + _existingStudents);
         }
-        final HashMap<String, TableInfo.Column> _columnsLessons = new HashMap<String, TableInfo.Column>(8);
+        final HashMap<String, TableInfo.Column> _columnsLessons = new HashMap<String, TableInfo.Column>(6);
         _columnsLessons.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsLessons.put("studentId", new TableInfo.Column("studentId", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsLessons.put("date", new TableInfo.Column("date", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsLessons.put("startTime", new TableInfo.Column("startTime", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsLessons.put("durationMinutes", new TableInfo.Column("durationMinutes", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsLessons.put("notes", new TableInfo.Column("notes", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsLessons.put("rateType", new TableInfo.Column("rateType", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsLessons.put("rateAmount", new TableInfo.Column("rateAmount", "REAL", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysLessons = new HashSet<TableInfo.ForeignKey>(1);
         _foreignKeysLessons.add(new TableInfo.ForeignKey("students", "CASCADE", "NO ACTION", Arrays.asList("studentId"), Arrays.asList("id")));
         final HashSet<TableInfo.Index> _indicesLessons = new HashSet<TableInfo.Index>(1);
@@ -133,7 +131,7 @@ public final class TutorBillingDatabase_Impl extends TutorBillingDatabase {
         }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "5f0d35b0bc3cd5d5f5f4844f31f3bca3", "ddd6b991dfb811eba472af0d1fa02de1");
+    }, "7e7bf1bc92dbfcd77bdc57dbade10bfc", "aafcf131278cefa99fb833bfe58d2200");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;

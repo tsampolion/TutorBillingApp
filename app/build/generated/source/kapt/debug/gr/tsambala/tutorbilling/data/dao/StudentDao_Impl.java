@@ -1,6 +1,7 @@
 package gr.tsambala.tutorbilling.data.dao;
 
 import android.database.Cursor;
+import android.os.CancellationSignal;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.CoroutinesRoom;
@@ -15,6 +16,7 @@ import androidx.sqlite.db.SupportSQLiteStatement;
 import gr.tsambala.tutorbilling.data.model.Student;
 import java.lang.Class;
 import java.lang.Exception;
+import java.lang.Integer;
 import java.lang.Long;
 import java.lang.Object;
 import java.lang.Override;
@@ -40,7 +42,7 @@ public final class StudentDao_Impl implements StudentDao {
 
   private final EntityDeletionOrUpdateAdapter<Student> __updateAdapterOfStudent;
 
-  private final SharedSQLiteStatement __preparedStmtOfDeleteById;
+  private final SharedSQLiteStatement __preparedStmtOfSoftDeleteStudent;
 
   public StudentDao_Impl(@NonNull final RoomDatabase __db) {
     this.__db = __db;
@@ -110,11 +112,11 @@ public final class StudentDao_Impl implements StudentDao {
         statement.bindLong(6, entity.getId());
       }
     };
-    this.__preparedStmtOfDeleteById = new SharedSQLiteStatement(__db) {
+    this.__preparedStmtOfSoftDeleteStudent = new SharedSQLiteStatement(__db) {
       @Override
       @NonNull
       public String createQuery() {
-        final String _query = "DELETE FROM students WHERE id = ?";
+        final String _query = "UPDATE students SET isActive = 0 WHERE id = ?";
         return _query;
       }
     };
@@ -175,12 +177,13 @@ public final class StudentDao_Impl implements StudentDao {
   }
 
   @Override
-  public Object deleteById(final long studentId, final Continuation<? super Unit> $completion) {
+  public Object softDeleteStudent(final long studentId,
+      final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
       public Unit call() throws Exception {
-        final SupportSQLiteStatement _stmt = __preparedStmtOfDeleteById.acquire();
+        final SupportSQLiteStatement _stmt = __preparedStmtOfSoftDeleteStudent.acquire();
         int _argIndex = 1;
         _stmt.bindLong(_argIndex, studentId);
         try {
@@ -193,7 +196,7 @@ public final class StudentDao_Impl implements StudentDao {
             __db.endTransaction();
           }
         } finally {
-          __preparedStmtOfDeleteById.release(_stmt);
+          __preparedStmtOfSoftDeleteStudent.release(_stmt);
         }
       }
     }, $completion);
@@ -201,7 +204,7 @@ public final class StudentDao_Impl implements StudentDao {
 
   @Override
   public Flow<Student> getStudentById(final long studentId) {
-    final String _sql = "SELECT * FROM students WHERE id = ?";
+    final String _sql = "SELECT * FROM students WHERE id = ? AND isActive = 1";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
     _statement.bindLong(_argIndex, studentId);
@@ -256,7 +259,7 @@ public final class StudentDao_Impl implements StudentDao {
   }
 
   @Override
-  public Flow<List<Student>> getAllStudents() {
+  public Flow<List<Student>> getAllActiveStudents() {
     final String _sql = "SELECT * FROM students WHERE isActive = 1 ORDER BY name ASC";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
     return CoroutinesRoom.createFlow(__db, false, new String[] {"students"}, new Callable<List<Student>>() {
@@ -310,9 +313,15 @@ public final class StudentDao_Impl implements StudentDao {
   }
 
   @Override
-  public Flow<List<Student>> getAllStudentsIncludingInactive() {
-    final String _sql = "SELECT * FROM students ORDER BY name ASC";
-    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
+  public Flow<List<Student>> searchStudentsByName(final String query) {
+    final String _sql = "SELECT * FROM students WHERE isActive = 1 AND name LIKE '%' || ? || '%' ORDER BY name ASC";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
+    int _argIndex = 1;
+    if (query == null) {
+      _statement.bindNull(_argIndex);
+    } else {
+      _statement.bindString(_argIndex, query);
+    }
     return CoroutinesRoom.createFlow(__db, false, new String[] {"students"}, new Callable<List<Student>>() {
       @Override
       @NonNull
@@ -361,6 +370,38 @@ public final class StudentDao_Impl implements StudentDao {
         _statement.release();
       }
     });
+  }
+
+  @Override
+  public Object getActiveStudentCount(final Continuation<? super Integer> $completion) {
+    final String _sql = "SELECT COUNT(*) FROM students WHERE isActive = 1";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
+    final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();
+    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable<Integer>() {
+      @Override
+      @NonNull
+      public Integer call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final Integer _result;
+          if (_cursor.moveToFirst()) {
+            final Integer _tmp;
+            if (_cursor.isNull(0)) {
+              _tmp = null;
+            } else {
+              _tmp = _cursor.getInt(0);
+            }
+            _result = _tmp;
+          } else {
+            _result = null;
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+          _statement.release();
+        }
+      }
+    }, $completion);
   }
 
   @NonNull
