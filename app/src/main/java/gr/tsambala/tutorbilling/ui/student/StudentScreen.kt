@@ -384,6 +384,12 @@ private fun StudentEditForm(
     onCancel: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val nameError = uiState.name.isBlank()
+    val surnameError = uiState.surname.isBlank()
+    val phoneError = !viewModel.isPhoneValid(uiState.parentMobile)
+    val emailError = !viewModel.isEmailValid(uiState.parentEmail)
+    val rateError = uiState.rate.toDoubleOrNull() == null
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -393,7 +399,9 @@ private fun StudentEditForm(
         OutlinedTextField(
             value = uiState.name,
             onValueChange = viewModel::updateName,
-            label = { Text("First Name") },
+            label = { Text("First Name*") },
+            isError = nameError,
+            supportingText = { if (nameError) Text("Required") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
@@ -401,7 +409,9 @@ private fun StudentEditForm(
         OutlinedTextField(
             value = uiState.surname,
             onValueChange = viewModel::updateSurname,
-            label = { Text("Last Name") },
+            label = { Text("Last Name*") },
+            isError = surnameError,
+            supportingText = { if (surnameError) Text("Required") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
@@ -409,7 +419,9 @@ private fun StudentEditForm(
         OutlinedTextField(
             value = uiState.parentMobile,
             onValueChange = viewModel::updateParentMobile,
-            label = { Text("Parent Mobile") },
+            label = { Text("Parent Mobile*") },
+            isError = phoneError,
+            supportingText = { if (phoneError) Text("Enter 10 digits") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
@@ -418,7 +430,9 @@ private fun StudentEditForm(
         OutlinedTextField(
             value = uiState.parentEmail,
             onValueChange = viewModel::updateParentEmail,
-            label = { Text("Parent Email") },
+            label = { Text("Parent Email*") },
+            isError = emailError,
+            supportingText = { if (emailError) Text("Invalid email") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
@@ -452,10 +466,11 @@ private fun StudentEditForm(
             onValueChange = viewModel::updateRate,
             label = {
                 Text(
-                    if (uiState.rateType == RateTypes.HOURLY) "Hourly Rate (€)"
-                    else "Rate per Lesson (€)"
+                    if (uiState.rateType == RateTypes.HOURLY) "Hourly Rate (€)*" else "Rate per Lesson (€)*"
                 )
             },
+            isError = rateError,
+            supportingText = { if (rateError) Text("Required") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
@@ -476,7 +491,7 @@ private fun StudentEditForm(
                 value = uiState.className,
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Class") },
+                label = { Text("Class*") },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
                 modifier = Modifier
                     .menuAnchor()
