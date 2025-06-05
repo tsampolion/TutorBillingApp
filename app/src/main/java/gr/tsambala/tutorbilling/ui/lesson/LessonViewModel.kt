@@ -45,12 +45,12 @@ class LessonViewModel @Inject constructor(
         viewModelScope.launch {
             studentId?.toLongOrNull()?.let { id ->
                 studentDao.getStudentById(id).collect { student ->
-                    student?.let {
+                    student?.let { s ->
                         _uiState.update { state ->
                             state.copy(
-                                studentName = it.name,
-                                studentRateType = it.rateType,
-                                studentRate = it.rate
+                                studentName = s.name,
+                                studentRateType = s.rateType,
+                                studentRate = s.rate
                             )
                         }
                     }
@@ -63,13 +63,13 @@ class LessonViewModel @Inject constructor(
         viewModelScope.launch {
             lessonId?.toLongOrNull()?.let { id ->
                 lessonDao.getLessonById(id).collect { lesson ->
-                    lesson?.let {
+                    lesson?.let { l ->
                         _uiState.update { state ->
                             state.copy(
-                                date = it.date,
-                                startTime = it.startTime,
-                                durationMinutes = it.durationMinutes.toString(),
-                                notes = it.notes ?: "",
+                                date = l.date,
+                                startTime = l.startTime,
+                                durationMinutes = l.durationMinutes.toString(),
+                                notes = l.notes ?: "",
                                 isEditMode = false
                             )
                         }
@@ -111,9 +111,7 @@ class LessonViewModel @Inject constructor(
                         date = state.date,
                         startTime = state.startTime,
                         durationMinutes = duration,
-                        notes = state.notes.ifBlank { null },
-                        rateType = state.studentRateType,
-                        rateAmount = state.studentRate
+                        notes = state.notes.ifBlank { null }
                     )
                     lessonDao.insert(lesson)
                 } else {
@@ -124,9 +122,7 @@ class LessonViewModel @Inject constructor(
                             date = state.date,
                             startTime = state.startTime,
                             durationMinutes = duration,
-                            notes = state.notes.ifBlank { null },
-                            rateType = state.studentRateType,
-                            rateAmount = state.studentRate
+                            notes = state.notes.ifBlank { null }
                         )
                         lessonDao.update(lesson)
                     }
