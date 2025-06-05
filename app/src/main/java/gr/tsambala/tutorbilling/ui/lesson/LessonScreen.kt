@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -42,14 +43,39 @@ fun LessonScreen(
                     }
                 },
                 actions = {
+                    var showDelete by remember { mutableStateOf(false) }
+                    if (lessonId != "new") {
+                        IconButton(onClick = { showDelete = true }) {
+                            Icon(Icons.Default.Delete, contentDescription = "Delete")
+                        }
+                    }
                     TextButton(
                         onClick = {
                             viewModel.saveLesson()
                             onNavigateBack()
                         },
-                        enabled = uiState.durationMinutes.toIntOrNull()?.let { it > 0 } == true
+                        enabled = viewModel.isFormValid()
                     ) {
                         Text("Save")
+                    }
+
+                    if (showDelete) {
+                        AlertDialog(
+                            onDismissRequest = { showDelete = false },
+                            title = { Text("Delete Lesson") },
+                            text = { Text("Are you sure you want to delete this lesson?") },
+                            confirmButton = {
+                                TextButton(onClick = {
+                                    viewModel.deleteLesson(onNavigateBack)
+                                    showDelete = false
+                                }) {
+                                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                                }
+                            },
+                            dismissButton = {
+                                TextButton(onClick = { showDelete = false }) { Text("Cancel") }
+                            }
+                        )
                     }
                 }
             )
