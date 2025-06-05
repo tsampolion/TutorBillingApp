@@ -98,6 +98,22 @@ class LessonViewModel @Inject constructor(
         _uiState.update { it.copy(notes = notes) }
     }
 
+    private fun isValidDate(value: String): Boolean = try {
+        LocalDate.parse(value)
+        true
+    } catch (_: Exception) { false }
+
+    private fun isValidTime(value: String): Boolean = try {
+        LocalTime.parse(value)
+        true
+    } catch (_: Exception) { false }
+
+    fun isFormValid(): Boolean {
+        val state = _uiState.value
+        val duration = state.durationMinutes.toIntOrNull() ?: 0
+        return duration > 0 && isValidDate(state.date) && isValidTime(state.startTime)
+    }
+
     fun toggleEditMode() {
         _uiState.update { it.copy(isEditMode = !it.isEditMode) }
     }
@@ -106,7 +122,7 @@ class LessonViewModel @Inject constructor(
         viewModelScope.launch {
             val state = _uiState.value
             val duration = state.durationMinutes.toIntOrNull() ?: 0
-            if (duration <= 0) return@launch
+            if (!isFormValid()) return@launch
 
             studentId?.toLongOrNull()?.let { sId ->
                 if (lessonId == "new") {
