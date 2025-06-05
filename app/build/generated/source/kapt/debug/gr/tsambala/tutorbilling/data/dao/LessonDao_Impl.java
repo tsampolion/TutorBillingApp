@@ -48,7 +48,7 @@ public final class LessonDao_Impl implements LessonDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR ABORT INTO `lessons` (`id`,`studentId`,`date`,`startTime`,`durationMinutes`,`notes`,`rateType`,`rateAmount`) VALUES (nullif(?, 0),?,?,?,?,?,?,?)";
+        return "INSERT OR ABORT INTO `lessons` (`id`,`studentId`,`date`,`startTime`,`durationMinutes`,`notes`) VALUES (nullif(?, 0),?,?,?,?,?)";
       }
 
       @Override
@@ -72,12 +72,6 @@ public final class LessonDao_Impl implements LessonDao {
         } else {
           statement.bindString(6, entity.getNotes());
         }
-        if (entity.getRateType() == null) {
-          statement.bindNull(7);
-        } else {
-          statement.bindString(7, entity.getRateType());
-        }
-        statement.bindDouble(8, entity.getRateAmount());
       }
     };
     this.__deletionAdapterOfLesson = new EntityDeletionOrUpdateAdapter<Lesson>(__db) {
@@ -97,7 +91,7 @@ public final class LessonDao_Impl implements LessonDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "UPDATE OR ABORT `lessons` SET `id` = ?,`studentId` = ?,`date` = ?,`startTime` = ?,`durationMinutes` = ?,`notes` = ?,`rateType` = ?,`rateAmount` = ? WHERE `id` = ?";
+        return "UPDATE OR ABORT `lessons` SET `id` = ?,`studentId` = ?,`date` = ?,`startTime` = ?,`durationMinutes` = ?,`notes` = ? WHERE `id` = ?";
       }
 
       @Override
@@ -121,13 +115,7 @@ public final class LessonDao_Impl implements LessonDao {
         } else {
           statement.bindString(6, entity.getNotes());
         }
-        if (entity.getRateType() == null) {
-          statement.bindNull(7);
-        } else {
-          statement.bindString(7, entity.getRateType());
-        }
-        statement.bindDouble(8, entity.getRateAmount());
-        statement.bindLong(9, entity.getId());
+        statement.bindLong(7, entity.getId());
       }
     };
     this.__preparedStmtOfDeleteById = new SharedSQLiteStatement(__db) {
@@ -237,8 +225,6 @@ public final class LessonDao_Impl implements LessonDao {
           final int _cursorIndexOfStartTime = CursorUtil.getColumnIndexOrThrow(_cursor, "startTime");
           final int _cursorIndexOfDurationMinutes = CursorUtil.getColumnIndexOrThrow(_cursor, "durationMinutes");
           final int _cursorIndexOfNotes = CursorUtil.getColumnIndexOrThrow(_cursor, "notes");
-          final int _cursorIndexOfRateType = CursorUtil.getColumnIndexOrThrow(_cursor, "rateType");
-          final int _cursorIndexOfRateAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "rateAmount");
           final Lesson _result;
           if (_cursor.moveToFirst()) {
             final long _tmpId;
@@ -265,15 +251,7 @@ public final class LessonDao_Impl implements LessonDao {
             } else {
               _tmpNotes = _cursor.getString(_cursorIndexOfNotes);
             }
-            final String _tmpRateType;
-            if (_cursor.isNull(_cursorIndexOfRateType)) {
-              _tmpRateType = null;
-            } else {
-              _tmpRateType = _cursor.getString(_cursorIndexOfRateType);
-            }
-            final double _tmpRateAmount;
-            _tmpRateAmount = _cursor.getDouble(_cursorIndexOfRateAmount);
-            _result = new Lesson(_tmpId,_tmpStudentId,_tmpDate,_tmpStartTime,_tmpDurationMinutes,_tmpNotes,_tmpRateType,_tmpRateAmount);
+            _result = new Lesson(_tmpId,_tmpStudentId,_tmpDate,_tmpStartTime,_tmpDurationMinutes,_tmpNotes);
           } else {
             _result = null;
           }
@@ -308,8 +286,6 @@ public final class LessonDao_Impl implements LessonDao {
           final int _cursorIndexOfStartTime = CursorUtil.getColumnIndexOrThrow(_cursor, "startTime");
           final int _cursorIndexOfDurationMinutes = CursorUtil.getColumnIndexOrThrow(_cursor, "durationMinutes");
           final int _cursorIndexOfNotes = CursorUtil.getColumnIndexOrThrow(_cursor, "notes");
-          final int _cursorIndexOfRateType = CursorUtil.getColumnIndexOrThrow(_cursor, "rateType");
-          final int _cursorIndexOfRateAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "rateAmount");
           final List<Lesson> _result = new ArrayList<Lesson>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Lesson _item;
@@ -337,15 +313,7 @@ public final class LessonDao_Impl implements LessonDao {
             } else {
               _tmpNotes = _cursor.getString(_cursorIndexOfNotes);
             }
-            final String _tmpRateType;
-            if (_cursor.isNull(_cursorIndexOfRateType)) {
-              _tmpRateType = null;
-            } else {
-              _tmpRateType = _cursor.getString(_cursorIndexOfRateType);
-            }
-            final double _tmpRateAmount;
-            _tmpRateAmount = _cursor.getDouble(_cursorIndexOfRateAmount);
-            _item = new Lesson(_tmpId,_tmpStudentId,_tmpDate,_tmpStartTime,_tmpDurationMinutes,_tmpNotes,_tmpRateType,_tmpRateAmount);
+            _item = new Lesson(_tmpId,_tmpStudentId,_tmpDate,_tmpStartTime,_tmpDurationMinutes,_tmpNotes);
             _result.add(_item);
           }
           return _result;
@@ -377,8 +345,6 @@ public final class LessonDao_Impl implements LessonDao {
           final int _cursorIndexOfStartTime = CursorUtil.getColumnIndexOrThrow(_cursor, "startTime");
           final int _cursorIndexOfDurationMinutes = CursorUtil.getColumnIndexOrThrow(_cursor, "durationMinutes");
           final int _cursorIndexOfNotes = CursorUtil.getColumnIndexOrThrow(_cursor, "notes");
-          final int _cursorIndexOfRateType = CursorUtil.getColumnIndexOrThrow(_cursor, "rateType");
-          final int _cursorIndexOfRateAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "rateAmount");
           final List<Lesson> _result = new ArrayList<Lesson>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Lesson _item;
@@ -406,90 +372,7 @@ public final class LessonDao_Impl implements LessonDao {
             } else {
               _tmpNotes = _cursor.getString(_cursorIndexOfNotes);
             }
-            final String _tmpRateType;
-            if (_cursor.isNull(_cursorIndexOfRateType)) {
-              _tmpRateType = null;
-            } else {
-              _tmpRateType = _cursor.getString(_cursorIndexOfRateType);
-            }
-            final double _tmpRateAmount;
-            _tmpRateAmount = _cursor.getDouble(_cursorIndexOfRateAmount);
-            _item = new Lesson(_tmpId,_tmpStudentId,_tmpDate,_tmpStartTime,_tmpDurationMinutes,_tmpNotes,_tmpRateType,_tmpRateAmount);
-            _result.add(_item);
-          }
-          return _result;
-        } finally {
-          _cursor.close();
-        }
-      }
-
-      @Override
-      protected void finalize() {
-        _statement.release();
-      }
-    });
-  }
-
-  @Override
-  public Flow<List<Lesson>> getLessonsByDate(final String date) {
-    final String _sql = "SELECT * FROM lessons WHERE date = ? ORDER BY startTime ASC";
-    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
-    int _argIndex = 1;
-    if (date == null) {
-      _statement.bindNull(_argIndex);
-    } else {
-      _statement.bindString(_argIndex, date);
-    }
-    return CoroutinesRoom.createFlow(__db, false, new String[] {"lessons"}, new Callable<List<Lesson>>() {
-      @Override
-      @NonNull
-      public List<Lesson> call() throws Exception {
-        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
-        try {
-          final int _cursorIndexOfId = CursorUtil.getColumnIndexOrThrow(_cursor, "id");
-          final int _cursorIndexOfStudentId = CursorUtil.getColumnIndexOrThrow(_cursor, "studentId");
-          final int _cursorIndexOfDate = CursorUtil.getColumnIndexOrThrow(_cursor, "date");
-          final int _cursorIndexOfStartTime = CursorUtil.getColumnIndexOrThrow(_cursor, "startTime");
-          final int _cursorIndexOfDurationMinutes = CursorUtil.getColumnIndexOrThrow(_cursor, "durationMinutes");
-          final int _cursorIndexOfNotes = CursorUtil.getColumnIndexOrThrow(_cursor, "notes");
-          final int _cursorIndexOfRateType = CursorUtil.getColumnIndexOrThrow(_cursor, "rateType");
-          final int _cursorIndexOfRateAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "rateAmount");
-          final List<Lesson> _result = new ArrayList<Lesson>(_cursor.getCount());
-          while (_cursor.moveToNext()) {
-            final Lesson _item;
-            final long _tmpId;
-            _tmpId = _cursor.getLong(_cursorIndexOfId);
-            final long _tmpStudentId;
-            _tmpStudentId = _cursor.getLong(_cursorIndexOfStudentId);
-            final String _tmpDate;
-            if (_cursor.isNull(_cursorIndexOfDate)) {
-              _tmpDate = null;
-            } else {
-              _tmpDate = _cursor.getString(_cursorIndexOfDate);
-            }
-            final String _tmpStartTime;
-            if (_cursor.isNull(_cursorIndexOfStartTime)) {
-              _tmpStartTime = null;
-            } else {
-              _tmpStartTime = _cursor.getString(_cursorIndexOfStartTime);
-            }
-            final int _tmpDurationMinutes;
-            _tmpDurationMinutes = _cursor.getInt(_cursorIndexOfDurationMinutes);
-            final String _tmpNotes;
-            if (_cursor.isNull(_cursorIndexOfNotes)) {
-              _tmpNotes = null;
-            } else {
-              _tmpNotes = _cursor.getString(_cursorIndexOfNotes);
-            }
-            final String _tmpRateType;
-            if (_cursor.isNull(_cursorIndexOfRateType)) {
-              _tmpRateType = null;
-            } else {
-              _tmpRateType = _cursor.getString(_cursorIndexOfRateType);
-            }
-            final double _tmpRateAmount;
-            _tmpRateAmount = _cursor.getDouble(_cursorIndexOfRateAmount);
-            _item = new Lesson(_tmpId,_tmpStudentId,_tmpDate,_tmpStartTime,_tmpDurationMinutes,_tmpNotes,_tmpRateType,_tmpRateAmount);
+            _item = new Lesson(_tmpId,_tmpStudentId,_tmpDate,_tmpStartTime,_tmpDurationMinutes,_tmpNotes);
             _result.add(_item);
           }
           return _result;
@@ -533,8 +416,6 @@ public final class LessonDao_Impl implements LessonDao {
           final int _cursorIndexOfStartTime = CursorUtil.getColumnIndexOrThrow(_cursor, "startTime");
           final int _cursorIndexOfDurationMinutes = CursorUtil.getColumnIndexOrThrow(_cursor, "durationMinutes");
           final int _cursorIndexOfNotes = CursorUtil.getColumnIndexOrThrow(_cursor, "notes");
-          final int _cursorIndexOfRateType = CursorUtil.getColumnIndexOrThrow(_cursor, "rateType");
-          final int _cursorIndexOfRateAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "rateAmount");
           final List<Lesson> _result = new ArrayList<Lesson>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Lesson _item;
@@ -562,15 +443,7 @@ public final class LessonDao_Impl implements LessonDao {
             } else {
               _tmpNotes = _cursor.getString(_cursorIndexOfNotes);
             }
-            final String _tmpRateType;
-            if (_cursor.isNull(_cursorIndexOfRateType)) {
-              _tmpRateType = null;
-            } else {
-              _tmpRateType = _cursor.getString(_cursorIndexOfRateType);
-            }
-            final double _tmpRateAmount;
-            _tmpRateAmount = _cursor.getDouble(_cursorIndexOfRateAmount);
-            _item = new Lesson(_tmpId,_tmpStudentId,_tmpDate,_tmpStartTime,_tmpDurationMinutes,_tmpNotes,_tmpRateType,_tmpRateAmount);
+            _item = new Lesson(_tmpId,_tmpStudentId,_tmpDate,_tmpStartTime,_tmpDurationMinutes,_tmpNotes);
             _result.add(_item);
           }
           return _result;
