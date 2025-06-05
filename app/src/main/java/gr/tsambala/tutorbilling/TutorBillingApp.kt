@@ -5,7 +5,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import gr.tsambala.tutorbilling.ui.home.HomeScreen
+import gr.tsambala.tutorbilling.ui.home.HomeMenuScreen
+import gr.tsambala.tutorbilling.ui.students.StudentsScreen
+import gr.tsambala.tutorbilling.ui.classes.ClassesScreen
 import gr.tsambala.tutorbilling.ui.student.StudentScreen
 import gr.tsambala.tutorbilling.ui.lesson.LessonScreen
 
@@ -18,14 +20,23 @@ fun TutorBillingApp(
         startDestination = "home"
     ) {
         composable("home") {
-            HomeScreen(
+            HomeMenuScreen(
+                onStudentsClick = { navController.navigate("students") },
+                onClassesClick = { navController.navigate("classes") }
+            )
+        }
+
+        composable("students") {
+            StudentsScreen(
                 onNavigateToStudent = { studentId ->
                     navController.navigate("student/$studentId")
                 },
-                onAddStudent = {
-                    navController.navigate("student/new")
-                }
+                onAddStudent = { navController.navigate("student/new") }
             )
+        }
+
+        composable("classes") {
+            ClassesScreen(onBack = { navController.popBackStack() })
         }
 
         composable("student/{studentId}") { backStackEntry ->

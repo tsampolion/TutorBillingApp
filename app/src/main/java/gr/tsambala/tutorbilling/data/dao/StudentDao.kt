@@ -21,10 +21,10 @@ interface StudentDao {
     @Query("SELECT * FROM students WHERE id = :studentId AND isActive = 1")
     fun getStudentById(studentId: Long): Flow<Student?>
 
-    @Query("SELECT * FROM students WHERE isActive = 1 ORDER BY name ASC")
+    @Query("SELECT * FROM students WHERE isActive = 1 ORDER BY name ASC, surname ASC")
     fun getAllActiveStudents(): Flow<List<Student>>
 
-    @Query("SELECT * FROM students WHERE isActive = 1 AND name LIKE '%' || :query || '%' ORDER BY name ASC")
+    @Query("SELECT * FROM students WHERE isActive = 1 AND (name LIKE '%' || :query || '%' OR surname LIKE '%' || :query || '%') ORDER BY name ASC, surname ASC")
     fun searchStudentsByName(query: String): Flow<List<Student>>
 
     @Query("SELECT COUNT(*) FROM students WHERE isActive = 1")

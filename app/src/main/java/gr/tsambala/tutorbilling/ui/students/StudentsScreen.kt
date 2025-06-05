@@ -1,4 +1,4 @@
-package gr.tsambala.tutorbilling.ui.home
+package gr.tsambala.tutorbilling.ui.students
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,10 +19,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(
+fun StudentsScreen(
     onNavigateToStudent: (Long) -> Unit,
     onAddStudent: () -> Unit,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: StudentsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -44,26 +45,47 @@ fun HomeScreen(
             }
         }
     ) { paddingValues ->
-        if (uiState.students.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "No students yet.\nTap + to add your first student.",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentPadding = PaddingValues(vertical = 8.dp)
+        ) {
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedTextField(
+                        value = viewModel.uiState.value.searchQuery,
+                        onValueChange = viewModel::updateSearchQuery,
+                        modifier = Modifier.weight(1f),
+                        label = { Text("Search") }
+                    )
+                    IconButton(onClick = { viewModel.toggleSortOrder() }) {
+                        Icon(Icons.Default.Sort, contentDescription = "Sort")
+                    }
+                }
             }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                contentPadding = PaddingValues(vertical = 8.dp)
-            ) {
+
+            if (uiState.students.isEmpty()) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "No students yet.\nTap + to add your first student.",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            } else {
                 items(
                     items = uiState.students,
                     key = { it.student.id }

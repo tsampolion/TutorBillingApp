@@ -43,7 +43,7 @@ fun StudentScreen(
                         text = when {
                             uiState.isEditMode && studentId == "new" -> "Add Student"
                             uiState.isEditMode -> "Edit Student"
-                            else -> uiState.name
+                            else -> "${uiState.name} ${uiState.surname}".trim()
                         }
                     )
                 },
@@ -109,7 +109,7 @@ fun StudentScreen(
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
             title = { Text("Delete Student") },
-            text = { Text("Are you sure you want to delete ${uiState.name}? This will also delete all lessons.") },
+            text = { Text("Are you sure you want to delete ${uiState.name} ${uiState.surname}? This will also delete all lessons.") },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -153,9 +153,14 @@ private fun StudentDetailView(
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Text(
-                        text = uiState.name,
+                        text = "${uiState.name} ${uiState.surname}".trim(),
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Class: ${uiState.className}",
+                        style = MaterialTheme.typography.bodyMedium
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
@@ -388,7 +393,33 @@ private fun StudentEditForm(
         OutlinedTextField(
             value = uiState.name,
             onValueChange = viewModel::updateName,
-            label = { Text("Student Name") },
+            label = { Text("First Name") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+
+        OutlinedTextField(
+            value = uiState.surname,
+            onValueChange = viewModel::updateSurname,
+            label = { Text("Last Name") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+
+        OutlinedTextField(
+            value = uiState.parentMobile,
+            onValueChange = viewModel::updateParentMobile,
+            label = { Text("Parent Mobile") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+
+        OutlinedTextField(
+            value = uiState.parentEmail,
+            onValueChange = viewModel::updateParentEmail,
+            label = { Text("Parent Email") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
@@ -431,6 +462,42 @@ private fun StudentEditForm(
             prefix = { Text("€") }
         )
 
+        val classes = listOf(
+            "Junior A", "Junior B", "Junior A&B (One year Course)",
+            "Senior A", "Senior B", "Senior C", "Senior D/B1",
+            "Pre-Lower/B1+", "B2", "C1", "Proficiency/C2", "Custom", "Unassigned"
+        )
+        var expanded by remember { mutableStateOf(false) }
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded }
+        ) {
+            OutlinedTextField(
+                value = uiState.className,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Class") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+                modifier = Modifier
+                    .menuAnchor()
+                    .fillMaxWidth()
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                classes.forEach { cls ->
+                    DropdownMenuItem(
+                        text = { Text(cls) },
+                        onClick = {
+                            viewModel.updateClassName(cls)
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+
         Spacer(modifier = Modifier.weight(1f))
 
         Row(
@@ -446,7 +513,7 @@ private fun StudentEditForm(
             Button(
                 onClick = onSave,
                 modifier = Modifier.weight(1f),
-                enabled = uiState.name.isNotBlank() && uiState.rate.toDoubleOrNull() != null
+                enabled = viewModel.isFormValid()
             ) {
                 Text("Save")
             }

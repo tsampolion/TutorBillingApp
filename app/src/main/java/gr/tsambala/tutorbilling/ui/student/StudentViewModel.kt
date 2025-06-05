@@ -9,6 +9,7 @@ import gr.tsambala.tutorbilling.data.model.Student
 import gr.tsambala.tutorbilling.data.model.RateTypes
 import gr.tsambala.tutorbilling.data.dao.StudentDao
 import gr.tsambala.tutorbilling.data.dao.LessonDao
+import android.util.Patterns
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -43,8 +44,12 @@ class StudentViewModel @Inject constructor(
                         _uiState.update { state ->
                             state.copy(
                                 name = s.name,
+                                surname = s.surname,
+                                parentMobile = s.parentMobile,
+                                parentEmail = s.parentEmail,
                                 rateType = s.rateType,
                                 rate = s.rate.toString(),
+                                className = s.className,
                                 isEditMode = false
                             )
                         }
@@ -104,12 +109,28 @@ class StudentViewModel @Inject constructor(
         _uiState.update { it.copy(name = name) }
     }
 
+    fun updateSurname(surname: String) {
+        _uiState.update { it.copy(surname = surname) }
+    }
+
+    fun updateParentMobile(mobile: String) {
+        _uiState.update { it.copy(parentMobile = mobile) }
+    }
+
+    fun updateParentEmail(email: String) {
+        _uiState.update { it.copy(parentEmail = email) }
+    }
+
     fun updateRateType(rateType: String) {
         _uiState.update { it.copy(rateType = rateType) }
     }
 
     fun updateRate(rate: String) {
         _uiState.update { it.copy(rate = rate) }
+    }
+
+    fun updateClassName(className: String) {
+        _uiState.update { it.copy(className = className) }
     }
 
     fun toggleEditMode() {
@@ -124,8 +145,12 @@ class StudentViewModel @Inject constructor(
             if (studentId == "new") {
                 val student = Student(
                     name = state.name,
+                    surname = state.surname,
+                    parentMobile = state.parentMobile,
+                    parentEmail = state.parentEmail,
                     rateType = state.rateType,
-                    rate = rate
+                    rate = rate,
+                    className = state.className
                 )
                 studentDao.insert(student)
             } else {
@@ -133,8 +158,12 @@ class StudentViewModel @Inject constructor(
                     val student = Student(
                         id = id,
                         name = state.name,
+                        surname = state.surname,
+                        parentMobile = state.parentMobile,
+                        parentEmail = state.parentEmail,
                         rateType = state.rateType,
-                        rate = rate
+                        rate = rate,
+                        className = state.className
                     )
                     studentDao.update(student)
                 }
@@ -158,12 +187,30 @@ class StudentViewModel @Inject constructor(
             lessonDao.deleteById(lessonId)
         }
     }
+
+    private fun isPhoneValid(phone: String): Boolean = phone.matches(Regex("^\\d{10}$"))
+
+    private fun isEmailValid(email: String): Boolean = Patterns.EMAIL_ADDRESS.matcher(email).matches()
+
+    fun isFormValid(): Boolean {
+        val state = _uiState.value
+        return state.name.isNotBlank() &&
+                state.surname.isNotBlank() &&
+                isPhoneValid(state.parentMobile) &&
+                isEmailValid(state.parentEmail) &&
+                state.className != "Unassigned" &&
+                state.rate.toDoubleOrNull() != null
+    }
 }
 
 data class StudentUiState(
     val name: String = "",
+    val surname: String = "",
+    val parentMobile: String = "",
+    val parentEmail: String = "",
     val rateType: String = RateTypes.HOURLY,
     val rate: String = "",
+    val className: String = "Unassigned",
     val lessons: List<Lesson> = emptyList(),
     val weekEarnings: Double = 0.0,
     val monthEarnings: Double = 0.0,
