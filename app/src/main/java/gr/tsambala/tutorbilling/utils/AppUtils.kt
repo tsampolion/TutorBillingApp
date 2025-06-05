@@ -1,6 +1,5 @@
 package gr.tsambala.tutorbilling.utils
 
-import gr.tsambala.tutorbilling.data.model.RateType
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -231,7 +230,6 @@ fun String.titleCase(): String {
 /**
  * App-wide constants for consistency.
  */
-object AppConstants {
     // Validation limits
     const val MAX_STUDENT_NAME_LENGTH = 100
     const val MAX_LESSON_DURATION_MINUTES = 480 // 8 hours
@@ -250,15 +248,4 @@ object AppConstants {
     const val DATE_PATTERN_DISPLAY = "dd MMM yyyy"
     const val TIME_PATTERN_24H = "HH:mm"
     const val TIME_PATTERN_12H = "h:mm a"
-}
-
-/**
- * Rate type display names for UI.
- */
-fun RateType.getDisplayName(): String {
-    return when (this) {
-        RateType.HOURLY -> "Hourly Rate"
-        RateType.PER_LESSON -> "Per Lesson"
-        RateType.NONE -> "No Rate Set"
-    }
 }
