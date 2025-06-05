@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import gr.tsambala.tutorbilling.data.model.Lesson
 import gr.tsambala.tutorbilling.data.dao.LessonDao
 import gr.tsambala.tutorbilling.data.dao.StudentDao
+import gr.tsambala.tutorbilling.data.model.RateTypes
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -147,8 +148,8 @@ class LessonViewModel @Inject constructor(
         val duration = state.durationMinutes.toIntOrNull() ?: 0
 
         return when (state.studentRateType) {
-            "hourly" -> (duration / 60.0) * state.studentRate
-            "per_lesson" -> state.studentRate
+            RateTypes.HOURLY -> (duration / 60.0) * state.studentRate
+            RateTypes.PER_LESSON -> state.studentRate
             else -> state.studentRate
         }
     }
@@ -160,7 +161,7 @@ data class LessonUiState(
     val durationMinutes: String = "",
     val notes: String = "",
     val studentName: String = "",
-    val studentRateType: String = "hourly",
+    val studentRateType: String = RateTypes.HOURLY,
     val studentRate: Double = 0.0,
     val isEditMode: Boolean = true
 )

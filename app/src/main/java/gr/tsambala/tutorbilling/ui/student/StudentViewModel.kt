@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import gr.tsambala.tutorbilling.data.model.Lesson
 import gr.tsambala.tutorbilling.data.model.Student
+import gr.tsambala.tutorbilling.data.model.RateTypes
 import gr.tsambala.tutorbilling.data.dao.StudentDao
 import gr.tsambala.tutorbilling.data.dao.LessonDao
 import kotlinx.coroutines.flow.*
@@ -66,7 +67,7 @@ class StudentViewModel @Inject constructor(
                     val rate = _uiState.value.rate.toDoubleOrNull() ?: 0.0
                     val rateType = _uiState.value.rateType
                     fun calcFee(mins: Int): Double =
-                        if (rateType == "hourly") (mins / 60.0) * rate else rate
+                        if (rateType == RateTypes.HOURLY) (mins / 60.0) * rate else rate
 
                     val weekEarnings = lessons
                         .filter { lesson ->
@@ -161,7 +162,7 @@ class StudentViewModel @Inject constructor(
 
 data class StudentUiState(
     val name: String = "",
-    val rateType: String = "hourly",
+    val rateType: String = RateTypes.HOURLY,
     val rate: String = "",
     val lessons: List<Lesson> = emptyList(),
     val weekEarnings: Double = 0.0,
