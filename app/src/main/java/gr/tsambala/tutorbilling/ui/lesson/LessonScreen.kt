@@ -1,6 +1,7 @@
 package gr.tsambala.tutorbilling.ui.lesson
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -15,8 +16,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import gr.tsambala.tutorbilling.data.model.RateTypes
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -117,20 +120,63 @@ fun LessonScreen(
             }
 
             // Date input
+            var showDatePicker by remember { mutableStateOf(false) }
+            val datePickerState = rememberDatePickerState()
+            if (showDatePicker) {
+                DatePickerDialog(
+                    onDismissRequest = { showDatePicker = false },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            showDatePicker = false
+                            datePickerState.selectedDateMillis?.let { millis ->
+                                val date = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
+                                viewModel.updateDate(date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+                            }
+                        }) { Text("OK") }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showDatePicker = false }) { Text("Cancel") }
+                    }
+                ) {
+                    DatePicker(state = datePickerState)
+                }
+            }
             OutlinedTextField(
                 value = uiState.date,
-                onValueChange = viewModel::updateDate,
-                label = { Text("Date (YYYY-MM-DD)") },
-                modifier = Modifier.fillMaxWidth(),
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Date") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { showDatePicker = true },
                 singleLine = true
             )
 
             // Time input
+            var showTimePicker by remember { mutableStateOf(false) }
+            val timeState = rememberTimePickerState()
+            if (showTimePicker) {
+                TimePickerDialog(
+                    onDismissRequest = { showTimePicker = false },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            showTimePicker = false
+                            viewModel.updateStartTime("%02d:%02d".format(timeState.hour, timeState.minute))
+                        }) { Text("OK") }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showTimePicker = false }) { Text("Cancel") }
+                    }
+                ) { TimePicker(state = timeState) }
+            }
             OutlinedTextField(
                 value = uiState.startTime,
-                onValueChange = viewModel::updateStartTime,
-                label = { Text("Start Time (HH:MM)") },
-                modifier = Modifier.fillMaxWidth(),
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Start Time") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { showTimePicker = true },
                 singleLine = true
             )
 
