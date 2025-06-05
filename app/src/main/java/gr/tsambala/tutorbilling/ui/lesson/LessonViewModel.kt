@@ -89,7 +89,9 @@ class LessonViewModel @Inject constructor(
     }
 
     fun updateDuration(duration: String) {
-        _uiState.update { it.copy(durationMinutes = duration) }
+        val digits = duration.filter { it.isDigit() }
+        val sanitized = digits.toIntOrNull()?.takeIf { it > 0 }?.toString() ?: ""
+        _uiState.update { it.copy(durationMinutes = sanitized) }
     }
 
     fun updateNotes(notes: String) {
@@ -104,6 +106,7 @@ class LessonViewModel @Inject constructor(
         viewModelScope.launch {
             val state = _uiState.value
             val duration = state.durationMinutes.toIntOrNull() ?: 0
+            if (duration <= 0) return@launch
 
             studentId?.toLongOrNull()?.let { sId ->
                 if (lessonId == "new") {

@@ -67,7 +67,7 @@ class StudentViewModel @Inject constructor(
                     val rate = _uiState.value.rate.toDoubleOrNull() ?: 0.0
                     val rateType = _uiState.value.rateType
                     fun calcFee(mins: Int): Double =
-                        if (rateType == "hourly") (mins / 60.0) * rate else rate
+                        if (rateType == RateTypes.HOURLY) (mins / 60.0) * rate else rate
 
                     val weekEarnings = lessons
                         .filter { lesson ->

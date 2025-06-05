@@ -273,7 +273,6 @@ private fun StudentDetailView(
             ) { lesson ->
                 val rate = uiState.rate.toDoubleOrNull() ?: 0.0
                 val fee = if (uiState.rateType == RateTypes.HOURLY)
-                val fee = if (uiState.rateType == "hourly")
                     (lesson.durationMinutes / 60.0) * rate else rate
                 LessonCard(
                     lesson = lesson,

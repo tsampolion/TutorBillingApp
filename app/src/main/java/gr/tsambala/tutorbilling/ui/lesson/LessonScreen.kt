@@ -46,7 +46,8 @@ fun LessonScreen(
                         onClick = {
                             viewModel.saveLesson()
                             onNavigateBack()
-                        }
+                        },
+                        enabled = uiState.durationMinutes.toIntOrNull()?.let { it > 0 } == true
                     ) {
                         Text("Save")
                     }
