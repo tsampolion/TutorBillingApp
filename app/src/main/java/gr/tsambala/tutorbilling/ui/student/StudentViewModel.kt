@@ -141,7 +141,7 @@ class StudentViewModel @Inject constructor(
     fun deleteStudent(onDeleted: () -> Unit) {
         viewModelScope.launch {
             studentId?.toLongOrNull()?.let { id ->
-                studentDao.deleteById(id)
+                studentDao.softDeleteStudent(id)
                 onDeleted()
             }
         }

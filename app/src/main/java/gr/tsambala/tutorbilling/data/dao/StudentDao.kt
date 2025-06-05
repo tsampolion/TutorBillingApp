@@ -15,12 +15,18 @@ interface StudentDao {
     @Delete
     suspend fun delete(student: Student)
 
-    @Query("DELETE FROM students WHERE id = :studentId")
-    suspend fun deleteById(studentId: Long)
+    @Query("UPDATE students SET isActive = 0 WHERE id = :studentId")
+    suspend fun softDeleteStudent(studentId: Long)
 
-    @Query("SELECT * FROM students WHERE id = :studentId")
+    @Query("SELECT * FROM students WHERE id = :studentId AND isActive = 1")
     fun getStudentById(studentId: Long): Flow<Student?>
 
-    @Query("SELECT * FROM students ORDER BY name ASC")
-    fun getAllStudents(): Flow<List<Student>>
+    @Query("SELECT * FROM students WHERE isActive = 1 ORDER BY name ASC")
+    fun getAllActiveStudents(): Flow<List<Student>>
+
+    @Query("SELECT * FROM students WHERE isActive = 1 AND name LIKE '%' || :query || '%' ORDER BY name ASC")
+    fun searchStudentsByName(query: String): Flow<List<Student>>
+
+    @Query("SELECT COUNT(*) FROM students WHERE isActive = 1")
+    suspend fun getActiveStudentCount(): Int
 }

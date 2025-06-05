@@ -27,9 +27,6 @@ interface LessonDao {
     @Query("SELECT * FROM lessons ORDER BY date DESC, startTime DESC")
     fun getAllLessons(): Flow<List<Lesson>>
 
-    @Query("SELECT * FROM lessons WHERE date = :date ORDER BY startTime ASC")
-    fun getLessonsByDate(date: String): Flow<List<Lesson>>
-
     @Query("SELECT * FROM lessons WHERE date BETWEEN :startDate AND :endDate ORDER BY date DESC, startTime DESC")
     fun getLessonsInDateRange(startDate: String, endDate: String): Flow<List<Lesson>>
 }
