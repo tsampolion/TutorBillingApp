@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import gr.tsambala.tutorbilling.data.model.Lesson
 import gr.tsambala.tutorbilling.data.model.Student
+import gr.tsambala.tutorbilling.data.model.RateTypes
 import gr.tsambala.tutorbilling.data.dao.StudentDao
 import gr.tsambala.tutorbilling.data.dao.LessonDao
 import kotlinx.coroutines.flow.*
@@ -161,7 +162,7 @@ class StudentViewModel @Inject constructor(
 
 data class StudentUiState(
     val name: String = "",
-    val rateType: String = "hourly",
+    val rateType: String = RateTypes.HOURLY,
     val rate: String = "",
     val lessons: List<Lesson> = emptyList(),
     val weekEarnings: Double = 0.0,

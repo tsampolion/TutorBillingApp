@@ -4,6 +4,7 @@ import androidx.room.Embedded
 import androidx.room.Relation
 import gr.tsambala.tutorbilling.data.model.Lesson
 import gr.tsambala.tutorbilling.data.model.Student
+import gr.tsambala.tutorbilling.data.model.RateTypes
 
 data class LessonWithStudent(
     @Embedded val lesson: Lesson,
@@ -15,10 +16,8 @@ data class LessonWithStudent(
 ) {
     fun calculateFee(): Double {
         return when (student.rateType) {
-            "hourly" -> (lesson.durationMinutes / 60.0) * student.rate
-            else -> {
-                student.rate
-            }
+            RateTypes.HOURLY -> (lesson.durationMinutes / 60.0) * student.rate
+            else -> student.rate
         }
     }
 }

@@ -230,33 +230,22 @@ fun String.titleCase(): String {
 /**
  * App-wide constants for consistency.
  */
-// Validation limits
-const val MAX_STUDENT_NAME_LENGTH = 100
-const val MAX_LESSON_DURATION_MINUTES = 480 // 8 hours
-const val MIN_LESSON_DURATION_MINUTES = 5
-const val MAX_LESSON_NOTES_LENGTH = 500
+    // Validation limits
+    const val MAX_STUDENT_NAME_LENGTH = 100
+    const val MAX_LESSON_DURATION_MINUTES = 480 // 8 hours
+    const val MIN_LESSON_DURATION_MINUTES = 5
+    const val MAX_LESSON_NOTES_LENGTH = 500
 
-// UI Constants
-const val SEARCH_DEBOUNCE_DELAY_MS = 300L
-const val ANIMATION_DURATION_MS = 300
+    // UI Constants
+    const val SEARCH_DEBOUNCE_DELAY_MS = 300L
+    const val ANIMATION_DURATION_MS = 300
 
-// Default values
-const val DEFAULT_LESSON_DURATION_MINUTES = 60
-const val DEFAULT_HOURLY_RATE = 25.0
+    // Default values
+    const val DEFAULT_LESSON_DURATION_MINUTES = 60
+    const val DEFAULT_HOURLY_RATE = 25.0
 
-// Date/Time patterns
-const val DATE_PATTERN_DISPLAY = "dd MMM yyyy"
-const val TIME_PATTERN_24H = "HH:mm"
-const val TIME_PATTERN_12H = "h:mm a"
-
-// It seems there was an extra closing brace for an AppUtils object
-// that was not actually defined as an object.
-// If AppUtils was intended to be an object to group these utilities,
-// you would define it as:
-// object AppUtils { /* utility functions here */ }
-// However, based on the provided code, all functions are extension functions
-// or top-level functions, so an encompassing object might not be necessary
-// unless you want to namespace them explicitly like AppUtils.formatAsCurrency().
-// If you want to keep them as top-level, you can remove the AppUtils object definition.
-
-// For now, I've removed the implicit object structure and made constants top-level.
+    // Date/Time patterns
+    const val DATE_PATTERN_DISPLAY = "dd MMM yyyy"
+    const val TIME_PATTERN_24H = "HH:mm"
+    const val TIME_PATTERN_12H = "h:mm a"
+}

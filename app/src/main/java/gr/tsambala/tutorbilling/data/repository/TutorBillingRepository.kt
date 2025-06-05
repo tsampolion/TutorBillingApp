@@ -5,6 +5,7 @@ import gr.tsambala.tutorbilling.data.dao.StudentDao
 import gr.tsambala.tutorbilling.data.model.Lesson
 import gr.tsambala.tutorbilling.data.model.Student
 import gr.tsambala.tutorbilling.data.database.LessonWithStudent
+import gr.tsambala.tutorbilling.data.model.calculateFee
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
@@ -112,7 +113,7 @@ class TutorBillingRepository @Inject constructor(
      * Gets all lessons for a specific student as a Flow.
      */
     fun getLessonsForStudent(studentId: Long): Flow<List<Lesson>> {
-        return lessonDao.getLessonsForStudent(studentId)
+        return lessonDao.getLessonsByStudentId(studentId)
     }
 
     /**

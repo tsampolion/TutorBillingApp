@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import gr.tsambala.tutorbilling.data.model.Lesson
+import gr.tsambala.tutorbilling.data.model.RateTypes
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -158,7 +159,7 @@ private fun StudentDetailView(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = if (uiState.rateType == "hourly") {
+                        text = if (uiState.rateType == RateTypes.HOURLY) {
                             "€${uiState.rate}/hour"
                         } else {
                             "€${uiState.rate}/lesson"
@@ -271,6 +272,7 @@ private fun StudentDetailView(
                 key = { it.id }
             ) { lesson ->
                 val rate = uiState.rate.toDoubleOrNull() ?: 0.0
+                val fee = if (uiState.rateType == RateTypes.HOURLY)
                 val fee = if (uiState.rateType == "hourly")
                     (lesson.durationMinutes / 60.0) * rate else rate
                 LessonCard(
@@ -402,14 +404,14 @@ private fun StudentEditForm(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             FilterChip(
-                selected = uiState.rateType == "hourly",
-                onClick = { viewModel.updateRateType("hourly") },
+                selected = uiState.rateType == RateTypes.HOURLY,
+                onClick = { viewModel.updateRateType(RateTypes.HOURLY) },
                 label = { Text("Hourly") },
                 modifier = Modifier.weight(1f)
             )
             FilterChip(
-                selected = uiState.rateType == "per_lesson",
-                onClick = { viewModel.updateRateType("per_lesson") },
+                selected = uiState.rateType == RateTypes.PER_LESSON,
+                onClick = { viewModel.updateRateType(RateTypes.PER_LESSON) },
                 label = { Text("Per Lesson") },
                 modifier = Modifier.weight(1f)
             )
@@ -420,7 +422,7 @@ private fun StudentEditForm(
             onValueChange = viewModel::updateRate,
             label = {
                 Text(
-                    if (uiState.rateType == "hourly") "Hourly Rate (€)"
+                    if (uiState.rateType == RateTypes.HOURLY) "Hourly Rate (€)"
                     else "Rate per Lesson (€)"
                 )
             },
