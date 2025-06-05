@@ -3,9 +3,10 @@ package gr.tsambala.tutorbilling.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import gr.tsambala.tutorbilling.data.database.Student
+import gr.tsambala.tutorbilling.data.model.Student
 import gr.tsambala.tutorbilling.data.dao.StudentDao
 import gr.tsambala.tutorbilling.data.dao.LessonDao
+import gr.tsambala.tutorbilling.data.model.calculateFee
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -39,7 +40,7 @@ class HomeViewModel @Inject constructor(
                 val currentYear = today.year
 
                 students.map { student ->
-                    val studentLessons = lessons.filter { it.studentId == student.id }
+                val studentLessons = lessons.filter { it.studentId == student.id }
 
                     val weekEarnings = studentLessons
                         .filter { lesson ->
@@ -47,7 +48,7 @@ class HomeViewModel @Inject constructor(
                             lessonDate.year == currentYear &&
                                     lessonDate.get(weekFields.weekOfWeekBasedYear()) == currentWeek
                         }
-                        .sumOf { it.calculateFee() }
+                        .sumOf { it.calculateFee(student) }
 
                     val monthEarnings = studentLessons
                         .filter { lesson ->
@@ -55,7 +56,7 @@ class HomeViewModel @Inject constructor(
                             lessonDate.year == currentYear &&
                                     lessonDate.monthValue == currentMonth
                         }
-                        .sumOf { it.calculateFee() }
+                        .sumOf { it.calculateFee(student) }
 
                     StudentWithEarnings(
                         student = student,

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import gr.tsambala.tutorbilling.data.model.Lesson
 import gr.tsambala.tutorbilling.data.model.Student
+import gr.tsambala.tutorbilling.data.model.RateTypes
 import gr.tsambala.tutorbilling.data.dao.StudentDao
 import gr.tsambala.tutorbilling.data.dao.LessonDao
 import kotlinx.coroutines.flow.*
@@ -38,12 +39,12 @@ class StudentViewModel @Inject constructor(
         viewModelScope.launch {
             studentId?.toLongOrNull()?.let { id ->
                 studentDao.getStudentById(id).collect { student ->
-                    student?.let {
+                    student?.let { s ->
                         _uiState.update { state ->
                             state.copy(
-                                name = it.name,
-                                rateType = it.rateType,
-                                rate = it.rate.toString(),
+                                name = s.name,
+                                rateType = s.rateType,
+                                rate = s.rate.toString(),
                                 isEditMode = false
                             )
                         }
@@ -63,13 +64,18 @@ class StudentViewModel @Inject constructor(
                     val currentMonth = today.monthValue
                     val currentYear = today.year
 
+                    val rate = _uiState.value.rate.toDoubleOrNull() ?: 0.0
+                    val rateType = _uiState.value.rateType
+                    fun calcFee(mins: Int): Double =
+                        if (rateType == RateTypes.HOURLY) (mins / 60.0) * rate else rate
+
                     val weekEarnings = lessons
                         .filter { lesson ->
                             val lessonDate = LocalDate.parse(lesson.date)
                             lessonDate.year == currentYear &&
                                     lessonDate.get(weekFields.weekOfWeekBasedYear()) == currentWeek
                         }
-                        .sumOf { it.calculateFee() }
+                        .sumOf { calcFee(it.durationMinutes) }
 
                     val monthEarnings = lessons
                         .filter { lesson ->
@@ -77,9 +83,9 @@ class StudentViewModel @Inject constructor(
                             lessonDate.year == currentYear &&
                                     lessonDate.monthValue == currentMonth
                         }
-                        .sumOf { it.calculateFee() }
+                        .sumOf { calcFee(it.durationMinutes) }
 
-                    val totalEarnings = lessons.sumOf { it.calculateFee() }
+                    val totalEarnings = lessons.sumOf { calcFee(it.durationMinutes) }
 
                     _uiState.update { state ->
                         state.copy(
@@ -156,7 +162,7 @@ class StudentViewModel @Inject constructor(
 
 data class StudentUiState(
     val name: String = "",
-    val rateType: String = "hourly",
+    val rateType: String = RateTypes.HOURLY,
     val rate: String = "",
     val lessons: List<Lesson> = emptyList(),
     val weekEarnings: Double = 0.0,

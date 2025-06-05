@@ -18,6 +18,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import gr.tsambala.tutorbilling.data.model.Lesson
+import gr.tsambala.tutorbilling.data.model.RateTypes
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -157,7 +159,7 @@ private fun StudentDetailView(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = if (uiState.rateType == "hourly") {
+                        text = if (uiState.rateType == RateTypes.HOURLY) {
                             "€${uiState.rate}/hour"
                         } else {
                             "€${uiState.rate}/lesson"
@@ -249,7 +251,7 @@ private fun StudentDetailView(
             Divider()
         }
 
-        if (uiState.lessonDisplays.isEmpty()) {
+        if (uiState.lessons.isEmpty()) {
             item {
                 Box(
                     modifier = Modifier
@@ -266,13 +268,17 @@ private fun StudentDetailView(
             }
         } else {
             items(
-                items = uiState.lessonDisplays,
-                key = { it.lesson.id }
-            ) { lessonDisplay ->
+                items = uiState.lessons,
+                key = { it.id }
+            ) { lesson ->
+                val rate = uiState.rate.toDoubleOrNull() ?: 0.0
+                val fee = if (uiState.rateType == RateTypes.HOURLY)
+                    (lesson.durationMinutes / 60.0) * rate else rate
                 LessonCard(
-                    lessonDisplay = lessonDisplay,
-                    onLessonClick = { onLessonClick(lessonDisplay.lesson.id) },
-                    onDeleteClick = { viewModel.deleteLesson(lessonDisplay.lesson.id) }
+                    lesson = lesson,
+                    fee = fee,
+                    onLessonClick = { onLessonClick(lesson.id) },
+                    onDeleteClick = { viewModel.deleteLesson(lesson.id) }
                 )
                 Divider()
             }
@@ -283,7 +289,8 @@ private fun StudentDetailView(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun LessonCard(
-    lessonDisplay: StudentViewModel.LessonDisplay,
+    lesson: Lesson,
+    fee: Double,
     onLessonClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
@@ -306,15 +313,15 @@ private fun LessonCard(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = LocalDate.parse(lessonDisplay.lesson.date)
+                    text = LocalDate.parse(lesson.date)
                         .format(DateTimeFormatter.ofPattern("MMM d, yyyy")),
                     style = MaterialTheme.typography.titleSmall
                 )
                 Text(
-                    text = "${lessonDisplay.lesson.startTime} • ${lessonDisplay.lesson.durationMinutes} min",
+                    text = "${lesson.startTime} • ${lesson.durationMinutes} min",
                     style = MaterialTheme.typography.bodyMedium
                 )
-                lessonDisplay.lesson.notes?.let {
+                lesson.notes?.let {
                     Text(
                         text = it,
                         style = MaterialTheme.typography.bodySmall,
@@ -324,7 +331,7 @@ private fun LessonCard(
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = "€%.2f".format(lessonDisplay.fee),
+                    text = "€%.2f".format(fee),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -396,14 +403,14 @@ private fun StudentEditForm(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             FilterChip(
-                selected = uiState.rateType == "hourly",
-                onClick = { viewModel.updateRateType("hourly") },
+                selected = uiState.rateType == RateTypes.HOURLY,
+                onClick = { viewModel.updateRateType(RateTypes.HOURLY) },
                 label = { Text("Hourly") },
                 modifier = Modifier.weight(1f)
             )
             FilterChip(
-                selected = uiState.rateType == "per_lesson",
-                onClick = { viewModel.updateRateType("per_lesson") },
+                selected = uiState.rateType == RateTypes.PER_LESSON,
+                onClick = { viewModel.updateRateType(RateTypes.PER_LESSON) },
                 label = { Text("Per Lesson") },
                 modifier = Modifier.weight(1f)
             )
@@ -414,7 +421,7 @@ private fun StudentEditForm(
             onValueChange = viewModel::updateRate,
             label = {
                 Text(
-                    if (uiState.rateType == "hourly") "Hourly Rate (€)"
+                    if (uiState.rateType == RateTypes.HOURLY) "Hourly Rate (€)"
                     else "Rate per Lesson (€)"
                 )
             },

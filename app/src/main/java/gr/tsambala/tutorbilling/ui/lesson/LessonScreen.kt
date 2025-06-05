@@ -13,6 +13,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import gr.tsambala.tutorbilling.data.model.RateTypes
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -45,7 +46,8 @@ fun LessonScreen(
                         onClick = {
                             viewModel.saveLesson()
                             onNavigateBack()
-                        }
+                        },
+                        enabled = uiState.durationMinutes.toIntOrNull()?.let { it > 0 } == true
                     ) {
                         Text("Save")
                     }
@@ -77,7 +79,7 @@ fun LessonScreen(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = if (uiState.studentRateType == "hourly") {
+                            text = if (uiState.studentRateType == RateTypes.HOURLY) {
                                 "€${uiState.studentRate}/hour"
                             } else {
                                 "€${uiState.studentRate}/lesson"
