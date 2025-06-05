@@ -157,6 +157,11 @@ private fun StudentDetailView(
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold
                     )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Class: ${uiState.className}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = if (uiState.rateType == RateTypes.HOURLY) {
@@ -430,6 +435,42 @@ private fun StudentEditForm(
             singleLine = true,
             prefix = { Text("€") }
         )
+
+        val classes = listOf(
+            "Junior A", "Junior B", "Junior A&B (One year Course)",
+            "Senior A", "Senior B", "Senior C", "Senior D/B1",
+            "Pre-Lower/B1+", "B2", "C1", "Proficiency/C2", "Custom", "Unassigned"
+        )
+        var expanded by remember { mutableStateOf(false) }
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded }
+        ) {
+            OutlinedTextField(
+                value = uiState.className,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Class") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+                modifier = Modifier
+                    .menuAnchor()
+                    .fillMaxWidth()
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                classes.forEach { cls ->
+                    DropdownMenuItem(
+                        text = { Text(cls) },
+                        onClick = {
+                            viewModel.updateClassName(cls)
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.weight(1f))
 

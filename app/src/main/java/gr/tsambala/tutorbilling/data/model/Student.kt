@@ -11,6 +11,7 @@ data class Student(
     val name: String,
     val rateType: String = RateTypes.HOURLY, // "hourly" or "per_lesson"
     val rate: Double,
+    val className: String = "Unassigned",
     val isActive: Boolean = true // Added this field that DAOs expect
 ) {
     fun getFormattedRate(): String {
