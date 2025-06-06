@@ -153,22 +153,6 @@ fun LessonScreen(
             )
 
             // Time input
-            var showTimePicker by remember { mutableStateOf(false) }
-            val timeState = rememberTimePickerState()
-            if (showTimePicker) {
-                TimePickerDialog(
-                    onDismissRequest = { showTimePicker = false },
-                    confirmButton = {
-                        TextButton(onClick = {
-                            showTimePicker = false
-                            viewModel.updateStartTime("%02d:%02d".format(timeState.hour, timeState.minute))
-                        }) { Text("OK") }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { showTimePicker = false }) { Text("Cancel") }
-                    }
-                ) { TimePicker(state = timeState) }
-            }
             OutlinedTextField(
                 value = uiState.startTime,
                 onValueChange = {},
