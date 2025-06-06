@@ -7,6 +7,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
+import androidx.compose.ui.platform.LocalContext
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -120,27 +123,7 @@ fun LessonScreen(
             }
 
             // Date input
-            var showDatePicker by remember { mutableStateOf(false) }
-            val datePickerState = rememberDatePickerState()
-            if (showDatePicker) {
-                DatePickerDialog(
-                    onDismissRequest = { showDatePicker = false },
-                    confirmButton = {
-                        TextButton(onClick = {
-                            showDatePicker = false
-                            datePickerState.selectedDateMillis?.let { millis ->
-                                val date = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
-                                viewModel.updateDate(date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
-                            }
-                        }) { Text("OK") }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { showDatePicker = false }) { Text("Cancel") }
-                    }
-                ) {
-                    DatePicker(state = datePickerState)
-                }
-            }
+            val context = LocalContext.current
             OutlinedTextField(
                 value = uiState.date,
                 onValueChange = {},
@@ -148,7 +131,23 @@ fun LessonScreen(
                 label = { Text("Date") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { showDatePicker = true },
+                    .clickable {
+                        val current = try {
+                            LocalDate.parse(uiState.date, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                        } catch (_: Exception) {
+                            LocalDate.now()
+                        }
+                        DatePickerDialog(
+                            context,
+                            { _, year, month, day ->
+                                val date = LocalDate.of(year, month + 1, day)
+                                viewModel.updateDate(date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+                            },
+                            current.year,
+                            current.monthValue - 1,
+                            current.dayOfMonth
+                        ).show()
+                    },
                 singleLine = true
             )
 
@@ -176,7 +175,19 @@ fun LessonScreen(
                 label = { Text("Start Time") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { showTimePicker = true },
+                    .clickable {
+                        val (h, m) = uiState.startTime.split(":").mapNotNull { it.toIntOrNull() }
+                            .let { if (it.size == 2) it[0] to it[1] else LocalTime.now().hour to LocalTime.now().minute }
+                        TimePickerDialog(
+                            context,
+                            { _, hour, minute ->
+                                viewModel.updateStartTime("%02d:%02d".format(hour, minute))
+                            },
+                            h,
+                            m,
+                            true
+                        ).show()
+                    },
                 singleLine = true
             )
 
