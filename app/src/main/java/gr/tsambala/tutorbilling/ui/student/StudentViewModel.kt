@@ -188,9 +188,9 @@ class StudentViewModel @Inject constructor(
         }
     }
 
-    private fun isPhoneValid(phone: String): Boolean = phone.matches(Regex("^\\d{10}$"))
+    fun isPhoneValid(phone: String): Boolean = phone.matches(Regex("^\\d{10}$"))
 
-    private fun isEmailValid(email: String): Boolean = Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    fun isEmailValid(email: String): Boolean = Patterns.EMAIL_ADDRESS.matcher(email).matches()
 
     fun isFormValid(): Boolean {
         val state = _uiState.value

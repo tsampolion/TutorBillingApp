@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,6 +21,9 @@ class LessonViewModel @Inject constructor(
     private val lessonDao: LessonDao,
     private val studentDao: StudentDao
 ) : ViewModel() {
+
+    private val dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+    private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
     private val studentId: String? = savedStateHandle.get<String>("studentId")
     private val lessonId: String? = savedStateHandle.get<String>("lessonId")
@@ -35,8 +39,8 @@ class LessonViewModel @Inject constructor(
             // Set default values for new lesson
             _uiState.update {
                 it.copy(
-                    date = LocalDate.now().toString(),
-                    startTime = LocalTime.now().withSecond(0).withNano(0).toString()
+                    date = LocalDate.now().format(dateFormatter),
+                    startTime = LocalTime.now().withSecond(0).withNano(0).format(timeFormatter)
                 )
             }
         }
@@ -67,7 +71,7 @@ class LessonViewModel @Inject constructor(
                     lesson?.let { l ->
                         _uiState.update { state ->
                             state.copy(
-                                date = l.date,
+                                date = LocalDate.parse(l.date).format(dateFormatter),
                                 startTime = l.startTime,
                                 durationMinutes = l.durationMinutes.toString(),
                                 notes = l.notes ?: "",
@@ -99,12 +103,12 @@ class LessonViewModel @Inject constructor(
     }
 
     private fun isValidDate(value: String): Boolean = try {
-        LocalDate.parse(value)
+        LocalDate.parse(value, dateFormatter)
         true
     } catch (_: Exception) { false }
 
     private fun isValidTime(value: String): Boolean = try {
-        LocalTime.parse(value)
+        LocalTime.parse(value, timeFormatter)
         true
     } catch (_: Exception) { false }
 
@@ -128,7 +132,7 @@ class LessonViewModel @Inject constructor(
                 if (lessonId == "new") {
                     val lesson = Lesson(
                         studentId = sId,
-                        date = state.date,
+                        date = LocalDate.parse(state.date, dateFormatter).toString(),
                         startTime = state.startTime,
                         durationMinutes = duration,
                         notes = state.notes.ifBlank { null }
@@ -139,7 +143,7 @@ class LessonViewModel @Inject constructor(
                         val lesson = Lesson(
                             id = lId,
                             studentId = sId,
-                            date = state.date,
+                            date = LocalDate.parse(state.date, dateFormatter).toString(),
                             startTime = state.startTime,
                             durationMinutes = duration,
                             notes = state.notes.ifBlank { null }
