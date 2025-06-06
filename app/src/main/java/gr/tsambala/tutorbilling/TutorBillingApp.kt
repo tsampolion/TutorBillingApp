@@ -10,6 +10,7 @@ import gr.tsambala.tutorbilling.ui.students.StudentsScreen
 import gr.tsambala.tutorbilling.ui.classes.ClassesScreen
 import gr.tsambala.tutorbilling.ui.student.StudentScreen
 import gr.tsambala.tutorbilling.ui.lesson.LessonScreen
+import gr.tsambala.tutorbilling.ui.lessons.LessonsScreen
 
 @Composable
 fun TutorBillingApp(
@@ -22,7 +23,13 @@ fun TutorBillingApp(
         composable("home") {
             HomeMenuScreen(
                 onStudentsClick = { navController.navigate("students") },
-                onClassesClick = { navController.navigate("classes") }
+                onClassesClick = { navController.navigate("classes") },
+                onLessonsClick = { navController.navigate("lessons") },
+                onAddStudent = { navController.navigate("student/new") },
+                onAddLesson = {
+                    // Requires a student, direct user to select a student first
+                    navController.navigate("students")
+                }
             )
         }
 
@@ -37,6 +44,15 @@ fun TutorBillingApp(
 
         composable("classes") {
             ClassesScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable("lessons") {
+            LessonsScreen(
+                onBack = { navController.popBackStack() },
+                onLessonClick = { studentId, lessonId ->
+                    navController.navigate("lesson/$studentId/$lessonId")
+                }
+            )
         }
 
         composable("student/{studentId}") { backStackEntry ->
