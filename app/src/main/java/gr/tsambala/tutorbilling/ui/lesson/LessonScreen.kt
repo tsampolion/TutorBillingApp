@@ -8,8 +8,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.ui.platform.LocalContext
-import android.app.DatePickerDialog as AndroidDatePickerDialog
-import android.app.TimePickerDialog as AndroidTimePickerDialog
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -137,7 +135,7 @@ fun LessonScreen(
                         } catch (_: Exception) {
                             LocalDate.now()
                         }
-                        AndroidDatePickerDialog(
+                        android.app.DatePickerDialog(
                             context,
                             { _, year, month, day ->
                                 val date = LocalDate.of(year, month + 1, day)
@@ -178,7 +176,7 @@ fun LessonScreen(
                     .clickable {
                         val (h, m) = uiState.startTime.split(":").mapNotNull { it.toIntOrNull() }
                             .let { if (it.size == 2) it[0] to it[1] else LocalTime.now().hour to LocalTime.now().minute }
-                        AndroidTimePickerDialog(
+                        android.app.TimePickerDialog(
                             context,
                             { _, hour, minute ->
                                 viewModel.updateStartTime("%02d:%02d".format(hour, minute))
