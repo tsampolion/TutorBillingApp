@@ -32,6 +32,7 @@
     <string name="lesson_duration">Duration (minutes)</string>
     <string name="lesson_note">Note (optional)</string>
     <string name="no_lessons">No lessons recorded yet</string>
+    <string name="lessons">Lessons</string>
 
     <!-- Financial summary strings -->
     <string name="week_total">This Week</string>
