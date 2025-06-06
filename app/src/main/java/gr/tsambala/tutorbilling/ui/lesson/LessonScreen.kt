@@ -19,8 +19,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import gr.tsambala.tutorbilling.data.model.RateTypes
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -150,6 +152,22 @@ fun LessonScreen(
             )
 
             // Time input
+            var showTimePicker by remember { mutableStateOf(false) }
+            val timeState = rememberTimePickerState()
+            if (showTimePicker) {
+                TimePickerDialog(
+                    onDismissRequest = { showTimePicker = false },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            showTimePicker = false
+                            viewModel.updateStartTime("%02d:%02d".format(timeState.hour, timeState.minute))
+                        }) { Text("OK") }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showTimePicker = false }) { Text("Cancel") }
+                    }
+                ) { TimePicker(state = timeState) }
+            }
             OutlinedTextField(
                 value = uiState.startTime,
                 onValueChange = {},
