@@ -1,11 +1,13 @@
 package gr.tsambala.tutorbilling.ui.lesson
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -117,20 +119,55 @@ fun LessonScreen(
             }
 
             // Date input
+            val context = LocalContext.current
             OutlinedTextField(
                 value = uiState.date,
-                onValueChange = viewModel::updateDate,
-                label = { Text("Date (YYYY-MM-DD)") },
-                modifier = Modifier.fillMaxWidth(),
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Date") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        val current = try {
+                            LocalDate.parse(uiState.date, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                        } catch (_: Exception) {
+                            LocalDate.now()
+                        }
+                        android.app.DatePickerDialog(
+                            context,
+                            { _, year, month, day ->
+                                val date = LocalDate.of(year, month + 1, day)
+                                viewModel.updateDate(date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+                            },
+                            current.year,
+                            current.monthValue - 1,
+                            current.dayOfMonth
+                        ).show()
+                    },
                 singleLine = true
             )
 
             // Time input
             OutlinedTextField(
                 value = uiState.startTime,
-                onValueChange = viewModel::updateStartTime,
-                label = { Text("Start Time (HH:MM)") },
-                modifier = Modifier.fillMaxWidth(),
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Start Time") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        val (h, m) = uiState.startTime.split(":").mapNotNull { it.toIntOrNull() }
+                            .let { if (it.size == 2) it[0] to it[1] else LocalTime.now().hour to LocalTime.now().minute }
+                        android.app.TimePickerDialog(
+                            context,
+                            { _, hour, minute ->
+                                viewModel.updateStartTime("%02d:%02d".format(hour, minute))
+                            },
+                            h,
+                            m,
+                            true
+                        ).show()
+                    },
                 singleLine = true
             )
 
