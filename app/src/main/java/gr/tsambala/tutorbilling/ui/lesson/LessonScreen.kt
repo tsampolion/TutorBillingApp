@@ -7,6 +7,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,6 +34,7 @@ fun LessonScreen(
     viewModel: LessonViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -135,7 +138,7 @@ fun LessonScreen(
                         } catch (_: Exception) {
                             LocalDate.now()
                         }
-                        android.app.DatePickerDialog(
+                        DatePickerDialog(
                             context,
                             { _, year, month, day ->
                                 val date = LocalDate.of(year, month + 1, day)
@@ -176,7 +179,7 @@ fun LessonScreen(
                     .clickable {
                         val (h, m) = uiState.startTime.split(":").mapNotNull { it.toIntOrNull() }
                             .let { if (it.size == 2) it[0] to it[1] else LocalTime.now().hour to LocalTime.now().minute }
-                        android.app.TimePickerDialog(
+                        TimePickerDialog(
                             context,
                             { _, hour, minute ->
                                 viewModel.updateStartTime("%02d:%02d".format(hour, minute))
