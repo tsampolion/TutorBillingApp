@@ -28,7 +28,9 @@ fun TutorBillingApp(
                 onAddStudent = { navController.navigate("student/new") },
                 onAddLesson = {
                     navController.navigate("lesson/null/new")
-                }
+                },
+                onSettings = { navController.navigate("settings") },
+                onSearch = { navController.navigate("search") }
             )
         }
 
@@ -82,6 +84,18 @@ fun TutorBillingApp(
                 onNavigateBack = {
                     navController.popBackStack()
                 }
+            )
+        }
+
+        composable("settings") {
+            gr.tsambala.tutorbilling.ui.settings.SettingsScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable("search") {
+            gr.tsambala.tutorbilling.ui.search.GlobalSearchScreen(
+                onBack = { navController.popBackStack() }
             )
         }
     }
