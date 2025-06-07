@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import gr.tsambala.tutorbilling.data.dao.StudentDao
+import gr.tsambala.tutorbilling.data.model.Student
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,8 +19,8 @@ class SearchViewModel @Inject constructor(
 ) : ViewModel() {
     private val query = MutableStateFlow("")
     val searchQuery: StateFlow<String> = query.asStateFlow()
-    private val _results = MutableStateFlow(emptyList<gr.tsambala.tutorbilling.data.model.Student>())
-    val results: StateFlow<List<gr.tsambala.tutorbilling.data.model.Student>> = _results.asStateFlow()
+    private val _results = MutableStateFlow(emptyList<Student>())
+    val results: StateFlow<List<Student>> = _results.asStateFlow()
 
     init {
         viewModelScope.launch {
