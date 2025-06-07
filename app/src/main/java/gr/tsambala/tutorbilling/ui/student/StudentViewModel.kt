@@ -133,6 +133,10 @@ class StudentViewModel @Inject constructor(
         _uiState.update { it.copy(className = className) }
     }
 
+    fun updateCustomClass(name: String) {
+        _uiState.update { it.copy(customClass = name, classError = false) }
+    }
+
     fun toggleEditMode() {
         _uiState.update { it.copy(isEditMode = !it.isEditMode) }
     }
@@ -141,6 +145,13 @@ class StudentViewModel @Inject constructor(
         viewModelScope.launch {
             val state = _uiState.value
             val rate = state.rate.toDoubleOrNull() ?: 0.0
+            val finalClass = if (state.className == "Custom") state.customClass else state.className
+
+            val existingClasses = studentDao.getAllActiveStudents().first().map { it.className.lowercase() }
+            if (state.className == "Custom" && existingClasses.contains(finalClass.lowercase())) {
+                _uiState.update { it.copy(classError = true) }
+                return@launch
+            }
 
             if (studentId == "new") {
                 val student = Student(
@@ -150,7 +161,7 @@ class StudentViewModel @Inject constructor(
                     parentEmail = state.parentEmail,
                     rateType = state.rateType,
                     rate = rate,
-                    className = state.className
+                    className = finalClass
                 )
                 studentDao.insert(student)
             } else {
@@ -163,7 +174,7 @@ class StudentViewModel @Inject constructor(
                         parentEmail = state.parentEmail,
                         rateType = state.rateType,
                         rate = rate,
-                        className = state.className
+                        className = finalClass
                     )
                     studentDao.update(student)
                 }
@@ -194,12 +205,14 @@ class StudentViewModel @Inject constructor(
 
     fun isFormValid(): Boolean {
         val state = _uiState.value
+        val hasClass = if (state.className == "Custom") state.customClass.isNotBlank() else state.className != "Unassigned"
         return state.name.isNotBlank() &&
                 state.surname.isNotBlank() &&
                 isPhoneValid(state.parentMobile) &&
                 isEmailValid(state.parentEmail) &&
-                state.className != "Unassigned" &&
-                state.rate.toDoubleOrNull() != null
+                hasClass &&
+                state.rate.toDoubleOrNull() != null &&
+                !state.classError
     }
 }
 
@@ -211,6 +224,8 @@ data class StudentUiState(
     val rateType: String = RateTypes.HOURLY,
     val rate: String = "",
     val className: String = "Unassigned",
+    val customClass: String = "",
+    val classError: Boolean = false,
     val lessons: List<Lesson> = emptyList(),
     val weekEarnings: Double = 0.0,
     val monthEarnings: Double = 0.0,

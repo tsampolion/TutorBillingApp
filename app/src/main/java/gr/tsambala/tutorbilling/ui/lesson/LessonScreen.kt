@@ -7,6 +7,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import androidx.compose.ui.platform.LocalContext
@@ -95,7 +97,7 @@ fun LessonScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Student info (read-only)
+            // Student info or picker
             if (uiState.studentName.isNotEmpty()) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -119,6 +121,39 @@ fun LessonScreen(
                             },
                             style = MaterialTheme.typography.bodyMedium
                         )
+                    }
+                }
+            } else if (uiState.availableStudents.isNotEmpty()) {
+                var expanded by remember { mutableStateOf(false) }
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded }
+                ) {
+                    OutlinedTextField(
+                        value = uiState.selectedStudentId?.let { id ->
+                            uiState.availableStudents.firstOrNull { it.id == id }?.getFullName()
+                        } ?: "",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Student*") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        uiState.availableStudents.forEach { student ->
+                            DropdownMenuItem(
+                                text = { Text(student.getFullName()) },
+                                onClick = {
+                                    viewModel.updateSelectedStudent(student.id)
+                                    expanded = false
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -176,15 +211,16 @@ fun LessonScreen(
                 singleLine = true
             )
 
-            // Duration input
-            OutlinedTextField(
-                value = uiState.durationMinutes,
-                onValueChange = viewModel::updateDuration,
-                label = { Text("Duration (minutes)") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
+            if (uiState.studentRateType == RateTypes.HOURLY) {
+                OutlinedTextField(
+                    value = uiState.durationMinutes,
+                    onValueChange = viewModel::updateDuration,
+                    label = { Text("Duration (minutes)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+            }
 
             // Fee calculation
             Card(

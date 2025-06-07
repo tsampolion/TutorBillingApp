@@ -22,14 +22,17 @@ class ClassesViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             studentDao.getAllActiveStudents().map { students ->
-                students.groupBy { it.className }
-            }.collect { grouped ->
-                _uiState.value = ClassesUiState(grouped)
+                val grouped = students.groupBy { it.className }
+                val hasUnassigned = grouped["Unassigned"]?.isNotEmpty() == true
+                ClassesUiState(grouped, hasUnassigned)
+            }.collect { state ->
+                _uiState.value = state
             }
         }
     }
 }
 
 data class ClassesUiState(
-    val studentsByClass: Map<String, List<gr.tsambala.tutorbilling.data.model.Student>> = emptyMap()
+    val studentsByClass: Map<String, List<gr.tsambala.tutorbilling.data.model.Student>> = emptyMap(),
+    val hasUnassigned: Boolean = false
 )
