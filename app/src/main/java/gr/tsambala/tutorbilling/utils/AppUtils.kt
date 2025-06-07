@@ -27,15 +27,16 @@ import java.util.Locale
  * - 100.0 -> "€100.00"
  * - 0.0 -> "€0.00"
  */
-fun Double.formatAsCurrency(): String {
-    return "€%.2f".format(this)
+fun Double.formatAsCurrency(symbol: String = "€", decimals: Int = 2): String {
+    return "$symbol%.${'$'}decimalsf".format(this)
 }
 
 /**
  * Formats a nullable Double as currency, returning a default for null values.
  */
-fun Double?.formatAsCurrencyOrDefault(default: String = "€0.00"): String {
-    return this?.formatAsCurrency() ?: default
+fun Double?.formatAsCurrencyOrDefault(symbol: String = "€", decimals: Int = 2): String {
+    val default = "$symbol%.${'$'}decimalsf".format(0.0)
+    return this?.formatAsCurrency(symbol, decimals) ?: default
 }
 
 // ===== Date Formatting =====
