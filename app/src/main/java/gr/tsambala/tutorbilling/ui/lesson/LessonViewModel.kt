@@ -8,6 +8,7 @@ import gr.tsambala.tutorbilling.data.model.Lesson
 import gr.tsambala.tutorbilling.data.dao.LessonDao
 import gr.tsambala.tutorbilling.data.dao.StudentDao
 import gr.tsambala.tutorbilling.data.model.RateTypes
+import gr.tsambala.tutorbilling.data.model.Student
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -48,17 +49,23 @@ class LessonViewModel @Inject constructor(
 
     private fun loadStudentInfo() {
         viewModelScope.launch {
-            studentId?.toLongOrNull()?.let { id ->
+            val id = studentId?.toLongOrNull()
+            if (id != null) {
                 studentDao.getStudentById(id).collect { student ->
                     student?.let { s ->
                         _uiState.update { state ->
                             state.copy(
                                 studentName = s.name,
                                 studentRateType = s.rateType,
-                                studentRate = s.rate
+                                studentRate = s.rate,
+                                selectedStudentId = id
                             )
                         }
                     }
+                }
+            } else {
+                studentDao.getAllActiveStudents().collect { list ->
+                    _uiState.update { it.copy(availableStudents = list) }
                 }
             }
         }
@@ -98,6 +105,23 @@ class LessonViewModel @Inject constructor(
         _uiState.update { it.copy(durationMinutes = sanitized) }
     }
 
+    fun updateSelectedStudent(id: Long) {
+        viewModelScope.launch {
+            studentDao.getStudentById(id).collect { student ->
+                student?.let { s ->
+                    _uiState.update {
+                        it.copy(
+                            selectedStudentId = id,
+                            studentName = s.name,
+                            studentRateType = s.rateType,
+                            studentRate = s.rate
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     fun updateNotes(notes: String) {
         _uiState.update { it.copy(notes = notes) }
     }
@@ -115,7 +139,9 @@ class LessonViewModel @Inject constructor(
     fun isFormValid(): Boolean {
         val state = _uiState.value
         val duration = state.durationMinutes.toIntOrNull() ?: 0
-        return duration > 0 && isValidDate(state.date) && isValidTime(state.startTime)
+        val hasStudent = state.selectedStudentId != null
+        val durationOk = if (state.studentRateType == RateTypes.HOURLY) duration >= 60 else true
+        return hasStudent && durationOk && isValidDate(state.date) && isValidTime(state.startTime)
     }
 
     fun toggleEditMode() {
@@ -125,13 +151,18 @@ class LessonViewModel @Inject constructor(
     fun saveLesson() {
         viewModelScope.launch {
             val state = _uiState.value
-            val duration = state.durationMinutes.toIntOrNull() ?: 0
+            var duration = state.durationMinutes.toIntOrNull() ?: 0
+            if (state.studentRateType == RateTypes.HOURLY) {
+                if (duration <= 0) duration = 60
+                if (duration < 60) duration = 60
+            }
             if (!isFormValid()) return@launch
 
-            studentId?.toLongOrNull()?.let { sId ->
+            val sId = state.selectedStudentId
+            sId?.let {
                 if (lessonId == "new") {
                     val lesson = Lesson(
-                        studentId = sId,
+                        studentId = it,
                         date = LocalDate.parse(state.date, dateFormatter).toString(),
                         startTime = state.startTime,
                         durationMinutes = duration,
@@ -142,7 +173,7 @@ class LessonViewModel @Inject constructor(
                     lessonId?.toLongOrNull()?.let { lId ->
                         val lesson = Lesson(
                             id = lId,
-                            studentId = sId,
+                            studentId = it,
                             date = LocalDate.parse(state.date, dateFormatter).toString(),
                             startTime = state.startTime,
                             durationMinutes = duration,
@@ -186,5 +217,7 @@ data class LessonUiState(
     val studentName: String = "",
     val studentRateType: String = RateTypes.HOURLY,
     val studentRate: Double = 0.0,
+    val availableStudents: List<Student> = emptyList(),
+    val selectedStudentId: Long? = null,
     val isEditMode: Boolean = true
 )

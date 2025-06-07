@@ -27,8 +27,7 @@ fun TutorBillingApp(
                 onLessonsClick = { navController.navigate("lessons") },
                 onAddStudent = { navController.navigate("student/new") },
                 onAddLesson = {
-                    // Requires a student, direct user to select a student first
-                    navController.navigate("students")
+                    navController.navigate("lesson/null/new")
                 }
             )
         }
@@ -43,7 +42,10 @@ fun TutorBillingApp(
         }
 
         composable("classes") {
-            ClassesScreen(onBack = { navController.popBackStack() })
+            ClassesScreen(
+                onBack = { navController.popBackStack() },
+                onStudentClick = { id -> navController.navigate("student/$id") }
+            )
         }
 
         composable("lessons") {

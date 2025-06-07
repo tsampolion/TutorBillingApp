@@ -514,6 +514,18 @@ private fun StudentEditForm(
             }
         }
 
+        if (uiState.className == "Custom") {
+            OutlinedTextField(
+                value = uiState.customClass,
+                onValueChange = viewModel::updateCustomClass,
+                label = { Text("Class Description*") },
+                isError = uiState.classError,
+                supportingText = { if (uiState.classError) Text("Class already exists") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+        }
+
         Spacer(modifier = Modifier.weight(1f))
 
         Row(
