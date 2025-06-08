@@ -249,4 +249,3 @@ fun String.titleCase(): String {
     const val DATE_PATTERN_DISPLAY = "dd MMM yyyy"
     const val TIME_PATTERN_24H = "HH:mm"
     const val TIME_PATTERN_12H = "h:mm a"
-}
