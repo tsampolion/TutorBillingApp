@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.time.temporal.WeekFields
 import java.util.Locale
+import java.util.IllegalFormatPrecisionException
 
 /**
  * AppUtils contains utility functions and extension methods used throughout the app.
@@ -28,15 +29,23 @@ import java.util.Locale
  * - 0.0 -> "€0.00"
  */
 fun Double.formatAsCurrency(symbol: String = "€", decimals: Int = 2): String {
-    return "$symbol${"%.${decimals}f".format(this)}"
+    // Clamp decimals to avoid IllegalFormatPrecisionException
+    val safeDecimals = decimals.coerceIn(0, 4)
+    return try {
+        "$symbol${"%.${safeDecimals}f".format(this)}"
+    } catch (e: IllegalFormatPrecisionException) {
+        // Fallback to two decimal places if formatting fails
+        "$symbol${"%.2f".format(this)}"
+    }
 }
 
 /**
  * Formats a nullable Double as currency, returning a default for null values.
  */
 fun Double?.formatAsCurrencyOrDefault(symbol: String = "€", decimals: Int = 2): String {
-    val default = "$symbol${"%.${decimals}f".format(0.0)}"
-    return this?.formatAsCurrency(symbol, decimals) ?: default
+    val safeDecimals = decimals.coerceIn(0, 4)
+    val default = "$symbol${"%.${safeDecimals}f".format(0.0)}"
+    return this?.formatAsCurrency(symbol, safeDecimals) ?: default
 }
 
 // ===== Date Formatting =====
