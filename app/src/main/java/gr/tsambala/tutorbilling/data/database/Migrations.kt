@@ -20,6 +20,7 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
 val MIGRATION_3_4 = object : Migration(3, 4) {
     override fun migrate(database: SupportSQLiteDatabase) {
         // Add the isActive column only if it doesn't already exist
+
         var hasColumn = false
         database.query("PRAGMA table_info(students)").use { cursor ->
             val nameIndex = cursor.getColumnIndex("name")
