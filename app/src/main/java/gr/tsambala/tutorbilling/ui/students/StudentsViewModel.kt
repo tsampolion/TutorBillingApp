@@ -23,21 +23,22 @@ class StudentsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(StudentsUiState())
     val uiState: StateFlow<StudentsUiState> = _uiState.asStateFlow()
 
-    private val searchQuery = MutableStateFlow("")
-    private val sortAscending = MutableStateFlow(true)
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+
+    private val _sortAscending = MutableStateFlow(true)
+    val sortAscending: StateFlow<Boolean> = _sortAscending.asStateFlow()
 
     init {
         loadStudentsWithEarnings()
     }
 
     fun updateSearchQuery(query: String) {
-        searchQuery.value = query
-        loadStudentsWithEarnings()
+        _searchQuery.value = query
     }
 
     fun toggleSortOrder() {
-        sortAscending.value = !sortAscending.value
-        loadStudentsWithEarnings()
+        _sortAscending.value = !_sortAscending.value
     }
 
     private fun loadStudentsWithEarnings() {
@@ -88,7 +89,7 @@ class StudentsViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         students = studentsWithEarnings,
-                        searchQuery = searchQuery.value
+                        searchQuery = _searchQuery.value
                     )
                 }
             }
