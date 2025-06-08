@@ -35,11 +35,11 @@ class StudentsViewModel @Inject constructor(
     }
 
     fun updateSearchQuery(query: String) {
-        _searchQuery.value = query
+        searchQuery.value = query
     }
 
     fun toggleSortOrder() {
-        _sortAscending.value = !_sortAscending.value
+        sortAscending.value = !sortAscending.value
     }
 
     private fun loadStudentsWithEarnings() {
