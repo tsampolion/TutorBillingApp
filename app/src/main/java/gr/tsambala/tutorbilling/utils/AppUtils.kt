@@ -28,14 +28,14 @@ import java.util.Locale
  * - 0.0 -> "€0.00"
  */
 fun Double.formatAsCurrency(symbol: String = "€", decimals: Int = 2): String {
-    return "$symbol%.${'$'}decimalsf".format(this)
+    return "$symbol${"%.${decimals}f".format(this)}"
 }
 
 /**
  * Formats a nullable Double as currency, returning a default for null values.
  */
 fun Double?.formatAsCurrencyOrDefault(symbol: String = "€", decimals: Int = 2): String {
-    val default = "$symbol%.${'$'}decimalsf".format(0.0)
+    val default = "$symbol${"%.${decimals}f".format(0.0)}"
     return this?.formatAsCurrency(symbol, decimals) ?: default
 }
 
