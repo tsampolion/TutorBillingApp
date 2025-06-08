@@ -1,7 +1,6 @@
 package gr.tsambala.tutorbilling.utils
 
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -35,7 +34,7 @@ fun Double.formatAsCurrency(symbol: String = "€", decimals: Int = 2): String {
 
     return try {
         "$symbol${"%.${safeDecimals}f".format(this)}"
-    } catch (e: IllegalFormatPrecisionException) {
+    } catch (_: IllegalFormatPrecisionException) {
         // Fallback to two decimal places if formatting fails
         "$symbol${"%.2f".format(this)}"
     }
