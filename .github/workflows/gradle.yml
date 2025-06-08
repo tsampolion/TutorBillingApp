@@ -16,7 +16,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Build
+      - name: Build and Lint
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: test
+          arguments: lint build
