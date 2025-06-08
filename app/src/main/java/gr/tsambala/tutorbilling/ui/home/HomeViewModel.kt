@@ -2,6 +2,7 @@ package gr.tsambala.tutorbilling.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import dagger.hilt.android.lifecycle.HiltViewModel
 import gr.tsambala.tutorbilling.data.model.Student
 import gr.tsambala.tutorbilling.data.dao.StudentDao
@@ -71,7 +72,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun deleteStudent(studentId: Long) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             studentDao.softDeleteStudent(studentId)
         }
     }

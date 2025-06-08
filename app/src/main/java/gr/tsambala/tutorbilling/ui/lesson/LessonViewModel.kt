@@ -3,6 +3,7 @@ package gr.tsambala.tutorbilling.ui.lesson
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import dagger.hilt.android.lifecycle.HiltViewModel
 import gr.tsambala.tutorbilling.data.model.Lesson
 import gr.tsambala.tutorbilling.data.dao.LessonDao
@@ -48,7 +49,7 @@ class LessonViewModel @Inject constructor(
     }
 
     private fun loadStudentInfo() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val id = studentId?.toLongOrNull()
             if (id != null) {
                 studentDao.getStudentById(id).collect { student ->
@@ -72,7 +73,7 @@ class LessonViewModel @Inject constructor(
     }
 
     private fun loadLesson() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             lessonId?.toLongOrNull()?.let { id ->
                 lessonDao.getLessonById(id).collect { lesson ->
                     lesson?.let { l ->
@@ -106,7 +107,7 @@ class LessonViewModel @Inject constructor(
     }
 
     fun updateSelectedStudent(id: Long) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             studentDao.getStudentById(id).collect { student ->
                 student?.let { s ->
                     _uiState.update {
@@ -149,7 +150,7 @@ class LessonViewModel @Inject constructor(
     }
 
     fun saveLesson() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val state = _uiState.value
             var duration = state.durationMinutes.toIntOrNull() ?: 0
             if (state.studentRateType == RateTypes.HOURLY) {
@@ -189,7 +190,7 @@ class LessonViewModel @Inject constructor(
     }
 
     fun deleteLesson(onDeleted: () -> Unit) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             lessonId?.toLongOrNull()?.let { id ->
                 lessonDao.deleteById(id)
                 onDeleted()

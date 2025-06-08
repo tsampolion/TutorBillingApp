@@ -2,6 +2,7 @@ package gr.tsambala.tutorbilling.ui.students
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import dagger.hilt.android.lifecycle.HiltViewModel
 import gr.tsambala.tutorbilling.data.model.Student
 import gr.tsambala.tutorbilling.data.dao.StudentDao
@@ -23,8 +24,11 @@ class StudentsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(StudentsUiState())
     val uiState: StateFlow<StudentsUiState> = _uiState.asStateFlow()
 
-    private val searchQuery = MutableStateFlow("")
-    private val sortAscending = MutableStateFlow(true)
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+
+    private val _sortAscending = MutableStateFlow(true)
+    val sortAscending: StateFlow<Boolean> = _sortAscending.asStateFlow()
 
     init {
         loadStudentsWithEarnings()
@@ -86,7 +90,7 @@ class StudentsViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         students = studentsWithEarnings,
-                        searchQuery = searchQuery.value
+                        searchQuery = _searchQuery.value
                     )
                 }
             }
@@ -94,7 +98,7 @@ class StudentsViewModel @Inject constructor(
     }
 
     fun deleteStudent(studentId: Long) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             studentDao.softDeleteStudent(studentId)
         }
     }
