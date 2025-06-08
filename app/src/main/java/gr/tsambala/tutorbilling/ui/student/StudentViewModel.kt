@@ -3,6 +3,7 @@ package gr.tsambala.tutorbilling.ui.student
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import dagger.hilt.android.lifecycle.HiltViewModel
 import gr.tsambala.tutorbilling.data.model.Lesson
 import gr.tsambala.tutorbilling.data.model.Student
@@ -37,7 +38,7 @@ class StudentViewModel @Inject constructor(
     }
 
     private fun loadStudent() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             studentId?.toLongOrNull()?.let { id ->
                 studentDao.getStudentById(id).collect { student ->
                     student?.let { s ->
@@ -60,7 +61,7 @@ class StudentViewModel @Inject constructor(
     }
 
     private fun loadLessons() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             studentId?.toLongOrNull()?.let { id ->
                 lessonDao.getLessonsByStudentId(id).collect { lessons ->
                     val today = LocalDate.now()
@@ -142,7 +143,7 @@ class StudentViewModel @Inject constructor(
     }
 
     fun saveStudent() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val state = _uiState.value
             val rate = state.rate.toDoubleOrNull() ?: 0.0
             val finalClass = if (state.className == "Custom") state.customClass else state.className
@@ -185,7 +186,7 @@ class StudentViewModel @Inject constructor(
     }
 
     fun deleteStudent(onDeleted: () -> Unit) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             studentId?.toLongOrNull()?.let { id ->
                 studentDao.softDeleteStudent(id)
                 onDeleted()
@@ -194,7 +195,7 @@ class StudentViewModel @Inject constructor(
     }
 
     fun deleteLesson(lessonId: Long) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             lessonDao.deleteById(lessonId)
         }
     }

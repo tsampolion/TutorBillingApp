@@ -2,6 +2,7 @@ package gr.tsambala.tutorbilling.ui.students
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import dagger.hilt.android.lifecycle.HiltViewModel
 import gr.tsambala.tutorbilling.data.model.Student
 import gr.tsambala.tutorbilling.data.dao.StudentDao
@@ -34,11 +35,11 @@ class StudentsViewModel @Inject constructor(
     }
 
     fun updateSearchQuery(query: String) {
-        searchQuery.value = query
+        _searchQuery.value = query
     }
 
     fun toggleSortOrder() {
-        sortAscending.value = !sortAscending.value
+        _sortAscending.value = !_sortAscending.value
     }
 
     private fun loadStudentsWithEarnings() {
@@ -97,7 +98,7 @@ class StudentsViewModel @Inject constructor(
     }
 
     fun deleteStudent(studentId: Long) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             studentDao.softDeleteStudent(studentId)
         }
     }
