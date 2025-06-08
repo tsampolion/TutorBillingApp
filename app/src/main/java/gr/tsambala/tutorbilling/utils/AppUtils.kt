@@ -29,8 +29,10 @@ import java.util.IllegalFormatPrecisionException
  * - 0.0 -> "€0.00"
  */
 fun Double.formatAsCurrency(symbol: String = "€", decimals: Int = 2): String {
-    // Clamp decimals to avoid IllegalFormatPrecisionException
-    val safeDecimals = decimals.coerceIn(0, 4)
+
+    // Clamp decimals to 0..2. Any invalid value defaults to 2
+    val safeDecimals = decimals.takeIf { it in 0..2 } ?: 2
+
     return try {
         "$symbol${"%.${safeDecimals}f".format(this)}"
     } catch (e: IllegalFormatPrecisionException) {
@@ -43,7 +45,9 @@ fun Double.formatAsCurrency(symbol: String = "€", decimals: Int = 2): String {
  * Formats a nullable Double as currency, returning a default for null values.
  */
 fun Double?.formatAsCurrencyOrDefault(symbol: String = "€", decimals: Int = 2): String {
-    val safeDecimals = decimals.coerceIn(0, 4)
+
+    val safeDecimals = decimals.takeIf { it in 0..2 } ?: 2
+
     val default = "$symbol${"%.${safeDecimals}f".format(0.0)}"
     return this?.formatAsCurrency(symbol, safeDecimals) ?: default
 }
