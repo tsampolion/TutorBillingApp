@@ -40,7 +40,8 @@ val MIGRATION_3_4 = object : Migration(3, 4) {
             } catch (e: SQLiteException) {
                 // Ignore duplicate column errors that may occur if the column
                 // already exists for some reason.
-                if (!e.message?.contains("duplicate column", ignoreCase = true) == true) {
+                if (e.message?.contains("duplicate column", ignoreCase = true) != true) {
+
                     throw e
                 }
             }
