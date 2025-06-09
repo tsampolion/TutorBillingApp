@@ -52,28 +52,13 @@ fun HomeMenuScreen(
                     onClick = { showFabMenu = !showFabMenu },
                     containerColor = MaterialTheme.colorScheme.primary
                 ) { Icon(Icons.Default.Add, contentDescription = "Add") }
+
                 FloatingActionButton(
                     onClick = onSettings,
                     containerColor = MaterialTheme.colorScheme.tertiary
                 ) { Icon(Icons.Default.Settings, contentDescription = "Settings") }
             }
         },
-        floatingActionButton = {
-            Box {
-                FloatingActionButton(onClick = { showFabMenu = !showFabMenu }) {}
-                DropdownMenu(expanded = showFabMenu, onDismissRequest = { showFabMenu = false }) {
-                    DropdownMenuItem(text = { Text("Add Student") }, onClick = {
-                        showFabMenu = false
-                        onAddStudent()
-                    })
-                    DropdownMenuItem(text = { Text("Add Lesson") }, onClick = {
-                        showFabMenu = false
-                        onAddLesson()
-                    })
-                }
-            }
-        },
-        floatingActionButtonPosition = FabPosition.Center
     ) { padding ->
         Column(
             modifier = Modifier
