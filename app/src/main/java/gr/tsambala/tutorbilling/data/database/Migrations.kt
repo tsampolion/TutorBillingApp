@@ -1,5 +1,6 @@
 package gr.tsambala.tutorbilling.data.database
 
+import android.database.sqlite.SQLiteException
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
@@ -19,21 +20,30 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
 
 val MIGRATION_3_4 = object : Migration(3, 4) {
     override fun migrate(database: SupportSQLiteDatabase) {
-        // Add the isActive column only if it doesn't already exist
+        // Add the isActive column only if it doesn't already exist. The
+        // PRAGMA table_info query returns all columns of the students table
+        // so we can safely check for the existence of the column before
+        // attempting to add it.
 
-        var hasColumn = false
-        database.query("PRAGMA table_info(students)").use { cursor ->
-            val nameIndex = cursor.getColumnIndex("name")
-            while (cursor.moveToNext()) {
-                if (nameIndex != -1 && cursor.getString(nameIndex) == "isActive") {
-                    hasColumn = true
-                    break
-                }
-            }
+        val columns = database.query("PRAGMA table_info(students)").use { cursor ->
+            val index = cursor.getColumnIndex("name")
+            generateSequence {
+                if (index == -1 || !cursor.moveToNext()) null else cursor.getString(index)
+            }.toList()
         }
 
-        if (!hasColumn) {
-            database.execSQL("ALTER TABLE students ADD COLUMN isActive INTEGER NOT NULL DEFAULT 1")
+        if ("isActive" !in columns) {
+            try {
+                database.execSQL(
+                    "ALTER TABLE students ADD COLUMN isActive INTEGER NOT NULL DEFAULT 1"
+                )
+            } catch (e: SQLiteException) {
+                // Ignore duplicate column errors that may occur if the column
+                // already exists for some reason.
+                if (!e.message?.contains("duplicate column", ignoreCase = true) == true) {
+                    throw e
+                }
+            }
         }
     }
 }
