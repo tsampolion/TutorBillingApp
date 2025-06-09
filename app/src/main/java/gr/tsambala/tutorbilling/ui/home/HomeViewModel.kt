@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import dagger.hilt.android.lifecycle.HiltViewModel
 import gr.tsambala.tutorbilling.data.model.Student
+import gr.tsambala.tutorbilling.data.model.StudentWithEarnings
 import gr.tsambala.tutorbilling.data.dao.StudentDao
 import gr.tsambala.tutorbilling.data.dao.LessonDao
 import gr.tsambala.tutorbilling.data.model.calculateFee
@@ -80,10 +81,4 @@ class HomeViewModel @Inject constructor(
 
 data class HomeUiState(
     val students: List<StudentWithEarnings> = emptyList()
-)
-
-data class StudentWithEarnings(
-    val student: Student,
-    val weekEarnings: Double,
-    val monthEarnings: Double
 )
