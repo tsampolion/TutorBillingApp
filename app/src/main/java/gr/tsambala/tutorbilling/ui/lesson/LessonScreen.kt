@@ -12,7 +12,6 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.material3.TimePicker
-import androidx.compose.material3.TimePickerDialog
 import gr.tsambala.tutorbilling.ui.components.ClickableReadOnlyField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -211,10 +210,11 @@ fun LessonScreen(
                     dismissButton = {
                         TextButton(onClick = { showTimePicker = false }) { Text("Cancel") }
                     },
-                    title = { Text("Select time") }
-                ) {
-                    TimePicker(state = timePickerState)
-                }
+                    title = { Text("Select time") },
+                    text = {
+                        TimePicker(state = timePickerState)
+                    }
+                )
             }
 
             if (uiState.studentRateType == RateTypes.HOURLY) {
