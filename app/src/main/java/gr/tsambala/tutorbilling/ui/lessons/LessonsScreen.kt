@@ -61,7 +61,8 @@ fun LessonsScreen(
                 items(uiState.lessons, key = { it.lesson.id }) { item ->
                     LessonItem(
                         lessonWithStudent = item,
-                        onClick = { onLessonClick(item.student.id, item.lesson.id) }
+                        onClick = { onLessonClick(item.student.id, item.lesson.id) },
+                        onPaidChange = { viewModel.updatePaid(item.lesson.id, it) }
                     )
                     Divider()
                 }
@@ -74,7 +75,8 @@ fun LessonsScreen(
 @Composable
 private fun LessonItem(
     lessonWithStudent: LessonWithStudent,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onPaidChange: (Boolean) -> Unit
 ) {
     val lesson = lessonWithStudent.lesson
     val student = lessonWithStudent.student
@@ -116,11 +118,18 @@ private fun LessonItem(
                     )
                 }
             }
-            Text(
-                text = "€%.2f".format(lessonWithStudent.calculateFee()),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    text = "€%.2f".format(lessonWithStudent.calculateFee()),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("Paid")
+                    Spacer(Modifier.width(4.dp))
+                    Checkbox(checked = lesson.isPaid, onCheckedChange = onPaidChange)
+                }
+            }
         }
     }
 }

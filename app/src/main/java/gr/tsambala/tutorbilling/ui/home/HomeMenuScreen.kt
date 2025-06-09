@@ -66,6 +66,7 @@ fun HomeMenuScreen(
                         })
                     }
                 }
+
                 FloatingActionButton(
                     onClick = onSettings,
                     containerColor = MaterialTheme.colorScheme.tertiary

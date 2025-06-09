@@ -24,5 +24,6 @@ data class Lesson(
     val date: String,
     val startTime: String,
     val durationMinutes: Int,
-    val notes: String? = null
+    val notes: String? = null,
+    val isPaid: Boolean = false
 )
