@@ -20,16 +20,19 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
 
 val MIGRATION_3_4 = object : Migration(3, 4) {
     override fun migrate(database: SupportSQLiteDatabase) {
-        fun columnExists(table: String, column: String): Boolean {
-            return database.query("PRAGMA table_info($table)").use { cursor ->
-                val index = cursor.getColumnIndex("name")
-                generateSequence {
-                    if (index == -1 || !cursor.moveToNext()) null else cursor.getString(index)
-                }.toList()
-            }.contains(column)
+        // Check if the isActive column already exists in the students table
+        val cursor = database.query("PRAGMA table_info('students')")
+        val nameIndex = cursor.getColumnIndex("name")
+        var hasColumn = false
+        while (cursor.moveToNext()) {
+            if (nameIndex != -1 && cursor.getString(nameIndex) == "isActive") {
+                hasColumn = true
+                break
+            }
         }
+        cursor.close()
 
-        if (!columnExists("students", "isActive")) {
+        if (!hasColumn) {
             try {
                 database.execSQL("ALTER TABLE students ADD COLUMN isActive INTEGER NOT NULL DEFAULT 1")
             } catch (e: SQLiteException) {
