@@ -1,16 +1,17 @@
 package gr.tsambala.tutorbilling.ui.invoice
 
-import android.app.DatePickerDialog
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Checkbox
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.*
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.DatePicker
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,6 +27,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.core.content.FileProvider
 import gr.tsambala.tutorbilling.data.database.LessonWithStudent
+import gr.tsambala.tutorbilling.ui.components.ClickableReadOnlyField
 import java.io.File
 import java.io.FileOutputStream
 import java.time.LocalDate
@@ -135,24 +137,33 @@ private fun LessonRow(item: LessonWithStudent, checked: Boolean, onToggle: () ->
 
 @Composable
 private fun DateField(label: String, date: LocalDate, onDate: (LocalDate) -> Unit) {
-    val context = LocalContext.current
-    OutlinedTextField(
-        value = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-        onValueChange = {},
-        readOnly = true,
-        label = { Text(label) },
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable {
-                DatePickerDialog(
-                    context,
-                    { _, y, m, d -> onDate(LocalDate.of(y, m + 1, d)) },
-                    date.year,
-                    date.monthValue - 1,
-                    date.dayOfMonth
-                ).show()
-            }
+    var showPicker by remember { mutableStateOf(false) }
+    val pickerState = rememberDatePickerState(
+        initialSelectedDateMillis = date.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()
     )
+    ClickableReadOnlyField(
+        value = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+        onClick = { showPicker = true },
+        label = { Text(label) },
+    )
+    if (showPicker) {
+        DatePickerDialog(
+            onDismissRequest = { showPicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    pickerState.selectedDateMillis?.let { millis ->
+                        onDate(java.time.Instant.ofEpochMilli(millis).atZone(java.time.ZoneId.systemDefault()).toLocalDate())
+                    }
+                    showPicker = false
+                }) { Text("OK") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showPicker = false }) { Text("Cancel") }
+            }
+        ) {
+            DatePicker(state = pickerState)
+        }
+    }
 }
 
 fun createInvoicePdf(directory: File, lessons: List<LessonWithStudent>): Uri {
