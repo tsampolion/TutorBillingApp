@@ -15,7 +15,7 @@ import androidx.room.PrimaryKey
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("studentId")]
+    indices = [Index("studentId"), Index("date")]
 )
 data class Lesson(
     @PrimaryKey(autoGenerate = true)

@@ -14,6 +14,7 @@ import gr.tsambala.tutorbilling.data.database.MIGRATION_1_2
 import gr.tsambala.tutorbilling.data.database.MIGRATION_2_3
 import gr.tsambala.tutorbilling.data.database.MIGRATION_3_4
 import gr.tsambala.tutorbilling.data.database.MIGRATION_4_5
+import gr.tsambala.tutorbilling.data.database.MIGRATION_5_6
 import javax.inject.Singleton
 
 @Module
@@ -30,7 +31,13 @@ object DatabaseModule {
             TutorBillingDatabase::class.java,
             "tutor_billing_database"
         )
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+            .addMigrations(
+                MIGRATION_1_2,
+                MIGRATION_2_3,
+                MIGRATION_3_4,
+                MIGRATION_4_5,
+                MIGRATION_5_6
+            )
             .build()
     }
 
