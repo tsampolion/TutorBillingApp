@@ -26,6 +26,7 @@ import androidx.compose.material3.MenuAnchorType
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.core.content.FileProvider
+import gr.tsambala.tutorbilling.R
 import gr.tsambala.tutorbilling.data.database.LessonWithStudent
 import gr.tsambala.tutorbilling.ui.components.ClickableReadOnlyField
 import java.io.File
@@ -135,6 +136,7 @@ private fun LessonRow(item: LessonWithStudent, checked: Boolean, onToggle: () ->
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DateField(label: String, date: LocalDate, onDate: (LocalDate) -> Unit) {
     var showPicker by remember { mutableStateOf(false) }
@@ -190,6 +192,7 @@ fun createInvoicePdf(directory: File, lessons: List<LessonWithStudent>): Uri {
     return Uri.fromFile(file)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun StudentDropdown(students: List<gr.tsambala.tutorbilling.data.model.Student>, selectedId: Long?, onSelect: (Long) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
