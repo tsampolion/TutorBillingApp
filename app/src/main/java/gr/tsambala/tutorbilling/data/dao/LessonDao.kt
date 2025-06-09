@@ -29,4 +29,10 @@ interface LessonDao {
 
     @Query("SELECT * FROM lessons WHERE date BETWEEN :startDate AND :endDate ORDER BY date DESC, startTime DESC")
     fun getLessonsInDateRange(startDate: String, endDate: String): Flow<List<Lesson>>
+
+    @Query("SELECT * FROM lessons WHERE date BETWEEN :startDate AND :endDate AND isPaid = 0 ORDER BY date ASC")
+    fun getUnpaidLessonsInDateRange(startDate: String, endDate: String): Flow<List<Lesson>>
+
+    @Query("UPDATE lessons SET isPaid = :paid WHERE id IN (:ids)")
+    suspend fun updatePaidStatus(ids: List<Long>, paid: Boolean)
 }
