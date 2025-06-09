@@ -44,7 +44,7 @@ fun PastInvoicesScreen(onBack: () -> Unit) {
             LazyColumn(Modifier.fillMaxSize().padding(padding)) {
                 items(invoices) { file ->
                     ListItem(
-                        headlineText = { Text(file.name) },
+                        headlineContent = { Text(file.name) },
                         modifier = Modifier.clickable {
                             val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
                             val intent = Intent(Intent.ACTION_VIEW).apply {
