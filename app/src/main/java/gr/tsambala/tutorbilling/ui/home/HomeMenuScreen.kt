@@ -7,12 +7,13 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,28 +43,43 @@ fun HomeMenuScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically // Added for better alignment
             ) {
                 FloatingActionButton(
                     onClick = onRevenue,
                     containerColor = MaterialTheme.colorScheme.secondary
                 ) { Icon(Icons.Default.BarChart, contentDescription = "Revenue") }
+
+                // Box for the FAB and its DropdownMenu
                 Box(
-                    modifier = Modifier.menuAnchor()
+                    contentAlignment = Alignment.Center // Ensures FAB is centered if Box is larger
+                    // Modifier.menuAnchor() removed - it's not a standard modifier here
                 ) {
                     FloatingActionButton(
                         onClick = { showFabMenu = !showFabMenu },
                         containerColor = MaterialTheme.colorScheme.primary
                     ) { Icon(Icons.Default.Add, contentDescription = "Add") }
-                    DropdownMenu(expanded = showFabMenu, onDismissRequest = { showFabMenu = false }) {
-                        DropdownMenuItem(text = { Text("Add Student") }, onClick = {
-                            showFabMenu = false
-                            onAddStudent()
-                        })
-                        DropdownMenuItem(text = { Text("Add Lesson") }, onClick = {
-                            showFabMenu = false
-                            onAddLesson()
-                        })
+
+                    DropdownMenu(
+                        expanded = showFabMenu,
+                        onDismissRequest = { showFabMenu = false }
+                        // The DropdownMenu will anchor to the Box by default
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Add Student") },
+                            onClick = {
+                                showFabMenu = false
+                                onAddStudent()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Add Lesson") },
+                            onClick = {
+                                showFabMenu = false
+                                onAddLesson()
+                            }
+                        )
                     }
                 }
 
