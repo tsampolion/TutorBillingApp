@@ -6,7 +6,8 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.time.temporal.WeekFields
 import java.util.Locale
-import java.util.IllegalFormatPrecisionException
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 
 /**
  * AppUtils contains utility functions and extension methods used throughout the app.
@@ -29,15 +30,16 @@ import java.util.IllegalFormatPrecisionException
  */
 fun Double.formatAsCurrency(symbol: String = "€", decimals: Int = 2): String {
 
-    // Clamp decimals to 0..2. Any invalid value defaults to 2
-    val safeDecimals = decimals.takeIf { it in 0..2 } ?: 2
+    // Clamp decimals to 0..2
+    val safeDecimals = decimals.coerceIn(0, 2)
 
-    return try {
-        "$symbol${"%.${safeDecimals}f".format(this)}"
-    } catch (_: IllegalFormatPrecisionException) {
-        // Fallback to two decimal places if formatting fails
-        "$symbol${"%.2f".format(this)}"
+    val symbols = DecimalFormatSymbols().apply { currencySymbol = symbol }
+    val pattern = "#,##0.${"0".repeat(safeDecimals)}"
+    val formatter = DecimalFormat(pattern, symbols).apply {
+        minimumFractionDigits = safeDecimals
+        maximumFractionDigits = safeDecimals
     }
+    return formatter.format(this)
 }
 
 /**
@@ -45,9 +47,9 @@ fun Double.formatAsCurrency(symbol: String = "€", decimals: Int = 2): String {
  */
 fun Double?.formatAsCurrencyOrDefault(symbol: String = "€", decimals: Int = 2): String {
 
-    val safeDecimals = decimals.takeIf { it in 0..2 } ?: 2
+    val safeDecimals = decimals.coerceIn(0, 2)
 
-    val default = "$symbol${"%.${safeDecimals}f".format(0.0)}"
+    val default = 0.0.formatAsCurrency(symbol, safeDecimals)
     return this?.formatAsCurrency(symbol, safeDecimals) ?: default
 }
 
