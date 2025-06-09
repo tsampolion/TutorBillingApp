@@ -191,10 +191,8 @@ class StudentViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             studentId?.toLongOrNull()?.let { id ->
                 studentDao.softDeleteStudent(id)
-                withContext(Dispatchers.Main) {
-                    onDeleted()
-                }
             }
+            withContext(Dispatchers.Main) { onDeleted() }
         }
     }
 
