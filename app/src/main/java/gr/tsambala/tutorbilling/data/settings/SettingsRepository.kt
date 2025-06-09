@@ -33,7 +33,7 @@ class SettingsRepository @Inject constructor(
     val settings: Flow<AppSettings> = context.settingsDataStore.data.map { prefs ->
         AppSettings(
             currencySymbol = prefs[Keys.CURRENCY] ?: "€",
-            roundingDecimals = prefs[Keys.ROUNDING] ?: 2,
+            roundingDecimals = (prefs[Keys.ROUNDING] ?: 2).coerceIn(0, 2),
             darkTheme = prefs[Keys.DARK_THEME] ?: false
         )
     }
@@ -43,7 +43,7 @@ class SettingsRepository @Inject constructor(
     }
 
     suspend fun setRounding(decimals: Int) {
-        context.settingsDataStore.edit { it[Keys.ROUNDING] = decimals }
+        context.settingsDataStore.edit { it[Keys.ROUNDING] = decimals.coerceIn(0, 2) }
     }
 
     suspend fun setDarkTheme(enabled: Boolean) {
