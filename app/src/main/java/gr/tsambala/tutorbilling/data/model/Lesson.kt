@@ -1,5 +1,6 @@
 package gr.tsambala.tutorbilling.data.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -25,5 +26,6 @@ data class Lesson(
     val startTime: String,
     val durationMinutes: Int,
     val notes: String? = null,
+    @ColumnInfo(defaultValue = "0")
     val isPaid: Boolean = false
 )
