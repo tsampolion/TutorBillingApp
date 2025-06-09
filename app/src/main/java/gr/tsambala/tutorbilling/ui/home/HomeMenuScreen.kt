@@ -4,16 +4,17 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import gr.tsambala.tutorbilling.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,7 +50,7 @@ fun HomeMenuScreen(
                 FloatingActionButton(
                     onClick = onRevenue,
                     containerColor = MaterialTheme.colorScheme.secondary
-                ) { Icon(Icons.Default.BarChart, contentDescription = "Revenue") }
+                ) { Icon(painterResource(R.drawable.bar_chart), contentDescription = "Revenue") }
 
                 // Box for the FAB and its DropdownMenu
                 Box(
