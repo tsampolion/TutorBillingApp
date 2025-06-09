@@ -32,6 +32,9 @@
     <string name="lesson_duration">Duration (minutes)</string>
     <string name="lesson_note">Note (optional)</string>
     <string name="no_lessons">No lessons recorded yet</string>
+    <string name="no_lessons_prompt">No lessons yet. Tap + to add a lesson.</string>
+    <string name="no_lessons_short">No lessons</string>
+    <string name="no_invoices">No invoices found</string>
     <string name="lessons">Lessons</string>
 
     <!-- Financial summary strings -->

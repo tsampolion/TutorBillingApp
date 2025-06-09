@@ -10,6 +10,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -38,7 +39,7 @@ fun PastInvoicesScreen(onBack: () -> Unit) {
     ) { padding ->
         if (invoices.isEmpty()) {
             Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
-                Text("No invoices found")
+                Text(stringResource(R.string.no_invoices))
             }
         } else {
             LazyColumn(Modifier.fillMaxSize().padding(padding)) {

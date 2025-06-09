@@ -14,6 +14,7 @@ import androidx.compose.material3.MenuAnchorType
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -266,7 +267,7 @@ private fun StudentDetailView(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "No lessons yet.\nTap + to add a lesson.",
+                        text = stringResource(R.string.no_lessons_prompt),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
