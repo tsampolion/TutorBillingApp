@@ -1,19 +1,22 @@
 package gr.tsambala.tutorbilling.ui.lesson
 
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.rememberTimePickerState
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerDialog
+import gr.tsambala.tutorbilling.ui.components.ClickableReadOnlyField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -33,7 +36,6 @@ fun LessonScreen(
     viewModel: LessonViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -147,56 +149,67 @@ fun LessonScreen(
             }
 
             // Date input
-            OutlinedTextField(
-                value = uiState.date,
-                onValueChange = {},
-                readOnly = true,
-                label = { Text("Date") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        val current = try {
-                            LocalDate.parse(uiState.date, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-                        } catch (_: Exception) {
-                            LocalDate.now()
-                        }
-                        DatePickerDialog(
-                            context,
-                            { _, year, month, day ->
-                                val date = LocalDate.of(year, month + 1, day)
-                                viewModel.updateDate(date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
-                            },
-                            current.year,
-                            current.monthValue - 1,
-                            current.dayOfMonth
-                        ).show()
-                    },
-                singleLine = true
+            var showDatePicker by remember { mutableStateOf(false) }
+            val currentDate = try {
+                LocalDate.parse(uiState.date, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+            } catch (_: Exception) {
+                LocalDate.now()
+            }
+            val datePickerState = rememberDatePickerState(
+                initialSelectedDateMillis = currentDate.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()
             )
+            ClickableReadOnlyField(
+                value = uiState.date,
+                onClick = { showDatePicker = true },
+                label = { Text("Date") },
+            )
+            if (showDatePicker) {
+                DatePickerDialog(
+                    onDismissRequest = { showDatePicker = false },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            datePickerState.selectedDateMillis?.let { millis ->
+                                val date = java.time.Instant.ofEpochMilli(millis).atZone(java.time.ZoneId.systemDefault()).toLocalDate()
+                                viewModel.updateDate(date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+                            }
+                            showDatePicker = false
+                        }) { Text("OK") }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showDatePicker = false }) { Text("Cancel") }
+                    }
+                ) {
+                    DatePicker(state = datePickerState)
+                }
+            }
 
             // Time input
-            OutlinedTextField(
+            var showTimePicker by remember { mutableStateOf(false) }
+            val (startHour, startMinute) = uiState.startTime.split(":").mapNotNull { it.toIntOrNull() }
+                .let { if (it.size == 2) it[0] to it[1] else LocalTime.now().hour to LocalTime.now().minute }
+            val timePickerState = rememberTimePickerState(startHour, startMinute, true)
+            ClickableReadOnlyField(
                 value = uiState.startTime,
-                onValueChange = {},
-                readOnly = true,
+                onClick = { showTimePicker = true },
                 label = { Text("Start Time") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        val (h, m) = uiState.startTime.split(":").mapNotNull { it.toIntOrNull() }
-                            .let { if (it.size == 2) it[0] to it[1] else LocalTime.now().hour to LocalTime.now().minute }
-                        TimePickerDialog(
-                            context,
-                            { _, hour, minute ->
-                                viewModel.updateStartTime("%02d:%02d".format(hour, minute))
-                            },
-                            h,
-                            m,
-                            true
-                        ).show()
-                    },
-                singleLine = true
             )
+            if (showTimePicker) {
+                TimePickerDialog(
+                    onDismissRequest = { showTimePicker = false },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            viewModel.updateStartTime("%02d:%02d".format(timePickerState.hour, timePickerState.minute))
+                            showTimePicker = false
+                        }) { Text("OK") }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showTimePicker = false }) { Text("Cancel") }
+                    },
+                    title = { Text("Select time") }
+                ) {
+                    TimePicker(state = timePickerState)
+                }
+            }
 
             if (uiState.studentRateType == RateTypes.HOURLY) {
                 OutlinedTextField(
