@@ -1,6 +1,5 @@
 package gr.tsambala.tutorbilling.ui.invoice
 
-import gr.tsambala.tutorbilling.R
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.*
