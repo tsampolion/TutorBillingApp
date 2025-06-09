@@ -1,5 +1,6 @@
 package gr.tsambala.tutorbilling.ui.student
 
+import gr.tsambala.tutorbilling.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
