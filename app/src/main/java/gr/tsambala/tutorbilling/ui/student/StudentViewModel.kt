@@ -11,6 +11,7 @@ import gr.tsambala.tutorbilling.data.model.RateTypes
 import gr.tsambala.tutorbilling.data.dao.StudentDao
 import gr.tsambala.tutorbilling.data.dao.LessonDao
 import android.util.Patterns
+import gr.tsambala.tutorbilling.utils.titleCase
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -107,11 +108,11 @@ class StudentViewModel @Inject constructor(
     }
 
     fun updateName(name: String) {
-        _uiState.update { it.copy(name = name) }
+        _uiState.update { it.copy(name = name.titleCase()) }
     }
 
     fun updateSurname(surname: String) {
-        _uiState.update { it.copy(surname = surname) }
+        _uiState.update { it.copy(surname = surname.titleCase()) }
     }
 
     fun updateParentMobile(mobile: String) {
@@ -156,8 +157,8 @@ class StudentViewModel @Inject constructor(
 
             if (studentId == "new") {
                 val student = Student(
-                    name = state.name,
-                    surname = state.surname,
+                    name = state.name.titleCase(),
+                    surname = state.surname.titleCase(),
                     parentMobile = state.parentMobile,
                     parentEmail = state.parentEmail,
                     rateType = state.rateType,
@@ -169,8 +170,8 @@ class StudentViewModel @Inject constructor(
                 studentId?.toLongOrNull()?.let { id ->
                     val student = Student(
                         id = id,
-                        name = state.name,
-                        surname = state.surname,
+                        name = state.name.titleCase(),
+                        surname = state.surname.titleCase(),
                         parentMobile = state.parentMobile,
                         parentEmail = state.parentEmail,
                         rateType = state.rateType,
@@ -202,7 +203,8 @@ class StudentViewModel @Inject constructor(
 
     fun isPhoneValid(phone: String): Boolean = phone.matches(Regex("^\\d{10}$"))
 
-    fun isEmailValid(email: String): Boolean = Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    fun isEmailValid(email: String): Boolean =
+        email.isBlank() || Patterns.EMAIL_ADDRESS.matcher(email).matches()
 
     fun isFormValid(): Boolean {
         val state = _uiState.value

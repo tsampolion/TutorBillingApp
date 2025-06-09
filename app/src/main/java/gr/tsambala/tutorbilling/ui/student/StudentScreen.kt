@@ -1,6 +1,8 @@
 package gr.tsambala.tutorbilling.ui.student
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
@@ -389,12 +391,14 @@ private fun StudentEditForm(
     val nameError = uiState.name.isBlank()
     val surnameError = uiState.surname.isBlank()
     val phoneError = !viewModel.isPhoneValid(uiState.parentMobile)
-    val emailError = !viewModel.isEmailValid(uiState.parentEmail)
+    val emailError = uiState.parentEmail.isNotBlank() && !viewModel.isEmailValid(uiState.parentEmail)
     val rateError = uiState.rate.toDoubleOrNull() == null
 
     Column(
         modifier = modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .imePadding()
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -432,7 +436,7 @@ private fun StudentEditForm(
         OutlinedTextField(
             value = uiState.parentEmail,
             onValueChange = viewModel::updateParentEmail,
-            label = { Text("Parent Email*") },
+            label = { Text("Parent Email (optional)") },
             isError = emailError,
             supportingText = { if (emailError) Text("Invalid email") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
