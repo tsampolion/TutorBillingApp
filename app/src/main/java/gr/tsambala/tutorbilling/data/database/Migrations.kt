@@ -54,3 +54,31 @@ val MIGRATION_4_5 = object : Migration(4, 5) {
         database.execSQL("ALTER TABLE lessons ADD COLUMN isPaid INTEGER NOT NULL DEFAULT 0")
     }
 }
+
+val MIGRATION_5_6 = object : Migration(5, 6) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        fun columnExists(table: String, column: String): Boolean {
+            return database.query("PRAGMA table_info($table)").use { cursor ->
+                val index = cursor.getColumnIndex("name")
+                generateSequence {
+                    if (index == -1 || !cursor.moveToNext()) null else cursor.getString(index)
+                }.toList()
+            }.contains(column)
+        }
+
+        val tables = listOf("students", "lessons")
+        val columns = listOf("createdAt", "updatedAt")
+
+        for (table in tables) {
+            for (col in columns) {
+                if (columnExists(table, col)) {
+                    try {
+                        database.execSQL("ALTER TABLE $table DROP COLUMN $col")
+                    } catch (_: SQLiteException) {
+                        // Ignore failures (older SQLite versions) or missing column
+                    }
+                }
+            }
+        }
+    }
+}
