@@ -195,11 +195,16 @@ fun LessonScreen(
                 label = { Text("Start Time") },
             )
             if (showTimePicker) {
-                TimePickerDialog(
+                AlertDialog(
                     onDismissRequest = { showTimePicker = false },
                     confirmButton = {
                         TextButton(onClick = {
-                            viewModel.updateStartTime("%02d:%02d".format(timePickerState.hour, timePickerState.minute))
+                            viewModel.updateStartTime(
+                                "%02d:%02d".format(
+                                    timePickerState.hour,
+                                    timePickerState.minute
+                                )
+                            )
                             showTimePicker = false
                         }) { Text("OK") }
                     },
