@@ -58,15 +58,6 @@ fun LessonScreen(
                             Icon(Icons.Default.Delete, contentDescription = "Delete")
                         }
                     }
-                    TextButton(
-                        onClick = {
-                            viewModel.saveLesson()
-                            onNavigateBack()
-                        },
-                        enabled = viewModel.isFormValid()
-                    ) {
-                        Text("Save")
-                    }
 
                     if (showDelete) {
                         AlertDialog(
@@ -98,7 +89,7 @@ fun LessonScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Student info or picker
-            if (uiState.studentName.isNotEmpty()) {
+            if (uiState.availableStudents.isEmpty()) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
@@ -123,7 +114,7 @@ fun LessonScreen(
                         )
                     }
                 }
-            } else if (uiState.availableStudents.isNotEmpty()) {
+            } else {
                 var expanded by remember { mutableStateOf(false) }
                 ExposedDropdownMenuBox(
                     expanded = expanded,
@@ -159,7 +150,6 @@ fun LessonScreen(
             }
 
             // Date input
-            val context = LocalContext.current
             OutlinedTextField(
                 value = uiState.date,
                 onValueChange = {},
@@ -257,6 +247,26 @@ fun LessonScreen(
                 minLines = 3,
                 maxLines = 5
             )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedButton(
+                    onClick = onNavigateBack,
+                    modifier = Modifier.weight(1f)
+                ) { Text("Cancel") }
+                Button(
+                    onClick = {
+                        viewModel.saveLesson()
+                        onNavigateBack()
+                    },
+                    modifier = Modifier.weight(1f),
+                    enabled = viewModel.isFormValid()
+                ) { Text("Save") }
+            }
         }
     }
 }
