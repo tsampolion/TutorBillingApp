@@ -7,15 +7,20 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Checkbox
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.MenuAnchorType
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.core.content.FileProvider
@@ -35,6 +40,9 @@ fun InvoiceScreen(
     val startDate by viewModel.startDate.collectAsStateWithLifecycle()
     val endDate by viewModel.endDate.collectAsStateWithLifecycle()
     val lessons by viewModel.lessons.collectAsStateWithLifecycle()
+    val students by viewModel.students.collectAsStateWithLifecycle()
+    val selectedStudentId by viewModel.selectedStudentId.collectAsStateWithLifecycle()
+    val selectedLessons by viewModel.selectedLessons.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     Scaffold(
@@ -43,7 +51,7 @@ fun InvoiceScreen(
                 title = { Text("Invoice") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -58,7 +66,8 @@ fun InvoiceScreen(
                 OutlinedButton(onClick = onBack, modifier = Modifier.weight(1f)) { Text("Cancel") }
                 Button(
                     onClick = {
-                        val uri = createInvoicePdf(context.cacheDir, lessons)
+                        val selected = lessons.filter { selectedLessons.contains(it.lesson.id) }
+                        val uri = createInvoicePdf(File(context.filesDir, "invoices"), selected)
                         val share = Intent(Intent.ACTION_SEND).apply {
                             type = "application/pdf"
                             putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(context, "${context.packageName}.provider", File(uri.path!!)))
@@ -67,23 +76,34 @@ fun InvoiceScreen(
                         context.startActivity(Intent.createChooser(share, null))
                     },
                     modifier = Modifier.weight(1f),
-                    enabled = lessons.isNotEmpty()
+                    enabled = selectedLessons.isNotEmpty()
                 ) { Text("Share PDF") }
             }
         }
     ) { padding ->
         Column(Modifier.padding(padding).padding(16.dp)) {
+            StudentDropdown(students, selectedStudentId, onSelect = viewModel::selectStudent)
             DateField("Start", startDate) { date -> viewModel.updateStartDate(date) }
             DateField("End", endDate) { date -> viewModel.updateEndDate(date) }
 
+            if (lessons.isNotEmpty()) {
+                TextButton(onClick = { viewModel.selectAll() }) {
+                    Text("Select All")
+                }
+            }
+
             if (lessons.isEmpty()) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("No unpaid lessons")
+                    Text("No lessons")
                 }
             } else {
                 LazyColumn(modifier = Modifier.weight(1f)) {
                     items(lessons) { item ->
-                        LessonRow(item)
+                        LessonRow(
+                            item = item,
+                            checked = selectedLessons.contains(item.lesson.id),
+                            onToggle = { viewModel.toggleLesson(item.lesson.id) }
+                        )
                         Divider()
                     }
                 }
@@ -93,18 +113,23 @@ fun InvoiceScreen(
 }
 
 @Composable
-private fun LessonRow(item: LessonWithStudent) {
+private fun LessonRow(item: LessonWithStudent, checked: Boolean, onToggle: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Column {
             Text(item.student.getFullName(), style = MaterialTheme.typography.bodyMedium)
             Text(LocalDate.parse(item.lesson.date).format(DateTimeFormatter.ofPattern("dd MMM")))
         }
-        Text("€%.2f".format(item.calculateFee()))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("€%.2f".format(item.calculateFee()))
+            Spacer(Modifier.width(8.dp))
+            Checkbox(checked = checked, onCheckedChange = { onToggle() })
+        }
     }
 }
 
@@ -130,7 +155,7 @@ private fun DateField(label: String, date: LocalDate, onDate: (LocalDate) -> Uni
     )
 }
 
-fun createInvoicePdf(cacheDir: File, lessons: List<LessonWithStudent>): Uri {
+fun createInvoicePdf(directory: File, lessons: List<LessonWithStudent>): Uri {
     val pdf = android.graphics.pdf.PdfDocument()
     val pageInfo = android.graphics.pdf.PdfDocument.PageInfo.Builder(595, 842, 1).create()
     val page = pdf.startPage(pageInfo)
@@ -147,8 +172,32 @@ fun createInvoicePdf(cacheDir: File, lessons: List<LessonWithStudent>): Uri {
         y += 20
     }
     pdf.finishPage(page)
-    val file = File(cacheDir, "invoice-${System.currentTimeMillis()}.pdf")
+    if (!directory.exists()) directory.mkdirs()
+    val file = File(directory, "invoice-${System.currentTimeMillis()}.pdf")
     FileOutputStream(file).use { pdf.writeTo(it) }
     pdf.close()
     return Uri.fromFile(file)
+}
+
+@Composable
+private fun StudentDropdown(students: List<gr.tsambala.tutorbilling.data.model.Student>, selectedId: Long?, onSelect: (Long) -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
+        OutlinedTextField(
+            value = students.firstOrNull { it.id == selectedId }?.getFullName() ?: "",
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Student") },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth()
+        )
+        ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            students.forEach { student ->
+                DropdownMenuItem(text = { Text(student.getFullName()) }, onClick = {
+                    onSelect(student.id)
+                    expanded = false
+                })
+            }
+        }
+    }
 }

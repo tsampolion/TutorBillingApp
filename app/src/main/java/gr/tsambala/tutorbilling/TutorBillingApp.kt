@@ -97,12 +97,19 @@ fun TutorBillingApp(
         composable("revenue") {
             gr.tsambala.tutorbilling.ui.revenue.RevenueScreen(
                 onBack = { navController.popBackStack() },
-                onInvoice = { navController.navigate("invoice") }
+                onInvoice = { navController.navigate("invoice") },
+                onPastInvoices = { navController.navigate("pastInvoices") }
             )
         }
 
         composable("invoice") {
             gr.tsambala.tutorbilling.ui.invoice.InvoiceScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable("pastInvoices") {
+            gr.tsambala.tutorbilling.ui.invoice.PastInvoicesScreen(
                 onBack = { navController.popBackStack() }
             )
         }
