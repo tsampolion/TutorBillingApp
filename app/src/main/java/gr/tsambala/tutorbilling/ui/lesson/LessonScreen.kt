@@ -1,5 +1,6 @@
 package gr.tsambala.tutorbilling.ui.lesson
 
+import gr.tsambala.tutorbilling.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons

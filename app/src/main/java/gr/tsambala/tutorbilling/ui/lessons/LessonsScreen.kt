@@ -1,5 +1,6 @@
 package gr.tsambala.tutorbilling.ui.lessons
 
+import gr.tsambala.tutorbilling.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
