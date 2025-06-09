@@ -20,28 +20,21 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
 
 val MIGRATION_3_4 = object : Migration(3, 4) {
     override fun migrate(database: SupportSQLiteDatabase) {
-        // Add the isActive column only if it doesn't already exist. The
-        // PRAGMA table_info query returns all columns of the students table
-        // so we can safely check for the existence of the column before
-        // attempting to add it.
-
-        val columns = database.query("PRAGMA table_info(students)").use { cursor ->
-            val index = cursor.getColumnIndex("name")
-            generateSequence {
-                if (index == -1 || !cursor.moveToNext()) null else cursor.getString(index)
-            }.toList()
+        fun columnExists(table: String, column: String): Boolean {
+            return database.query("PRAGMA table_info($table)").use { cursor ->
+                val index = cursor.getColumnIndex("name")
+                generateSequence {
+                    if (index == -1 || !cursor.moveToNext()) null else cursor.getString(index)
+                }.toList()
+            }.contains(column)
         }
 
-        if ("isActive" !in columns) {
+        if (!columnExists("students", "isActive")) {
             try {
-                database.execSQL(
-                    "ALTER TABLE students ADD COLUMN isActive INTEGER NOT NULL DEFAULT 1"
-                )
+                database.execSQL("ALTER TABLE students ADD COLUMN isActive INTEGER NOT NULL DEFAULT 1")
             } catch (e: SQLiteException) {
-                // Ignore duplicate column errors that may occur if the column
-                // already exists for some reason.
+                // Ignore duplicate column errors that may occur if the column already exists
                 if (e.message?.contains("duplicate column", ignoreCase = true) != true) {
-
                     throw e
                 }
             }
