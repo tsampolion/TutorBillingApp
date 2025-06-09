@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.MenuAnchorType
@@ -93,7 +94,7 @@ fun InvoiceScreen(
 
             if (lessons.isEmpty()) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("No lessons")
+                    Text(stringResource(R.string.no_lessons_short))
                 }
             } else {
                 LazyColumn(modifier = Modifier.weight(1f)) {
