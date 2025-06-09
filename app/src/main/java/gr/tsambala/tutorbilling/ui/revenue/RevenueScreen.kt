@@ -18,6 +18,7 @@ import gr.tsambala.tutorbilling.utils.formatAsCurrency
 @Composable
 fun RevenueScreen(
     onBack: () -> Unit,
+    onInvoice: () -> Unit,
     viewModel: RevenueViewModel = hiltViewModel(),
     settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
@@ -25,9 +26,12 @@ fun RevenueScreen(
     val settings by settingsViewModel.settings.collectAsStateWithLifecycle()
 
     Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = onInvoice) { Text("Invoice") }
+        },
         topBar = {
             TopAppBar(
-                title = { Text("Students") },
+                title = { Text("Revenue") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")

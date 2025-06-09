@@ -248,6 +248,16 @@ fun LessonScreen(
                 maxLines = 5
             )
 
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = "Paid")
+                Spacer(Modifier.width(8.dp))
+                Switch(checked = uiState.isPaid, onCheckedChange = viewModel::updatePaid)
+            }
+
             Spacer(modifier = Modifier.weight(1f))
 
             Row(
