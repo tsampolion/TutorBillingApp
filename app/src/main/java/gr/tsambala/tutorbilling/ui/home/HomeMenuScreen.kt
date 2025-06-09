@@ -48,10 +48,24 @@ fun HomeMenuScreen(
                     onClick = onRevenue,
                     containerColor = MaterialTheme.colorScheme.secondary
                 ) { Icon(Icons.Default.BarChart, contentDescription = "Revenue") }
-                FloatingActionButton(
-                    onClick = { showFabMenu = !showFabMenu },
-                    containerColor = MaterialTheme.colorScheme.primary
-                ) { Icon(Icons.Default.Add, contentDescription = "Add") }
+                Box(
+                    modifier = Modifier.menuAnchor()
+                ) {
+                    FloatingActionButton(
+                        onClick = { showFabMenu = !showFabMenu },
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ) { Icon(Icons.Default.Add, contentDescription = "Add") }
+                    DropdownMenu(expanded = showFabMenu, onDismissRequest = { showFabMenu = false }) {
+                        DropdownMenuItem(text = { Text("Add Student") }, onClick = {
+                            showFabMenu = false
+                            onAddStudent()
+                        })
+                        DropdownMenuItem(text = { Text("Add Lesson") }, onClick = {
+                            showFabMenu = false
+                            onAddLesson()
+                        })
+                    }
+                }
 
                 FloatingActionButton(
                     onClick = onSettings,
