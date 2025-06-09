@@ -27,15 +27,24 @@ import java.time.format.FormatStyle
  * - 0.0 -> "€0.00"
  */
 fun Double.formatAsCurrency(symbol: String = "€", decimals: Int = 2): String {
-    // Clamp decimals to 0..2
+    // Clamp decimals to a sensible range to avoid invalid patterns
     val safeDecimals = decimals.coerceIn(0, 2)
 
     val symbols = DecimalFormatSymbols().apply { currencySymbol = symbol }
-    val pattern = "#,##0.${"0".repeat(safeDecimals)}"
+
+    val pattern = buildString {
+        append("#,##0")
+        if (safeDecimals > 0) {
+            append('.')
+            repeat(safeDecimals) { append('0') }
+        }
+    }
+
     val formatter = DecimalFormat(pattern, symbols).apply {
         minimumFractionDigits = safeDecimals
         maximumFractionDigits = safeDecimals
     }
+
     return formatter.format(this)
 }
 
