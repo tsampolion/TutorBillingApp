@@ -14,6 +14,7 @@ import android.util.Patterns
 import gr.tsambala.tutorbilling.utils.titleCase
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.temporal.WeekFields
 import java.util.Locale
@@ -190,7 +191,9 @@ class StudentViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             studentId?.toLongOrNull()?.let { id ->
                 studentDao.softDeleteStudent(id)
-                onDeleted()
+                withContext(Dispatchers.Main) {
+                    onDeleted()
+                }
             }
         }
     }
