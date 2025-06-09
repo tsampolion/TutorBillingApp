@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,6 +25,11 @@ class SearchViewModel @Inject constructor(
     val results: StateFlow<List<Student>> = _results.asStateFlow()
 
     init {
+        collectResults()
+    }
+
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    private fun collectResults() {
         viewModelScope.launch {
             query
                 .debounce(300)
