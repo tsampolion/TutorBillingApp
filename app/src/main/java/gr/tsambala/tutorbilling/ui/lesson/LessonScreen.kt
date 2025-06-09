@@ -1,31 +1,26 @@
 package gr.tsambala.tutorbilling.ui.lesson
 
-import androidx.compose.foundation.layout.*
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.foundation.text2.input.MenuAnchorType
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import gr.tsambala.tutorbilling.data.model.RateTypes
-import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -130,7 +125,7 @@ fun LessonScreen(
                         label = { Text("Student*") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
                         modifier = Modifier
-                            .menuAnchor(MenuAnchorType.Default, enabled = true)
+                            .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
                             .fillMaxWidth()
                     )
                     ExposedDropdownMenu(

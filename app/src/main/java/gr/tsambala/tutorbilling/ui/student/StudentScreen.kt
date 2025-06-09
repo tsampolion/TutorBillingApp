@@ -6,12 +6,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.foundation.text2.input.MenuAnchorType
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -497,7 +496,7 @@ private fun StudentEditForm(
                 label = { Text("Class*") },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
                 modifier = Modifier
-                    .menuAnchor(MenuAnchorType.Default, enabled = true)
+                    .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
                     .fillMaxWidth()
             )
             ExposedDropdownMenu(
