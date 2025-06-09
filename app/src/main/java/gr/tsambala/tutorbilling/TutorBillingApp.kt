@@ -29,8 +29,8 @@ fun TutorBillingApp(
                 onAddLesson = {
                     navController.navigate("lesson/null/new")
                 },
-                onSettings = { navController.navigate("settings") },
-                onSearch = { navController.navigate("search") }
+                onRevenue = { navController.navigate("revenue") },
+                onSettings = { navController.navigate("settings") }
             )
         }
 
@@ -39,7 +39,8 @@ fun TutorBillingApp(
                 onNavigateToStudent = { studentId ->
                     navController.navigate("student/$studentId")
                 },
-                onAddStudent = { navController.navigate("student/new") }
+                onAddStudent = { navController.navigate("student/new") },
+                onBack = { navController.popBackStack() }
             )
         }
 
@@ -89,6 +90,12 @@ fun TutorBillingApp(
 
         composable("settings") {
             gr.tsambala.tutorbilling.ui.settings.SettingsScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable("revenue") {
+            gr.tsambala.tutorbilling.ui.revenue.RevenueScreen(
                 onBack = { navController.popBackStack() }
             )
         }
