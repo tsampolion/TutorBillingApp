@@ -5,11 +5,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.text2.input.MenuAnchorType
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,7 +51,7 @@ fun StudentScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
@@ -253,7 +255,7 @@ private fun StudentDetailView(
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
-            Divider()
+            HorizontalDivider()
         }
 
         if (uiState.lessons.isEmpty()) {
@@ -285,7 +287,7 @@ private fun StudentDetailView(
                     onLessonClick = { onLessonClick(lesson.id) },
                     onDeleteClick = { viewModel.deleteLesson(lesson.id) }
                 )
-                Divider()
+                HorizontalDivider()
             }
         }
     }
@@ -495,7 +497,7 @@ private fun StudentEditForm(
                 label = { Text("Class*") },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
                 modifier = Modifier
-                    .menuAnchor()
+                    .menuAnchor(MenuAnchorType.Default, enabled = true)
                     .fillMaxWidth()
             )
             ExposedDropdownMenu(
