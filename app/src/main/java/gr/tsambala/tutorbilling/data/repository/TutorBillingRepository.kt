@@ -126,12 +126,7 @@ class TutorBillingRepository @Inject constructor(
      * Gets lessons with full student data for a specific student.
      */
     fun getLessonsWithStudentData(studentId: Long): Flow<List<LessonWithStudent>> {
-        return combine(
-            studentDao.getStudentById(studentId),
-            lessonDao.getLessonsByStudentId(studentId)
-        ) { student, lessons ->
-            student?.let { s -> lessons.map { LessonWithStudent(it, s) } } ?: emptyList()
-        }
+        return lessonDao.getLessonsWithStudentsByStudent(studentId)
     }
 
     // ===== Financial Calculations =====
