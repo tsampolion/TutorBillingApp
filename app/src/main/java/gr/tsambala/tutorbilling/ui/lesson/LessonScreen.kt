@@ -12,7 +12,6 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.material3.TimePicker
-import androidx.compose.material3.TimePickerDialog
 import gr.tsambala.tutorbilling.ui.components.ClickableReadOnlyField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -195,21 +194,27 @@ fun LessonScreen(
                 label = { Text("Start Time") },
             )
             if (showTimePicker) {
-                TimePickerDialog(
+                AlertDialog(
                     onDismissRequest = { showTimePicker = false },
                     confirmButton = {
                         TextButton(onClick = {
-                            viewModel.updateStartTime("%02d:%02d".format(timePickerState.hour, timePickerState.minute))
+                            viewModel.updateStartTime(
+                                "%02d:%02d".format(
+                                    timePickerState.hour,
+                                    timePickerState.minute
+                                )
+                            )
                             showTimePicker = false
                         }) { Text("OK") }
                     },
                     dismissButton = {
                         TextButton(onClick = { showTimePicker = false }) { Text("Cancel") }
                     },
-                    title = { Text("Select time") }
-                ) {
-                    TimePicker(state = timePickerState)
-                }
+                    title = { Text("Select time") },
+                    text = {
+                        TimePicker(state = timePickerState)
+                    }
+                )
             }
 
             if (uiState.studentRateType == RateTypes.HOURLY) {
