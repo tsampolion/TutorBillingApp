@@ -83,7 +83,8 @@ class LessonViewModel @Inject constructor(
                                 startTime = l.startTime,
                                 durationMinutes = l.durationMinutes.toString(),
                                 notes = l.notes ?: "",
-                                isEditMode = false
+                                isEditMode = false,
+                                isPaid = l.isPaid
                             )
                         }
                     }
@@ -127,6 +128,10 @@ class LessonViewModel @Inject constructor(
         _uiState.update { it.copy(notes = notes) }
     }
 
+    fun updatePaid(paid: Boolean) {
+        _uiState.update { it.copy(isPaid = paid) }
+    }
+
     private fun isValidDate(value: String): Boolean = try {
         LocalDate.parse(value, dateFormatter)
         true
@@ -167,7 +172,8 @@ class LessonViewModel @Inject constructor(
                         date = LocalDate.parse(state.date, dateFormatter).toString(),
                         startTime = state.startTime,
                         durationMinutes = duration,
-                        notes = state.notes.ifBlank { null }
+                        notes = state.notes.ifBlank { null },
+                        isPaid = state.isPaid
                     )
                     lessonDao.insert(lesson)
                 } else {
@@ -178,7 +184,8 @@ class LessonViewModel @Inject constructor(
                             date = LocalDate.parse(state.date, dateFormatter).toString(),
                             startTime = state.startTime,
                             durationMinutes = duration,
-                            notes = state.notes.ifBlank { null }
+                            notes = state.notes.ifBlank { null },
+                            isPaid = state.isPaid
                         )
                         lessonDao.update(lesson)
                     }
@@ -220,5 +227,6 @@ data class LessonUiState(
     val studentRate: Double = 0.0,
     val availableStudents: List<Student> = emptyList(),
     val selectedStudentId: Long? = null,
-    val isEditMode: Boolean = true
+    val isEditMode: Boolean = true,
+    val isPaid: Boolean = false
 )

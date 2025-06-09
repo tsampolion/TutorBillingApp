@@ -40,6 +40,12 @@ class LessonsViewModel @Inject constructor(
             }
         }
     }
+
+    fun updatePaid(lessonId: Long, paid: Boolean) {
+        viewModelScope.launch {
+            lessonDao.updatePaidStatus(listOf(lessonId), paid)
+        }
+    }
 }
 
 data class LessonsUiState(
