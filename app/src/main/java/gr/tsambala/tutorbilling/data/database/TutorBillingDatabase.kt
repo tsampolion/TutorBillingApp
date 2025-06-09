@@ -10,7 +10,7 @@ import gr.tsambala.tutorbilling.data.model.Lesson
 
 @Database(
     entities = [Student::class, Lesson::class],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 @TypeConverters(DateTimeConverters::class)
