@@ -19,6 +19,7 @@ import gr.tsambala.tutorbilling.utils.formatAsCurrency
 fun RevenueScreen(
     onBack: () -> Unit,
     onInvoice: () -> Unit,
+    onPastInvoices: () -> Unit,
     viewModel: RevenueViewModel = hiltViewModel(),
     settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
@@ -26,9 +27,6 @@ fun RevenueScreen(
     val settings by settingsViewModel.settings.collectAsStateWithLifecycle()
 
     Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(onClick = onInvoice) { Text("Invoice") }
-        },
         topBar = {
             TopAppBar(
                 title = { Text("Revenue") },
@@ -82,6 +80,45 @@ fun RevenueScreen(
                     modifier = Modifier.weight(1f),
                     containerColor = MaterialTheme.colorScheme.tertiaryContainer
                 )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                MetricTile(
+                    label = "Unpaid",
+                    value = uiState.monthlyUnpaid.formatAsCurrency(
+                        settings.currencySymbol,
+                        settings.roundingDecimals
+                    ),
+                    modifier = Modifier.weight(1f),
+                    containerColor = MaterialTheme.colorScheme.errorContainer
+                )
+                MetricTile(
+                    label = "Paid",
+                    value = uiState.monthlyPaid.formatAsCurrency(
+                        settings.currencySymbol,
+                        settings.roundingDecimals
+                    ),
+                    modifier = Modifier.weight(1f),
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(
+                    onClick = onInvoice,
+                    modifier = Modifier.weight(1f)
+                ) { Text("New Invoice") }
+                OutlinedButton(
+                    onClick = onPastInvoices,
+                    modifier = Modifier.weight(1f)
+                ) { Text("Past Invoices") }
             }
         }
     }

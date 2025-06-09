@@ -61,10 +61,27 @@ class RevenueViewModel @Inject constructor(
                     lesson.calculateFee(student)
                 }
 
+                val (paidTotal, unpaidTotal) = lessons.filter { lesson ->
+                    val date = LocalDate.parse(lesson.date)
+                    !date.isBefore(monthStart) && !date.isAfter(monthEnd)
+                }.partition { it.isPaid }.let { (paid, unpaid) ->
+                    val paidSum = paid.sumOf { l ->
+                        val s = studentMap[l.studentId] ?: return@sumOf 0.0
+                        l.calculateFee(s)
+                    }
+                    val unpaidSum = unpaid.sumOf { l ->
+                        val s = studentMap[l.studentId] ?: return@sumOf 0.0
+                        l.calculateFee(s)
+                    }
+                    paidSum to unpaidSum
+                }
+
                 RevenueUiState(
                     dailyRevenue = dayTotal,
                     weeklyRevenue = weekTotal,
-                    monthlyRevenue = monthTotal
+                    monthlyRevenue = monthTotal,
+                    monthlyPaid = paidTotal,
+                    monthlyUnpaid = unpaidTotal
                 )
             }.collect { state ->
                 _uiState.value = state
@@ -76,5 +93,7 @@ class RevenueViewModel @Inject constructor(
 data class RevenueUiState(
     val dailyRevenue: Double = 0.0,
     val weeklyRevenue: Double = 0.0,
-    val monthlyRevenue: Double = 0.0
+    val monthlyRevenue: Double = 0.0,
+    val monthlyPaid: Double = 0.0,
+    val monthlyUnpaid: Double = 0.0
 )
