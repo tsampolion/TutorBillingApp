@@ -49,15 +49,12 @@ class InvoiceViewModel @Inject constructor(
                         _lessons.value = emptyList()
                         _selectedLessons.value = emptySet()
                     } else {
-                        combine(
-                            lessonDao.getLessonsByStudentAndDateRange(id, start.toString(), end.toString()),
-                            studentDao.getStudentById(id)
-                        ) { lessons, student ->
-                            student?.let { st -> lessons.map { LessonWithStudent(it, st) } } ?: emptyList()
-                        }.collect { list ->
-                            _lessons.value = list
-                            _selectedLessons.value = emptySet()
-                        }
+                        lessonDao
+                            .getLessonsWithStudentsByStudentAndDateRange(id, start.toString(), end.toString())
+                            .collect { list ->
+                                _lessons.value = list
+                                _selectedLessons.value = emptySet()
+                            }
                     }
                 }
         }
