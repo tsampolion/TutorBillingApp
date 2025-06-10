@@ -26,6 +26,7 @@ import androidx.compose.material3.MenuAnchorType
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.core.content.FileProvider
+import androidx.core.net.toFile
 import gr.tsambala.tutorbilling.R
 import gr.tsambala.tutorbilling.data.database.LessonWithStudent
 import gr.tsambala.tutorbilling.ui.components.ClickableReadOnlyField
@@ -71,9 +72,10 @@ fun InvoiceScreen(
                     onClick = {
                         val selected = lessons.filter { selectedLessons.contains(it.lesson.id) }
                         val uri = createInvoicePdf(File(context.filesDir, "invoices"), selected)
+                        val pdfFile = uri.toFile()
                         val share = Intent(Intent.ACTION_SEND).apply {
                             type = "application/pdf"
-                            putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(context, "${context.packageName}.provider", File(uri.path!!)))
+                            putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(context, "${context.packageName}.provider", pdfFile))
                             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                         }
                         context.startActivity(Intent.createChooser(share, null))
