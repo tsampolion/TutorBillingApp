@@ -1,92 +1,44 @@
+// AppUtils.kt - Fixed currency formatting
 package gr.tsambala.tutorbilling.utils
 
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
+import java.text.NumberFormat
+import java.util.Locale
 
 /**
- * AppUtils contains utility functions and extension methods used throughout the app.
- *
- * These are like the tools in your toolbox - small, reusable pieces of functionality
- * that make the rest of your code cleaner and more consistent. By centralizing
- * these utilities, we ensure consistent formatting and behavior across the app.
+ * Formats a Double value as currency with Euro symbol
+ * @param amount The amount to format
+ * @return Formatted currency string (e.g., "€ 12.34")
  */
-
-// ===== Currency Formatting =====
-
-/**
- * Formats a Double as currency with the Euro symbol.
- * This ensures all monetary values are displayed consistently.
- *
- * Examples:
- * - 25.5 -> "€25.50"
- * - 100.0 -> "€100.00"
- * - 0.0 -> "€0.00"
- */
-fun Double.formatAsCurrency(symbol: String = "€", decimals: Int = 2): String {
-    val safeDecimals = decimals.coerceIn(0, 2)
-    val symbols = DecimalFormatSymbols().apply { currencySymbol = symbol }
-    val pattern = "#,##0.${"0".repeat(safeDecimals)}"
-    val formatter = DecimalFormat(pattern, symbols).apply {
-        minimumFractionDigits = safeDecimals
-        maximumFractionDigits = safeDecimals
+fun formatAsCurrency(amount: Double): String {
+    return try {
+        // Use NumberFormat for proper currency formatting
+        val format = NumberFormat.getCurrencyInstance(Locale("el", "GR"))
+        format.currency = java.util.Currency.getInstance("EUR")
+        format.format(amount)
+    } catch (e: Exception) {
+        // Fallback to simple formatting if NumberFormat fails
+        "€ %.2f".format(Locale.US, amount)
     }
-    return formatter.format(this)
-}
-
-// ===== Date Formatting =====
-
-/**
- * Formats a LocalDate for display using localized formatting.
- * This respects the user's locale settings for date display.
- *
- * Examples (in US locale):
- * - 2024-03-15 -> "Mar 15, 2024"
- * - 2024-12-25 -> "Dec 25, 2024"
- */
-fun LocalDate.formatForDisplay(): String {
-    return format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
-}
-
-// ===== Time Formatting =====
-
-/**
- * Formats a LocalTime for display in 24-hour format.
- *
- * Examples:
- * - 09:30 -> "09:30"
- * - 14:45 -> "14:45"
- * - 00:00 -> "00:00"
- */
-fun LocalTime.formatForDisplay(): String {
-    return format(DateTimeFormatter.ofPattern("HH:mm"))
 }
 
 /**
- * Formats a LocalTime in 12-hour format with AM/PM.
- * Some users prefer this format.
- *
- * Examples:
- * - 09:30 -> "9:30 AM"
- * - 14:45 -> "2:45 PM"
- * - 00:00 -> "12:00 AM"
+ * Alternative: Simple Euro formatting without NumberFormat
  */
-fun LocalTime.format12Hour(): String {
-    return format(DateTimeFormatter.ofPattern("h:mm a"))
+fun formatAsEuro(amount: Double): String {
+    return "€ %.2f".format(Locale.US, amount)
 }
 
 /**
- * Capitalizes the first letter of each word.
- * Useful for formatting names.
- *
- * Example:
- * - "john smith" -> "John Smith"
+ * Formats minutes as hours and minutes string
+ * @param minutes Total minutes
+ * @return Formatted string (e.g., "2h 30m")
  */
-fun String.titleCase(): String {
-    return split(" ").joinToString(" ") { word ->
-        word.lowercase().replaceFirstChar { it.uppercase() }
+fun formatDuration(minutes: Int): String {
+    val hours = minutes / 60
+    val mins = minutes % 60
+    return when {
+        hours > 0 && mins > 0 -> "${hours}h ${mins}m"
+        hours > 0 -> "${hours}h"
+        else -> "${mins}m"
     }
 }
