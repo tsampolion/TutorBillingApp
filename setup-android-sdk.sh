@@ -10,12 +10,28 @@ NDK_VERSION="27.0.11718014"       # latest LTS
 CMAKE_VERSION="3.28.0"
 # --------------------------------------------------
 
-echo ">>>> Installing OS packages"
+e# --- 1. Make sure apt has the latest index -----------------------------------
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
+
+# --- 2. (Ubuntu only) turn on the “universe” repo so Java 21 & graphics libs are visible
+if grep -qi ubuntu /etc/os-release ; then
+  add-apt-repository -y universe            # needs software-properties-common
+  apt-get update -y
+fi
+
+# --- 3. Choose a JDK that actually exists in the repo ------------------------
+# Prefer 21 if available; otherwise fall back to 17.
+if apt-cache show openjdk-21-jdk > /dev/null 2>&1 ; then
+  JDK_PACKAGE=openjdk-21-jdk
+else
+  JDK_PACKAGE=openjdk-17-jdk   # Debian 12, Ubuntu LTS work everywhere
+fi
+
+# --- 4. Install base packages ------------------------------------------------
 apt-get install -y --no-install-recommends \
-    openjdk-21-jdk \             # Java 21 LTS :contentReference[oaicite:0]{index=0}
-    curl unzip git build-essential libglu1-mesa
+  "$JDK_PACKAGE" \
+  curl unzip git build-essential libglu1-mesa
 
 echo ">>>> Fetching Android command-line tools r${CMDLINE_VERSION}"
 mkdir -p "${ANDROID_SDK_ROOT}/cmdline-tools"
