@@ -11,7 +11,14 @@ CMDLINE_VERSION="11076708"        # r12b (May 2025 release notes)
 API_LEVEL="34"                    # Android 14
 BUILD_TOOLS="35.0.0"
 NDK_VERSION="27.0.11718014"       # NDK 27 LTS
-CMAKE_VERSION="3.28.0"
+# Prefer 3.22.1 (newest in repo); fall back to 3.18.1 or 3.10.2 if needed
+if sdkmanager --list | grep -q "cmake;3.22.1" ; then
+    CMAKE_VERSION="3.22.1"
+elif sdkmanager --list | grep -q "cmake;3.18.1" ; then
+    CMAKE_VERSION="3.18.1"
+else
+    CMAKE_VERSION="3.10.2.4988404"      # last-ditch legacy
+fi
 # ------------------------------------------------------------------------------
 
 echo ">>>> 1. Refreshing APT index"
