@@ -12,7 +12,7 @@ CMDLINE_VERSION="9477386"         # This is a known working version
 API_LEVEL="34"                    # Android 14
 BUILD_TOOLS="35.0.0"
 NDK_VERSION="27.0.11718014"       # NDK 27 LTS
-CMAKE_VERSION="3.28.0"
+CMAKE_VERSION=""                  # Will be detected dynamically after sdkmanager is installed
 # ------------------------------------------------------------------------------
 
 echo ">>>> 1. Refreshing APT index"
@@ -125,17 +125,38 @@ echo ">>>> 7. Installing SDK platforms & tools (grab a coffee ☕)"
 # First, try to update repository info
 "${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager" --list > /dev/null 2>&1 || true
 
+# Detect available CMake versions
+echo "Detecting available CMake versions..."
+if "${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager" --list 2>/dev/null | grep -q "cmake;3.22.1" ; then
+    CMAKE_VERSION="3.22.1"
+    echo "Found CMake 3.22.1"
+elif "${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager" --list 2>/dev/null | grep -q "cmake;3.18.1" ; then
+    CMAKE_VERSION="3.18.1"
+    echo "Found CMake 3.18.1"
+else
+    CMAKE_VERSION="3.10.2.4988404"  # last-ditch legacy
+    echo "Using legacy CMake 3.10.2"
+fi
+
 # Install packages
 yes | "${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager" \
     "platform-tools" \
     "platforms;android-${API_LEVEL}" \
     "build-tools;${BUILD_TOOLS}" \
     "ndk;${NDK_VERSION}" \
-    "cmake;${CMAKE_VERSION}" \
     "extras;android;m2repository" \
     "extras;google;m2repository" || {
     echo "WARNING: Some packages may have failed to install"
 }
+
+# Try to install CMake separately as it might fail
+if [ -n "${CMAKE_VERSION}" ]; then
+    echo "Installing CMake ${CMAKE_VERSION}..."
+    yes | "${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager" \
+        "cmake;${CMAKE_VERSION}" || {
+        echo "WARNING: CMake ${CMAKE_VERSION} installation failed"
+    }
+fi
 
 echo ">>>> 8. Accepting Android licenses"
 yes | "${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager" --licenses || true
