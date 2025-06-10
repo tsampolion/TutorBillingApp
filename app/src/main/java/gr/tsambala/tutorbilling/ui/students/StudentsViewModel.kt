@@ -8,12 +8,9 @@ import gr.tsambala.tutorbilling.data.model.Student
 import gr.tsambala.tutorbilling.data.model.StudentWithEarnings
 import gr.tsambala.tutorbilling.data.dao.StudentDao
 import gr.tsambala.tutorbilling.data.dao.LessonDao
-import gr.tsambala.tutorbilling.data.model.calculateFee
+import gr.tsambala.tutorbilling.utils.EarningsCalculator
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.temporal.WeekFields
-import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -56,31 +53,9 @@ class StudentsViewModel @Inject constructor(
                 }
                 filtered = if (ascending) filtered.sortedWith(compareBy({ it.name }, { it.surname }))
                 else filtered.sortedWith(compareByDescending<Student> { it.name }.thenByDescending { it.surname })
-                val today = LocalDate.now()
-                val weekFields = WeekFields.of(Locale.getDefault())
-                val currentWeek = today.get(weekFields.weekOfWeekBasedYear())
-                val currentMonth = today.monthValue
-                val currentYear = today.year
 
                 filtered.map { student ->
-                val studentLessons = lessons.filter { it.studentId == student.id }
-
-                    val weekEarnings = studentLessons
-                        .filter { lesson ->
-                            val lessonDate = LocalDate.parse(lesson.date)
-                            lessonDate.year == currentYear &&
-                                    lessonDate.get(weekFields.weekOfWeekBasedYear()) == currentWeek
-                        }
-                        .sumOf { it.calculateFee(student) }
-
-                    val monthEarnings = studentLessons
-                        .filter { lesson ->
-                            val lessonDate = LocalDate.parse(lesson.date)
-                            lessonDate.year == currentYear &&
-                                    lessonDate.monthValue == currentMonth
-                        }
-                        .sumOf { it.calculateFee(student) }
-
+                    val (weekEarnings, monthEarnings) = EarningsCalculator.calculate(student, lessons)
                     StudentWithEarnings(
                         student = student,
                         weekEarnings = weekEarnings,

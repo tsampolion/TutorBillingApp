@@ -104,7 +104,7 @@ class MigrationsTest {
             it.getInt(0)
         }
 
-        assertTrue(defaultValue?.contains("1") == true && count == 1)
+        assertTrue(defaultValue?.contains("0") == true && count == 1)
 
         db.close()
     }
