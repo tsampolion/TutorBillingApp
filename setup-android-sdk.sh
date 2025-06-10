@@ -10,7 +10,7 @@ NDK_VERSION="27.0.11718014"       # latest LTS
 CMAKE_VERSION="3.28.0"
 # --------------------------------------------------
 
-e# --- 1. Make sure apt has the latest index -----------------------------------
+# --- 1. Make sure apt has the latest index -----------------------------------
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
 
