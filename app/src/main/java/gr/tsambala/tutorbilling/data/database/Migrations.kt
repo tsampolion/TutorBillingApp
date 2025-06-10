@@ -61,7 +61,7 @@ val MIGRATION_5_6 = object : Migration(5, 6) {
                 "startTime TEXT NOT NULL," +
                 "durationMinutes INTEGER NOT NULL," +
                 "notes TEXT," +
-                "isPaid INTEGER NOT NULL DEFAULT 1," +
+                "isPaid INTEGER NOT NULL DEFAULT 0," +
                 "FOREIGN KEY(studentId) REFERENCES students(id) ON DELETE CASCADE)"
         )
 
