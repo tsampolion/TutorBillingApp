@@ -90,8 +90,8 @@ fun TutorBillingApp() {
             val studentId = backStackEntry.arguments?.getLong("studentId") ?: 0L
 
             LessonScreen(
-                studentId = studentId.toString(),
-                lessonId = if (lessonId == 0L) "new" else lessonId.toString(),
+                studentId = studentId.takeIf { it != 0L },
+                lessonId = lessonId,
                 onNavigateBack = { navController.popBackStack() },
                 viewModel = viewModel
             )

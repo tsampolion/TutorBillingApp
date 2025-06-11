@@ -29,8 +29,8 @@ import java.time.format.DateTimeFormatter
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LessonScreen(
-    studentId: String?,
-    lessonId: String?,
+    studentId: Long?,
+    lessonId: Long,
     onNavigateBack: () -> Unit,
     viewModel: LessonViewModel = hiltViewModel()
 ) {
@@ -41,7 +41,7 @@ fun LessonScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = if (lessonId == "new") "Add Lesson" else "Edit Lesson"
+                        text = if (lessonId == 0L) "Add Lesson" else "Edit Lesson"
                     )
                 },
                 navigationIcon = {
@@ -51,7 +51,7 @@ fun LessonScreen(
                 },
                 actions = {
                     var showDelete by remember { mutableStateOf(false) }
-                    if (lessonId != "new") {
+                    if (lessonId != 0L) {
                         IconButton(onClick = { showDelete = true }) {
                             Icon(Icons.Default.Delete, contentDescription = "Delete")
                         }
