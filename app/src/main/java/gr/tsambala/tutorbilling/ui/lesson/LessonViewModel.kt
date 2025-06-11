@@ -158,6 +158,7 @@ class LessonViewModel @Inject constructor(
             var duration = state.durationMinutes.toIntOrNull() ?: 0
             if (duration <= 0) duration = 60
             if (duration < 60) duration = 60
+            _uiState.update { it.copy(durationMinutes = duration.toString()) }
             if (!isFormValid()) return@launch
 
             val sId = state.selectedStudentId
