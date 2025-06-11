@@ -1,4 +1,4 @@
-// TutorDatabase.kt - Fixed database configuration
+// TutorBillingDatabase.kt - Fixed database configuration
 package gr.tsambala.tutorbilling.data.database
 
 import android.content.Context
@@ -15,23 +15,29 @@ import gr.tsambala.tutorbilling.data.model.Student
     version = 7, // Current version
     exportSchema = true
 )
-abstract class TutorDatabase : RoomDatabase() {
+abstract class TutorBillingDatabase : RoomDatabase() {
     abstract fun studentDao(): StudentDao
     abstract fun lessonDao(): LessonDao
 
     companion object {
         @Volatile
-        private var INSTANCE: TutorDatabase? = null
+        private var INSTANCE: TutorBillingDatabase? = null
 
-        fun getDatabase(context: Context): TutorDatabase {
+        fun getDatabase(context: Context): TutorBillingDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    TutorDatabase::class.java,
-                    "tutor_database"
+                    TutorBillingDatabase::class.java,
+                    DatabaseConstants.DATABASE_NAME
                 )
                     // Add all migrations
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                    .addMigrations(
+                        MIGRATION_1_2,
+                        MIGRATION_2_3,
+                        MIGRATION_3_4,
+                        MIGRATION_4_5,
+                        MIGRATION_5_6
+                    )
                     // Fallback to destructive migration only in debug builds
                     .fallbackToDestructiveMigration()
                     .build()
