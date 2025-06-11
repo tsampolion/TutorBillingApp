@@ -44,7 +44,7 @@ fun StudentScreen(
                 title = {
                     Text(
                         text = when {
-                            uiState.isEditMode && studentId == "new" -> "Add Student"
+                            uiState.isEditMode && viewModel.studentId == 0L -> "Add Student"
                             uiState.isEditMode -> "Edit Student"
                             else -> uiState.name
                         }
@@ -56,7 +56,7 @@ fun StudentScreen(
                     }
                 },
                 actions = {
-                    if (!uiState.isEditMode && studentId != "new") {
+                    if (!uiState.isEditMode && viewModel.studentId != 0L) {
                         IconButton(onClick = { viewModel.toggleEditMode() }) {
                             Icon(Icons.Default.Edit, contentDescription = "Edit")
                         }
@@ -72,7 +72,7 @@ fun StudentScreen(
             )
         },
         floatingActionButton = {
-            if (!uiState.isEditMode && studentId != "new") {
+            if (!uiState.isEditMode && viewModel.studentId != 0L) {
                 FloatingActionButton(onClick = onAddLesson) {
                     Icon(Icons.Default.Add, contentDescription = "Add Lesson")
                 }
@@ -85,12 +85,12 @@ fun StudentScreen(
                 viewModel = viewModel,
                 onSave = {
                     viewModel.saveStudent()
-                    if (studentId == "new") {
+                    if (viewModel.studentId == 0L) {
                         onNavigateBack()
                     }
                 },
                 onCancel = {
-                    if (studentId == "new") {
+                    if (viewModel.studentId == 0L) {
                         onNavigateBack()
                     } else {
                         viewModel.toggleEditMode()
