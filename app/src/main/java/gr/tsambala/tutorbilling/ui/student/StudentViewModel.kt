@@ -24,7 +24,7 @@ class StudentViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val studentId: Long = savedStateHandle.get<Long>("studentId") ?: 0L
+    val studentId: Long = savedStateHandle.get<Long>("studentId") ?: 0L
 
     // UI State
     private val _uiState = MutableStateFlow(StudentUiState(isEditMode = studentId == 0L))
