@@ -2,6 +2,7 @@
 package gr.tsambala.tutorbilling.data.database
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -14,7 +15,15 @@ import gr.tsambala.tutorbilling.data.model.Student
 @Database(
     entities = [Student::class, Lesson::class],
     version = 7, // Current version
-    exportSchema = true
+    exportSchema = true,
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2),
+        AutoMigration(from = 2, to = 3),
+        AutoMigration(from = 3, to = 4),
+        AutoMigration(from = 4, to = 5),
+        AutoMigration(from = 5, to = 6),
+        AutoMigration(from = 6, to = 7)
+    ]
 )
 abstract class TutorBillingDatabase : RoomDatabase() {
     abstract fun studentDao(): StudentDao
@@ -31,14 +40,6 @@ abstract class TutorBillingDatabase : RoomDatabase() {
                     TutorBillingDatabase::class.java,
                     DatabaseConstants.DATABASE_NAME
                 )
-                    // Add all migrations
-                    .addMigrations(
-                        MIGRATION_1_2,
-                        MIGRATION_2_3,
-                        MIGRATION_3_4,
-                        MIGRATION_4_5,
-                        MIGRATION_5_6
-                    )
                     // Fallback to destructive migration only in debug builds
                     .apply {
                         if (BuildConfig.DEBUG) {
