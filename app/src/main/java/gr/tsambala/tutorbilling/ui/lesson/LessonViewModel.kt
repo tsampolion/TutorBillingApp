@@ -33,6 +33,13 @@ class LessonViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(LessonUiState())
     val uiState: StateFlow<LessonUiState> = _uiState.asStateFlow()
 
+    // Navigation callback
+    private var onNavigateBack: (() -> Unit)? = null
+
+    fun setNavigationCallback(callback: () -> Unit) {
+        onNavigateBack = callback
+    }
+
     init {
         loadStudentInfo()
         if (lessonId != null && lessonId != 0L) {
@@ -190,15 +197,22 @@ class LessonViewModel @Inject constructor(
             }
 
             _uiState.update { it.copy(isEditMode = false) }
+
+            // Navigate back on main thread
+            withContext(Dispatchers.Main) {
+                onNavigateBack?.invoke()
+            }
         }
     }
 
-    fun deleteLesson(onDeleted: () -> Unit) {
+    fun deleteLesson() {
         viewModelScope.launch(Dispatchers.IO) {
             lessonId?.takeIf { it != 0L }?.let { id ->
                 lessonDao.deleteById(id)
+
+                // Navigate back on main thread
                 withContext(Dispatchers.Main) {
-                    onDeleted()
+                    onNavigateBack?.invoke()
                 }
             }
         }

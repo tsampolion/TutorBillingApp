@@ -86,6 +86,13 @@ fun TutorBillingApp() {
         ) { backStackEntry ->
             val viewModel: LessonViewModel = hiltViewModel()
 
+            // Set up navigation callback
+            LaunchedEffect(Unit) {
+                viewModel.setNavigationCallback {
+                    navController.popBackStack()
+                }
+            }
+
             val lessonId = backStackEntry.arguments?.getLong("lessonId") ?: 0L
             val studentId = backStackEntry.arguments?.getLong("studentId") ?: 0L
 
