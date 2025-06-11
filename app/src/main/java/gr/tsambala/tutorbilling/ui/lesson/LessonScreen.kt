@@ -13,6 +13,7 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.material3.TimePicker
 import gr.tsambala.tutorbilling.ui.components.ClickableReadOnlyField
+import gr.tsambala.tutorbilling.utils.getFullName
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -280,7 +281,7 @@ fun LessonScreen(
                 Button(
                     onClick = {
                         viewModel.saveLesson()
-                        if (lessonId == 0L) {
+                        if (lessonId == "new") {
                             onNavigateBack()
                         }
                     },

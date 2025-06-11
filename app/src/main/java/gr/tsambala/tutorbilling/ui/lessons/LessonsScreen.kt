@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import gr.tsambala.tutorbilling.data.database.LessonWithStudent
+import gr.tsambala.tutorbilling.utils.getFullName
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
