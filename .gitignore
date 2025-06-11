@@ -1,118 +1,16 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-
-# C extensions
-*.so
-
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-pip-wheel-metadata/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-
-# PyInstaller
-# Usually these files are written by a python script from a template
-# before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-media/ # If you store user-uploaded files here and don't want to track them directly
-static_collected/ # Or whatever your STATIC_ROOT is, if you run collectstatic
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# IDE / Editor specific
-.idea/
-.vscode/  # Consider committing .vscode/settings.json if you want to share editor settings
-*.project
-*.pydevproject
-.project
-.settings/
-*.sublime-workspace
-*.DS_Store
-Thumbs.db
-
-# Secrets - BE VERY CAREFUL WITH THESE
-# Ensure any file containing actual secrets is listed here
-# For example:
-# credentials.json
-# secrets.yaml
-# .env files containing API keys or passwords (already covered above but good to re-emphasize)
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# Celery
-celerybeat-schedule.*
-
-# Backup files
-*.bak
-*.swp
-*.swo
-
-# Gradle files
+# Android/Gradle build files
 .gradle/
 build/
 # local.properties is often used for SDK location or sensitive keys in Android
 local.properties
 
-# IntelliJ IDEA specific
+# IDE / Editor specific
 .idea/
+.vscode/  # Consider committing .vscode/settings.json if you want to share editor settings
+*.project
+.project
+.settings/
+*.sublime-workspace
 *.iml
 *.ipr
 *.iws
@@ -120,14 +18,13 @@ out/ # Default output directory for IntelliJ
 
 # Kotlin specific (if applicable beyond Android/Gradle)
 .kotlin/
-# Or more specifically if only sessions:
 # .kotlin/sessions/
 
-# Android Studio / Mobile specific (if it's an Android app)
+# Android Studio / Mobile specific
 *.apk
 *.aab
 *.ap_
 *.aar
 *.dex
 captures/
-.DS_Store # if you're on macOS
+
