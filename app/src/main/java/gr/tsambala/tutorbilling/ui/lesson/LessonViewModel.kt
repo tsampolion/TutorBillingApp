@@ -12,6 +12,7 @@ import gr.tsambala.tutorbilling.data.model.RateTypes
 import gr.tsambala.tutorbilling.data.model.Student
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -200,7 +201,9 @@ class LessonViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             lessonId?.toLongOrNull()?.let { id ->
                 lessonDao.deleteById(id)
-                onDeleted()
+                withContext(Dispatchers.Main) {
+                    onDeleted()
+                }
             }
         }
     }
