@@ -30,6 +30,7 @@ import androidx.core.net.toFile
 import gr.tsambala.tutorbilling.R
 import gr.tsambala.tutorbilling.data.database.LessonWithStudent
 import gr.tsambala.tutorbilling.ui.components.ClickableReadOnlyField
+import gr.tsambala.tutorbilling.utils.getFullName
 import java.io.File
 import java.io.FileOutputStream
 import java.time.LocalDate
