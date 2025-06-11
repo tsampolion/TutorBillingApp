@@ -28,6 +28,8 @@ android {
     }
 
     buildFeatures {
+        // Explicitly generate BuildConfig to access BuildConfig.DEBUG
+        buildConfig true
         compose true
     }
 
