@@ -1,0 +1,33 @@
+# TutorBillingApp
+
+TutorBillingApp is an Android application for managing tutoring sessions and invoices. It uses Jetpack Compose and Room for local data storage.
+
+## Prerequisites
+
+- **JDK 17 or newer** installed and available on your `PATH`.
+- **Android SDK** with API level 35 and build tools. The repository provides a helper script that installs the required SDK packages.
+
+## Setting up the Android SDK
+
+Run the setup script from the project root:
+
+```bash
+bash setup-android-sdk.sh
+source ~/.bashrc   # or the profile file printed by the script
+```
+
+This downloads the Android command line tools and creates a `local.properties` file pointing Gradle to the SDK location.
+
+## Building the project
+
+Use the Gradle wrapper to build and test the app:
+
+```bash
+./gradlew assemble   # compiles all modules
+./gradlew test       # runs unit tests
+```
+
+## Modules overview
+
+- **app** – main Compose application module containing UI, Hilt dependency injection and Room database code.
+
