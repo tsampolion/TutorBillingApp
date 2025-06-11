@@ -30,7 +30,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun LessonScreen(
     studentId: Long?,
-    lessonId: Long,
+    lessonId: String,
     onNavigateBack: () -> Unit,
     viewModel: LessonViewModel = hiltViewModel()
 ) {
@@ -41,7 +41,7 @@ fun LessonScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = if (lessonId == 0L) "Add Lesson" else "Edit Lesson"
+                        text = if (lessonId == "new") "Add Lesson" else "Edit Lesson"
                     )
                 },
                 navigationIcon = {
@@ -51,7 +51,7 @@ fun LessonScreen(
                 },
                 actions = {
                     var showDelete by remember { mutableStateOf(false) }
-                    if (lessonId != 0L) {
+                    if (lessonId != "new") {
                         IconButton(onClick = { showDelete = true }) {
                             Icon(Icons.Default.Delete, contentDescription = "Delete")
                         }
