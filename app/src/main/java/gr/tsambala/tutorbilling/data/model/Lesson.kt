@@ -1,6 +1,7 @@
 // Lesson.kt - Fixed data model with proper defaults
 package gr.tsambala.tutorbilling.data.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -31,6 +32,7 @@ data class Lesson(
     val startTime: String, // Store as time string (HH:mm)
     val durationMinutes: Int,
     val notes: String? = null,
+    @ColumnInfo(defaultValue = "0")
     val isPaid: Boolean = false // Default to false (0 in database)
 ) {
     // Helper functions for date/time conversion
