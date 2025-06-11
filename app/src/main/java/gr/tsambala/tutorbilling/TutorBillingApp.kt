@@ -26,11 +26,11 @@ fun TutorBillingApp() {
         // Home Screen
         composable("home") {
             HomeMenuScreen(
-                onStudentsClick = { navController.navigate("students") },
+                onNavigateToStudent = { navController.navigate("students") },
                 onClassesClick = { navController.navigate("classes") },
-                onLessonsClick = { navController.navigate("lessons") },
-                onAddStudent = { navController.navigate("student/0") },
-                onAddLesson = { navController.navigate("lesson/0") },
+                onNavigateToLesson = { navController.navigate("lessons") },
+                onNavigateToNewStudent = { navController.navigate("student/0") },
+                onNavigateToNewLesson = { navController.navigate("lesson/0") },
                 onRevenue = { navController.navigate("revenue") },
                 onSettings = { navController.navigate("settings") }
             )
