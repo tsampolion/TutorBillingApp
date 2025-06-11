@@ -10,6 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import gr.tsambala.tutorbilling.data.dao.LessonDao
 import gr.tsambala.tutorbilling.data.dao.StudentDao
 import gr.tsambala.tutorbilling.data.database.TutorBillingDatabase
+import gr.tsambala.tutorbilling.data.database.DatabaseConstants
 import gr.tsambala.tutorbilling.data.database.MIGRATION_1_2
 import gr.tsambala.tutorbilling.data.database.MIGRATION_2_3
 import gr.tsambala.tutorbilling.data.database.MIGRATION_3_4
@@ -30,7 +31,7 @@ object DatabaseModule {
         return Room.databaseBuilder(
             context,
             TutorBillingDatabase::class.java,
-            "tutor_billing_database"
+            DatabaseConstants.DATABASE_NAME
         )
             .addMigrations(
                 MIGRATION_1_2,
