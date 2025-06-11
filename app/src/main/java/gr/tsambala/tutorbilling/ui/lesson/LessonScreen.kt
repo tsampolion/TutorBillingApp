@@ -64,7 +64,7 @@ fun LessonScreen(
                             text = { Text("Are you sure you want to delete this lesson?") },
                             confirmButton = {
                                 TextButton(onClick = {
-                                    viewModel.deleteLesson(onNavigateBack)
+                                    viewModel.deleteLesson()
                                     showDelete = false
                                 }) {
                                     Text("Delete", color = MaterialTheme.colorScheme.error)
@@ -280,7 +280,9 @@ fun LessonScreen(
                 Button(
                     onClick = {
                         viewModel.saveLesson()
-                        onNavigateBack()
+                        if (lessonId == 0L) {
+                            onNavigateBack()
+                        }
                     },
                     modifier = Modifier.weight(1f),
                     enabled = viewModel.isFormValid()
