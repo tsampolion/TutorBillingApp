@@ -26,18 +26,13 @@ fun TutorBillingApp() {
         // Home Screen
         composable("home") {
             HomeMenuScreen(
-                onNavigateToStudent = { studentId ->
-                    navController.navigate("student/$studentId")
-                },
-                onNavigateToNewStudent = {
-                    navController.navigate("student/0")
-                },
-                onNavigateToLesson = { lessonId ->
-                    navController.navigate("lesson/$lessonId")
-                },
-                onNavigateToNewLesson = { studentId ->
-                    navController.navigate("lesson/0?studentId=$studentId")
-                }
+                onStudentsClick = { navController.navigate("students") },
+                onClassesClick = { navController.navigate("classes") },
+                onLessonsClick = { navController.navigate("lessons") },
+                onAddStudent = { navController.navigate("student/0") },
+                onAddLesson = { navController.navigate("lesson/0") },
+                onRevenue = { navController.navigate("revenue") },
+                onSettings = { navController.navigate("settings") }
             )
         }
 
@@ -52,6 +47,8 @@ fun TutorBillingApp() {
         ) { backStackEntry ->
             val viewModel: StudentViewModel = hiltViewModel()
 
+            val studentId = backStackEntry.arguments?.getLong("studentId") ?: 0L
+
             // Set up navigation callback
             LaunchedEffect(Unit) {
                 viewModel.setNavigationCallback {
@@ -60,10 +57,15 @@ fun TutorBillingApp() {
             }
 
             StudentScreen(
-                viewModel = viewModel,
-                onNavigateBack = {
-                    navController.popBackStack()
-                }
+                studentId = studentId.toString(),
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToLesson = { lessonId ->
+                    navController.navigate("lesson/$lessonId?studentId=$studentId")
+                },
+                onAddLesson = {
+                    navController.navigate("lesson/0?studentId=$studentId")
+                },
+                viewModel = viewModel
             )
         }
 
@@ -82,18 +84,14 @@ fun TutorBillingApp() {
         ) { backStackEntry ->
             val viewModel: LessonViewModel = hiltViewModel()
 
-            // Set up navigation callback
-            LaunchedEffect(Unit) {
-                viewModel.setNavigationCallback {
-                    navController.popBackStack()
-                }
-            }
+            val lessonId = backStackEntry.arguments?.getLong("lessonId") ?: 0L
+            val studentId = backStackEntry.arguments?.getLong("studentId") ?: 0L
 
             LessonScreen(
-                viewModel = viewModel,
-                onNavigateBack = {
-                    navController.popBackStack()
-                }
+                studentId = studentId.toString(),
+                lessonId = if (lessonId == 0L) "new" else lessonId.toString(),
+                onNavigateBack = { navController.popBackStack() },
+                viewModel = viewModel
             )
         }
     }
