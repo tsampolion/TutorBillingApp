@@ -9,6 +9,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.*
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.DatePicker
@@ -110,7 +111,7 @@ fun InvoiceScreen(
                             checked = selectedLessons.contains(item.lesson.id),
                             onToggle = { viewModel.toggleLesson(item.lesson.id) }
                         )
-                        Divider()
+                        HorizontalDivider()
                     }
                 }
             }
