@@ -19,11 +19,11 @@ import gr.tsambala.tutorbilling.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeMenuScreen(
-    onStudentsClick: () -> Unit,
+    onNavigateToStudent: () -> Unit,
     onClassesClick: () -> Unit,
-    onLessonsClick: () -> Unit,
-    onAddStudent: () -> Unit,
-    onAddLesson: () -> Unit,
+    onNavigateToLesson: () -> Unit,
+    onNavigateToNewStudent: () -> Unit,
+    onNavigateToNewLesson: () -> Unit,
     onRevenue: () -> Unit,
     onSettings: () -> Unit,
     viewModel: HomeMenuViewModel = hiltViewModel()
@@ -71,14 +71,14 @@ fun HomeMenuScreen(
                             text = { Text("Add Student") },
                             onClick = {
                                 showFabMenu = false
-                                onAddStudent()
+                                onNavigateToNewStudent()
                             }
                         )
                         DropdownMenuItem(
                             text = { Text("Add Lesson") },
                             onClick = {
                                 showFabMenu = false
-                                onAddLesson()
+                                onNavigateToNewLesson()
                             }
                         )
                     }
@@ -102,7 +102,7 @@ fun HomeMenuScreen(
             Spacer(Modifier.height(32.dp))
             Text("Tutor Billing", style = MaterialTheme.typography.headlineMedium)
             Button(
-                onClick = onStudentsClick,
+                onClick = onNavigateToStudent,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = studentsColor)
             ) { Text("Students") }
@@ -112,7 +112,7 @@ fun HomeMenuScreen(
                 colors = ButtonDefaults.buttonColors(containerColor = classesColor)
             ) { Text("Classes") }
             Button(
-                onClick = onLessonsClick,
+                onClick = onNavigateToLesson,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = lessonsColor)
             ) { Text("Lessons") }
