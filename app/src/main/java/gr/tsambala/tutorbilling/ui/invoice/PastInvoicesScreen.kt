@@ -9,8 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,7 +23,11 @@ import java.io.File
 fun PastInvoicesScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val invoicesDir = remember { File(context.filesDir, "invoices") }
-    val invoices = remember { invoicesDir.listFiles()?.sortedByDescending { it.lastModified() } ?: emptyList() }
+    var invoices by remember { mutableStateOf<List<File>>(emptyList()) }
+
+    LaunchedEffect(Unit) {
+        invoices = invoicesDir.listFiles()?.sortedByDescending { it.lastModified() } ?: emptyList()
+    }
 
     Scaffold(
         topBar = {
