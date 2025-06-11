@@ -49,10 +49,10 @@ class StudentsViewModel @Inject constructor(
                 sortAscending
             ) { students, lessons, query, ascending ->
                 var filtered = if (query.isBlank()) students else students.filter {
-                    it.name.contains(query, true) || it.surname.contains(query, true)
+                    it.name.contains(query, true)
                 }
-                filtered = if (ascending) filtered.sortedWith(compareBy({ it.name }, { it.surname }))
-                else filtered.sortedWith(compareByDescending<Student> { it.name }.thenByDescending { it.surname })
+                filtered = if (ascending) filtered.sortedBy { it.name }
+                else filtered.sortedByDescending { it.name }
 
                 filtered.map { student ->
                     val (weekEarnings, monthEarnings) = EarningsCalculator.calculate(student, lessons)

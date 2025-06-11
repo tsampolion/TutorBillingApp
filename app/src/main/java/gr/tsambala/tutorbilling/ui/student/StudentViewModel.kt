@@ -22,7 +22,7 @@ class StudentViewModel @Inject constructor(
     private val studentId: Long = savedStateHandle.get<Long>("studentId") ?: 0L
 
     // UI State
-    private val _uiState = MutableStateFlow(StudentUiState())
+    private val _uiState = MutableStateFlow(StudentUiState(isEditMode = studentId == 0L))
     val uiState: StateFlow<StudentUiState> = _uiState.asStateFlow()
 
     // Navigation callback
@@ -67,6 +67,10 @@ class StudentViewModel @Inject constructor(
 
     fun toggleActive() {
         _uiState.update { it.copy(isActive = !it.isActive, hasChanges = true) }
+    }
+
+    fun toggleEditMode() {
+        _uiState.update { it.copy(isEditMode = !it.isEditMode) }
     }
 
     fun saveStudent() {
@@ -147,6 +151,7 @@ data class StudentUiState(
     val name: String = "",
     val rate: String = "",
     val isActive: Boolean = true,
+    val isEditMode: Boolean = false,
     val isLoading: Boolean = false,
     val hasChanges: Boolean = false,
     val errorMessage: String? = null
