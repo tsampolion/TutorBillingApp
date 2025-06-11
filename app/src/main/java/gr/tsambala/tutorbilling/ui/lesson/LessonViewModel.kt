@@ -33,6 +33,13 @@ class LessonViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(LessonUiState())
     val uiState: StateFlow<LessonUiState> = _uiState.asStateFlow()
 
+    // Navigation callback
+    private var onNavigateBack: (() -> Unit)? = null
+
+    fun setNavigationCallback(callback: () -> Unit) {
+        onNavigateBack = callback
+    }
+
     init {
         loadStudentInfo()
         if (lessonId != null && lessonId != "new") {
@@ -158,6 +165,7 @@ class LessonViewModel @Inject constructor(
             var duration = state.durationMinutes.toIntOrNull() ?: 0
             if (duration <= 0) duration = 60
             if (duration < 60) duration = 60
+            _uiState.update { it.copy(durationMinutes = duration.toString()) }
             if (!isFormValid()) return@launch
 
             val sId = state.selectedStudentId
@@ -189,15 +197,22 @@ class LessonViewModel @Inject constructor(
             }
 
             _uiState.update { it.copy(isEditMode = false) }
+
+            // Navigate back on main thread
+            withContext(Dispatchers.Main) {
+                onNavigateBack?.invoke()
+            }
         }
     }
 
-    fun deleteLesson(onDeleted: () -> Unit) {
+    fun deleteLesson() {
         viewModelScope.launch(Dispatchers.IO) {
             lessonId?.takeIf { it != "new" }?.toLongOrNull()?.let { id ->
                 lessonDao.deleteById(id)
+
+                // Navigate back on main thread
                 withContext(Dispatchers.Main) {
-                    onDeleted()
+                    onNavigateBack?.invoke()
                 }
             }
         }
