@@ -6,7 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import gr.tsambala.tutorbilling.data.model.Student
+import gr.tsambala.tutorbilling.data.model.calculateFee
 import gr.tsambala.tutorbilling.data.repository.StudentRepository
+import gr.tsambala.tutorbilling.data.dao.LessonDao
+import gr.tsambala.tutorbilling.data.model.Lesson
+import gr.tsambala.tutorbilling.utils.EarningsCalculator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -16,6 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class StudentViewModel @Inject constructor(
     private val studentRepository: StudentRepository,
+    private val lessonDao: LessonDao,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -30,7 +35,7 @@ class StudentViewModel @Inject constructor(
 
     init {
         if (studentId > 0) {
-            loadStudent()
+            loadData()
         }
     }
 
@@ -38,19 +43,28 @@ class StudentViewModel @Inject constructor(
         onNavigateBack = callback
     }
 
-    private fun loadStudent() {
+    private fun loadData() {
         viewModelScope.launch {
-            studentRepository.getStudentById(studentId)
+            combine(
+                studentRepository.getStudentById(studentId),
+                lessonDao.getLessonsByStudentId(studentId)
+            ) { student, lessons -> student to lessons }
                 .catch { e ->
                     _uiState.update { it.copy(errorMessage = e.message) }
                 }
-                .collect { student ->
+                .collect { (student, lessons) ->
+                    val (week, month) = student?.let { EarningsCalculator.calculate(it, lessons) } ?: (0.0 to 0.0)
+                    val total = student?.let { lessons.sumOf { l -> l.calculateFee(it) } } ?: 0.0
                     _uiState.update { currentState ->
                         currentState.copy(
                             student = student,
-                            name = student?.name ?: "",
-                            rate = student?.rate?.toString() ?: "",
-                            isActive = student?.isActive ?: true
+                            name = if (currentState.isEditMode) currentState.name else student?.name ?: "",
+                            rate = if (currentState.isEditMode) currentState.rate else student?.rate?.toString() ?: "",
+                            isActive = if (currentState.isEditMode) currentState.isActive else student?.isActive ?: true,
+                            lessons = lessons,
+                            weekEarnings = week,
+                            monthEarnings = month,
+                            totalEarnings = total
                         )
                     }
                 }
@@ -141,6 +155,12 @@ class StudentViewModel @Inject constructor(
         }
     }
 
+    fun deleteLesson(id: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            lessonDao.deleteById(id)
+        }
+    }
+
     fun dismissError() {
         _uiState.update { it.copy(errorMessage = null) }
     }
@@ -154,5 +174,9 @@ data class StudentUiState(
     val isEditMode: Boolean = false,
     val isLoading: Boolean = false,
     val hasChanges: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val lessons: List<Lesson> = emptyList(),
+    val weekEarnings: Double = 0.0,
+    val monthEarnings: Double = 0.0,
+    val totalEarnings: Double = 0.0
 )
