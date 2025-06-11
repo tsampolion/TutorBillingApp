@@ -44,12 +44,6 @@ class TutorBillingRepository @Inject constructor(
      */
     suspend fun addStudent(student: Student): Long {
         require(student.name.isNotBlank()) { "First name cannot be empty" }
-        require(student.surname.isNotBlank()) { "Last name cannot be empty" }
-        require(student.parentMobile.matches(Regex("^\\d{10}$"))) { "Invalid parent mobile" }
-        require(student.parentEmail.isBlank() ||
-                android.util.Patterns.EMAIL_ADDRESS.matcher(student.parentEmail).matches()) {
-            "Invalid parent email"
-        }
         return studentDao.insert(student)
     }
 

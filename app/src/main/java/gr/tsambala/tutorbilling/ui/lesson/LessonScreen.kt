@@ -22,7 +22,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import gr.tsambala.tutorbilling.data.model.RateTypes
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -104,11 +103,7 @@ fun LessonScreen(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = if (uiState.studentRateType == RateTypes.HOURLY) {
-                                "€${uiState.studentRate}/hour"
-                            } else {
-                                "€${uiState.studentRate}/lesson"
-                            },
+                            text = "€${uiState.studentRate}/hour",
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
@@ -217,16 +212,14 @@ fun LessonScreen(
                 )
             }
 
-            if (uiState.studentRateType == RateTypes.HOURLY) {
-                OutlinedTextField(
-                    value = uiState.durationMinutes,
-                    onValueChange = viewModel::updateDuration,
-                    label = { Text("Duration (minutes)") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
-            }
+            OutlinedTextField(
+                value = uiState.durationMinutes,
+                onValueChange = viewModel::updateDuration,
+                label = { Text("Duration (minutes)") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
 
             // Fee calculation
             Card(

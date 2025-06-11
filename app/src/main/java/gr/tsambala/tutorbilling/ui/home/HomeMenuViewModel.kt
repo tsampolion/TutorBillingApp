@@ -31,10 +31,7 @@ class HomeMenuViewModel @Inject constructor(
                 studentDao.getAllActiveStudents(),
                 lessonDao.getAllLessons()
             ) { students, lessons ->
-                val classCount = students.map { it.className.lowercase() }
-                    .filter { it != "unassigned" }
-                    .distinct()
-                    .size
+                val classCount = 0
 
                 val today = LocalDate.now()
                 val weekStart = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))

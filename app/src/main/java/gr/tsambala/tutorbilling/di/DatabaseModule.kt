@@ -15,6 +15,7 @@ import gr.tsambala.tutorbilling.data.database.MIGRATION_2_3
 import gr.tsambala.tutorbilling.data.database.MIGRATION_3_4
 import gr.tsambala.tutorbilling.data.database.MIGRATION_4_5
 import gr.tsambala.tutorbilling.data.database.MIGRATION_5_6
+import gr.tsambala.tutorbilling.data.repository.StudentRepository
 import javax.inject.Singleton
 
 @Module
@@ -49,5 +50,11 @@ object DatabaseModule {
     @Provides
     fun provideLessonDao(database: TutorBillingDatabase): LessonDao {
         return database.lessonDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideStudentRepository(studentDao: StudentDao): StudentRepository {
+        return StudentRepository(studentDao)
     }
 }

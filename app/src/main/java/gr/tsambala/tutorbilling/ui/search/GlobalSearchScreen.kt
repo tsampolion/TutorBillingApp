@@ -47,7 +47,7 @@ fun GlobalSearchScreen(
                 .padding(16.dp)
         ) {
             items(results, key = { it.id }) { student ->
-                Text("${student.name} ${student.surname}", style = MaterialTheme.typography.bodyLarge)
+                Text(student.name, style = MaterialTheme.typography.bodyLarge)
                 HorizontalDivider()
             }
         }

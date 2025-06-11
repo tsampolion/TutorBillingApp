@@ -8,7 +8,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import gr.tsambala.tutorbilling.data.model.Lesson
 import gr.tsambala.tutorbilling.data.dao.LessonDao
 import gr.tsambala.tutorbilling.data.dao.StudentDao
-import gr.tsambala.tutorbilling.data.model.RateTypes
 import gr.tsambala.tutorbilling.data.model.Student
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -57,7 +56,6 @@ class LessonViewModel @Inject constructor(
                         _uiState.update { state ->
                             state.copy(
                                 studentName = s.name,
-                                studentRateType = s.rateType,
                                 studentRate = s.rate,
                                 selectedStudentId = id
                             )
@@ -115,7 +113,6 @@ class LessonViewModel @Inject constructor(
                         it.copy(
                             selectedStudentId = id,
                             studentName = s.name,
-                            studentRateType = s.rateType,
                             studentRate = s.rate
                         )
                     }
@@ -146,7 +143,7 @@ class LessonViewModel @Inject constructor(
         val state = _uiState.value
         val duration = state.durationMinutes.toIntOrNull() ?: 0
         val hasStudent = state.selectedStudentId != null
-        val durationOk = if (state.studentRateType == RateTypes.HOURLY) duration >= 60 else true
+        val durationOk = duration >= 60
         return hasStudent && durationOk && isValidDate(state.date) && isValidTime(state.startTime)
     }
 
@@ -158,10 +155,8 @@ class LessonViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val state = _uiState.value
             var duration = state.durationMinutes.toIntOrNull() ?: 0
-            if (state.studentRateType == RateTypes.HOURLY) {
-                if (duration <= 0) duration = 60
-                if (duration < 60) duration = 60
-            }
+            if (duration <= 0) duration = 60
+            if (duration < 60) duration = 60
             if (!isFormValid()) return@launch
 
             val sId = state.selectedStudentId
@@ -209,11 +204,7 @@ class LessonViewModel @Inject constructor(
         val state = _uiState.value
         val duration = state.durationMinutes.toIntOrNull() ?: 0
 
-        return when (state.studentRateType) {
-            RateTypes.HOURLY -> (duration / 60.0) * state.studentRate
-            RateTypes.PER_LESSON -> state.studentRate
-            else -> state.studentRate
-        }
+        return (duration / 60.0) * state.studentRate
     }
 }
 
@@ -223,7 +214,6 @@ data class LessonUiState(
     val durationMinutes: String = "",
     val notes: String = "",
     val studentName: String = "",
-    val studentRateType: String = RateTypes.HOURLY,
     val studentRate: Double = 0.0,
     val availableStudents: List<Student> = emptyList(),
     val selectedStudentId: Long? = null,
