@@ -30,7 +30,7 @@ fun TutorBillingApp() {
                 onClassesClick = { navController.navigate("classes") },
                 onNavigateToLesson = { navController.navigate("lessons") },
                 onNavigateToNewStudent = { navController.navigate("student/0") },
-                onNavigateToNewLesson = { navController.navigate("lesson/0") },
+                onNavigateToNewLesson = { navController.navigate("lesson/new") },
                 onRevenue = { navController.navigate("revenue") },
                 onSettings = { navController.navigate("settings") }
             )
@@ -65,7 +65,7 @@ fun TutorBillingApp() {
                     navController.navigate("lesson/$lessonId?studentId=$studentIdArg")
                 },
                 onAddLesson = {
-                    navController.navigate("lesson/0?studentId=$studentIdArg")
+                    navController.navigate("lesson/new?studentId=$studentIdArg")
                 },
                 viewModel = viewModel
             )
@@ -76,7 +76,7 @@ fun TutorBillingApp() {
             route = "lesson/{lessonId}?studentId={studentId}",
             arguments = listOf(
                 navArgument("lessonId") {
-                    type = NavType.LongType
+                    type = NavType.StringType
                 },
                 navArgument("studentId") {
                     type = NavType.LongType
@@ -86,7 +86,7 @@ fun TutorBillingApp() {
         ) { backStackEntry ->
             val viewModel: LessonViewModel = hiltViewModel()
 
-            val lessonId = backStackEntry.arguments?.getLong("lessonId") ?: 0L
+            val lessonId = backStackEntry.arguments?.getString("lessonId") ?: "new"
             val studentId = backStackEntry.arguments?.getLong("studentId") ?: 0L
 
             LessonScreen(

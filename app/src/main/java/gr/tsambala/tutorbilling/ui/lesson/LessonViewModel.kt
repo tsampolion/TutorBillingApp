@@ -28,14 +28,14 @@ class LessonViewModel @Inject constructor(
     private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
     private val studentId: Long? = savedStateHandle.get<Long>("studentId")
-    private val lessonId: Long? = savedStateHandle.get<Long>("lessonId")
+    private val lessonId: String? = savedStateHandle.get<String>("lessonId")
 
     private val _uiState = MutableStateFlow(LessonUiState())
     val uiState: StateFlow<LessonUiState> = _uiState.asStateFlow()
 
     init {
         loadStudentInfo()
-        if (lessonId != null && lessonId != 0L) {
+        if (lessonId != null && lessonId != "new") {
             loadLesson()
         } else {
             // Set default values for new lesson
@@ -73,7 +73,7 @@ class LessonViewModel @Inject constructor(
 
     private fun loadLesson() {
         viewModelScope.launch(Dispatchers.IO) {
-            lessonId?.takeIf { it != 0L }?.let { id ->
+            lessonId?.takeIf { it != "new" }?.toLongOrNull()?.let { id ->
                 lessonDao.getLessonById(id).collect { lesson ->
                     lesson?.let { l ->
                         _uiState.update { state ->
@@ -162,7 +162,7 @@ class LessonViewModel @Inject constructor(
 
             val sId = state.selectedStudentId
             sId?.let {
-                if (lessonId == null || lessonId == 0L) {
+                if (lessonId == null || lessonId == "new") {
                     val lesson = Lesson(
                         studentId = it,
                         date = LocalDate.parse(state.date, dateFormatter).toString(),
@@ -173,7 +173,7 @@ class LessonViewModel @Inject constructor(
                     )
                     lessonDao.insert(lesson)
                 } else {
-                    lessonId?.let { lId ->
+                    lessonId?.toLongOrNull()?.let { lId ->
                         val lesson = Lesson(
                             id = lId,
                             studentId = it,
@@ -194,7 +194,7 @@ class LessonViewModel @Inject constructor(
 
     fun deleteLesson(onDeleted: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
-            lessonId?.takeIf { it != 0L }?.let { id ->
+            lessonId?.takeIf { it != "new" }?.toLongOrNull()?.let { id ->
                 lessonDao.deleteById(id)
                 withContext(Dispatchers.Main) {
                     onDeleted()
