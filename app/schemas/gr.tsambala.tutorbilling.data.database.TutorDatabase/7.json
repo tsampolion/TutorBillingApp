@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 7,
-    "identityHash": "3631c63deb33e10cc812709975d06b3c",
+    "identityHash": "9753bfc22b96bfc6ed081b2c868a7814",
     "entities": [
       {
         "tableName": "students",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `rate` REAL NOT NULL, `isActive` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `rate` REAL NOT NULL, `isActive` INTEGER NOT NULL DEFAULT 1)",
         "fields": [
           {
             "fieldPath": "id",
@@ -30,7 +30,8 @@
             "fieldPath": "isActive",
             "columnName": "isActive",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": true,
+            "defaultValue": "1"
           }
         ],
         "primaryKey": {
@@ -42,7 +43,7 @@
       },
       {
         "tableName": "lessons",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `studentId` INTEGER NOT NULL, `date` TEXT NOT NULL, `startTime` TEXT NOT NULL, `durationMinutes` INTEGER NOT NULL, `notes` TEXT, `isPaid` INTEGER NOT NULL, FOREIGN KEY(`studentId`) REFERENCES `students`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `studentId` INTEGER NOT NULL, `date` TEXT NOT NULL, `startTime` TEXT NOT NULL, `durationMinutes` INTEGER NOT NULL, `notes` TEXT, `isPaid` INTEGER NOT NULL DEFAULT 0, FOREIGN KEY(`studentId`) REFERENCES `students`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -83,7 +84,8 @@
             "fieldPath": "isPaid",
             "columnName": "isPaid",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": true,
+            "defaultValue": "0"
           }
         ],
         "primaryKey": {
@@ -129,7 +131,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3631c63deb33e10cc812709975d06b3c')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9753bfc22b96bfc6ed081b2c868a7814')"
     ]
   }
 }

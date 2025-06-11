@@ -1,4 +1,3 @@
-// TutorBillingApp.kt - Fixed navigation handling
 package gr.tsambala.tutorbilling
 
 import androidx.compose.runtime.Composable

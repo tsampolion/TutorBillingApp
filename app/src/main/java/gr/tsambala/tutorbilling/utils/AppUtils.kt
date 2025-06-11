@@ -24,13 +24,6 @@ fun formatAsCurrency(amount: Double): String {
 }
 
 /**
- * Alternative: Simple Euro formatting without NumberFormat
- */
-fun formatAsEuro(amount: Double): String {
-    return "€ %.2f".format(Locale.US, amount)
-}
-
-/**
  * Extension version of [formatAsCurrency] used across the UI.
  *
  * @param symbol Currency symbol to use (defaults to "€")

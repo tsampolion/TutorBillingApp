@@ -74,13 +74,10 @@ fun HomeMenuScreen(
                                 onNavigateToNewStudent()
                             }
                         )
-                        DropdownMenuItem(
-                            text = { Text("Add Lesson") },
-                            onClick = {
+                        DropdownMenuItem(text = { Text("Add Lesson") }, onClick = {
                                 showFabMenu = false
                                 onNavigateToNewLesson()
-                            }
-                        )
+                            })
                     }
                 }
 
