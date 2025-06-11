@@ -47,7 +47,8 @@ fun TutorBillingApp() {
         ) { backStackEntry ->
             val viewModel: StudentViewModel = hiltViewModel()
 
-            val studentId = backStackEntry.arguments?.getLong("studentId") ?: 0L
+            // Obtain the student id from the nav arguments
+            val studentIdArg = backStackEntry.arguments?.getLong("studentId") ?: 0L
 
             // Set up navigation callback
             LaunchedEffect(Unit) {
@@ -56,14 +57,15 @@ fun TutorBillingApp() {
                 }
             }
 
+            val studentId = studentIdArg.toString()
             StudentScreen(
-                studentId = studentId.toString(),
+                studentId = studentId,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToLesson = { lessonId ->
-                    navController.navigate("lesson/$lessonId?studentId=$studentId")
+                    navController.navigate("lesson/$lessonId?studentId=$studentIdArg")
                 },
                 onAddLesson = {
-                    navController.navigate("lesson/0?studentId=$studentId")
+                    navController.navigate("lesson/0?studentId=$studentIdArg")
                 },
                 viewModel = viewModel
             )
