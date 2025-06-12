@@ -1,18 +1,33 @@
 package gr.tsambala.tutorbilling.data.database
 
 import android.content.Context
+import androidx.room.Room
+import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.SupportSQLiteOpenHelper
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
 
 class MigrationsTest {
 
+    private val context = ApplicationProvider.getApplicationContext<Context>()
+
+    private val TEST_DB = "test-db"
+
+    @get:Rule
+    val helper = MigrationTestHelper(
+        InstrumentationRegistry.getInstrumentation(),
+        TutorBillingDatabase::class.java,
+        FrameworkSQLiteOpenHelperFactory()
+    )
+
+
     @Test
     fun migration3To4_canRunTwice() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
         val factory = FrameworkSQLiteOpenHelperFactory()
         val configuration = SupportSQLiteOpenHelper.Configuration.builder(context)
             .name(null) // in-memory
@@ -51,7 +66,6 @@ class MigrationsTest {
 
     @Test
     fun migration5To6_rebuildsLessons() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
         val factory = FrameworkSQLiteOpenHelperFactory()
         val configuration = SupportSQLiteOpenHelper.Configuration.builder(context)
             .name(null)
@@ -106,6 +120,78 @@ class MigrationsTest {
 
         assertTrue(defaultValue?.contains("0") == true && count == 1)
 
+        db.close()
+    }
+
+    @Test
+    fun migration1To2_schemaValid() {
+        helper.createDatabase(TEST_DB, 1).close()
+        val db = helper.runMigrationsAndValidate(TEST_DB, 2, true, MIGRATION_1_2)
+        val count = db.query("SELECT count(*) FROM room_master_table").use {
+            it.moveToFirst()
+            it.getInt(0)
+        }
+        assertTrue(count > 0)
+        db.close()
+    }
+
+    @Test
+    fun migration2To3_schemaValid() {
+        helper.createDatabase(TEST_DB, 2).close()
+        val db = helper.runMigrationsAndValidate(TEST_DB, 3, true, MIGRATION_2_3)
+        val count = db.query("SELECT count(*) FROM room_master_table").use {
+            it.moveToFirst()
+            it.getInt(0)
+        }
+        assertTrue(count > 0)
+        db.close()
+    }
+
+    @Test
+    fun migration3To4_schemaValid() {
+        helper.createDatabase(TEST_DB, 3).close()
+        val db = helper.runMigrationsAndValidate(TEST_DB, 4, true, MIGRATION_3_4)
+        val count = db.query("SELECT count(*) FROM room_master_table").use {
+            it.moveToFirst()
+            it.getInt(0)
+        }
+        assertTrue(count > 0)
+        db.close()
+    }
+
+    @Test
+    fun migration4To5_schemaValid() {
+        helper.createDatabase(TEST_DB, 4).close()
+        val db = helper.runMigrationsAndValidate(TEST_DB, 5, true, MIGRATION_4_5)
+        val count = db.query("SELECT count(*) FROM room_master_table").use {
+            it.moveToFirst()
+            it.getInt(0)
+        }
+        assertTrue(count > 0)
+        db.close()
+    }
+
+    @Test
+    fun migration5To6_schemaValid() {
+        helper.createDatabase(TEST_DB, 5).close()
+        val db = helper.runMigrationsAndValidate(TEST_DB, 6, true, MIGRATION_5_6)
+        val count = db.query("SELECT count(*) FROM room_master_table").use {
+            it.moveToFirst()
+            it.getInt(0)
+        }
+        assertTrue(count > 0)
+        db.close()
+    }
+
+    @Test
+    fun migration6To7_schemaValid() {
+        helper.createDatabase(TEST_DB, 6).close()
+        val db = helper.runMigrationsAndValidate(TEST_DB, 7, true)
+        val count = db.query("SELECT count(*) FROM room_master_table").use {
+            it.moveToFirst()
+            it.getInt(0)
+        }
+        assertTrue(count > 0)
         db.close()
     }
 }
