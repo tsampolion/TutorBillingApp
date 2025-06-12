@@ -7,16 +7,20 @@ TutorBillingApp is an Android application for managing tutoring sessions and inv
 - **JDK 17 or newer** installed and available on your `PATH`.
 - **Android SDK** with API level 35 and build tools. The repository provides a helper script that installs the required SDK packages.
 
-## Setting up the Android SDK
+## Mandatory Android SDK setup
 
-Run the setup script from the project root:
+The project cannot be built until the Android SDK is installed. Use the provided
+setup script to download the required packages and configure the environment:
 
 ```bash
-bash setup-android-sdk.sh
+bash .codex/setup.sh
 source ~/.bashrc   # or the profile file printed by the script
 ```
 
-This downloads the Android command line tools and creates a `local.properties` file pointing Gradle to the SDK location.
+Running the script once will download the command line tools and create a
+`local.properties` file pointing Gradle to the SDK. Make sure to source your
+profile before invoking any Gradle tasks so that the `ANDROID_HOME` variables are
+available.
 
 ## Building the project
 
