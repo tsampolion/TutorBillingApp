@@ -13,7 +13,7 @@ The project cannot be built until the Android SDK is installed. Use the provided
 setup script to download the required packages and configure the environment:
 
 ```bash
-bash .codex/setup.sh
+bash setup-android-sdk.sh
 source ~/.bashrc   # or the profile file printed by the script
 ```
 
