@@ -35,3 +35,11 @@ Use the Gradle wrapper to build and test the app:
 
 - **app** – main Compose application module containing UI, Hilt dependency injection and Room database code.
 
+## Database migrations
+
+Room is configured with `autoMigrations` for database version upgrades. The
+generated schema files are stored under `app/schemas` via the
+`room.schemaLocation` Gradle argument. Since auto-migration handles the schema
+changes, the project does not keep SQL scripts under
+`app/src/main/assets/migrations`.
+
