@@ -6,11 +6,6 @@ import java.text.DecimalFormatSymbols
 import java.text.NumberFormat
 import java.util.Locale
 
-/**
- * Formats a Double value as currency with Euro symbol
- * @param amount The amount to format
- * @return Formatted currency string (e.g., "€ 12.34")
- */
 fun formatAsCurrency(amount: Double): String {
     return try {
         // Use NumberFormat for proper currency formatting
@@ -23,12 +18,6 @@ fun formatAsCurrency(amount: Double): String {
     }
 }
 
-/**
- * Extension version of [formatAsCurrency] used across the UI.
- *
- * @param symbol Currency symbol to use (defaults to "€")
- * @param decimals Number of decimal places allowed (clamped to 0..2)
- */
 fun Double.formatAsCurrency(symbol: String = "€", decimals: Int = 2): String {
     val safeDecimals = decimals.coerceIn(0, 2)
     val symbols = DecimalFormatSymbols().apply { currencySymbol = symbol }
@@ -40,11 +29,6 @@ fun Double.formatAsCurrency(symbol: String = "€", decimals: Int = 2): String {
     return formatter.format(this)
 }
 
-/**
- * Formats minutes as hours and minutes string
- * @param minutes Total minutes
- * @return Formatted string (e.g., "2h 30m")
- */
 fun formatDuration(minutes: Int): String {
     val hours = minutes / 60
     val mins = minutes % 60
