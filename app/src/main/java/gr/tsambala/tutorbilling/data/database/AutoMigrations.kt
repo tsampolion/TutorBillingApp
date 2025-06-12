@@ -1,6 +1,8 @@
 package gr.tsambala.tutorbilling.data.database
 
 import androidx.room.migration.AutoMigrationSpec
+import androidx.room.RenameColumn
+import androidx.room.DeleteColumn
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 /**
@@ -8,6 +10,31 @@ import androidx.sqlite.db.SupportSQLiteDatabase
  * Handles recreating the lessons table to enforce
  * foreign key constraints and string columns for date and time.
  */
+@RenameColumn(
+    tableName = "students",
+    fromColumnName = "hourlyRate",
+    toColumnName = "rate"
+)
+@DeleteColumn(
+    tableName = "students",
+    columnName = "perLessonRate"
+)
+@DeleteColumn(
+    tableName = "students",
+    columnName = "createdAt"
+)
+@DeleteColumn(
+    tableName = "students",
+    columnName = "updatedAt"
+)
+@DeleteColumn(
+    tableName = "lessons",
+    columnName = "createdAt"
+)
+@DeleteColumn(
+    tableName = "lessons",
+    columnName = "updatedAt"
+)
 class AutoMigration5To6 : AutoMigrationSpec {
     override fun onPostMigrate(db: SupportSQLiteDatabase) {
         db.execSQL(
