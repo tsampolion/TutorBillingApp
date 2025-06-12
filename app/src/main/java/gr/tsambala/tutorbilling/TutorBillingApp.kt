@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import gr.tsambala.tutorbilling.Screen
 import gr.tsambala.tutorbilling.ui.home.HomeMenuScreen
 import gr.tsambala.tutorbilling.ui.lesson.LessonScreen
 import gr.tsambala.tutorbilling.ui.lesson.LessonViewModel
@@ -20,24 +21,24 @@ fun TutorBillingApp() {
 
     NavHost(
         navController = navController,
-        startDestination = "home"
+        startDestination = Screen.Home.route
     ) {
         // Home Screen
-        composable("home") {
+        composable(Screen.Home.route) {
             HomeMenuScreen(
-                onNavigateToStudent = { navController.navigate("students") },
-                onClassesClick = { navController.navigate("classes") },
-                onNavigateToLesson = { navController.navigate("lessons") },
-                onNavigateToNewStudent = { navController.navigate("student/0") },
-                onNavigateToNewLesson = { navController.navigate("lesson/new") },
-                onRevenue = { navController.navigate("revenue") },
-                onSettings = { navController.navigate("settings") }
+                onNavigateToStudent = { navController.navigate(Screen.Students.route) },
+                onClassesClick = { navController.navigate(Screen.Classes.route) },
+                onNavigateToLesson = { navController.navigate(Screen.Lessons.route) },
+                onNavigateToNewStudent = { navController.navigate(Screen.Student.createRoute(0)) },
+                onNavigateToNewLesson = { navController.navigate(Screen.Lesson.createRoute("new")) },
+                onRevenue = { navController.navigate(Screen.Revenue.route) },
+                onSettings = { navController.navigate(Screen.Settings.route) }
             )
         }
 
         // Student Detail/Edit Screen
         composable(
-            route = "student/{studentId}",
+            route = Screen.Student.route,
             arguments = listOf(
                 navArgument("studentId") {
                     type = NavType.LongType
@@ -61,10 +62,10 @@ fun TutorBillingApp() {
                 studentId = studentId,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToLesson = { lessonId ->
-                    navController.navigate("lesson/$lessonId?studentId=$studentIdArg")
+                    navController.navigate(Screen.Lesson.createRoute(lessonId.toString(), studentIdArg))
                 },
                 onAddLesson = {
-                    navController.navigate("lesson/new?studentId=$studentIdArg")
+                    navController.navigate(Screen.Lesson.createRoute("new", studentIdArg))
                 },
                 viewModel = viewModel
             )
@@ -72,7 +73,7 @@ fun TutorBillingApp() {
 
         // Lesson Detail/Edit Screen
         composable(
-            route = "lesson/{lessonId}?studentId={studentId}",
+            route = Screen.Lesson.route,
             arguments = listOf(
                 navArgument("lessonId") {
                     type = NavType.StringType
