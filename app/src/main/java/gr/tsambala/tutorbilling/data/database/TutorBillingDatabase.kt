@@ -6,7 +6,6 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import gr.tsambala.tutorbilling.data.database.AutoMigration5To6
 import gr.tsambala.tutorbilling.BuildConfig
 import gr.tsambala.tutorbilling.data.dao.LessonDao
 import gr.tsambala.tutorbilling.data.dao.StudentDao
@@ -44,7 +43,7 @@ abstract class TutorBillingDatabase : RoomDatabase() {
                     // Fallback to destructive migration only in debug builds
                     .apply {
                         if (BuildConfig.DEBUG) {
-                            fallbackToDestructiveMigration()
+                            fallbackToDestructiveMigration(false)
                         }
                     }
                     .build()
