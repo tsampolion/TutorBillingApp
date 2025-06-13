@@ -56,6 +56,7 @@ interface LessonDao {
                students.id AS student_id,
                students.name AS student_name,
                students.rate AS student_rate,
+               students.rateType AS student_rateType,
                students.isActive AS student_isActive
         FROM lessons JOIN students ON lessons.studentId = students.id
         ORDER BY lessons.date DESC, lessons.startTime DESC
@@ -76,6 +77,7 @@ interface LessonDao {
                students.id AS student_id,
                students.name AS student_name,
                students.rate AS student_rate,
+               students.rateType AS student_rateType,
                students.isActive AS student_isActive
         FROM lessons JOIN students ON lessons.studentId = students.id
         WHERE lessons.studentId = :studentId
@@ -97,6 +99,7 @@ interface LessonDao {
                students.id AS student_id,
                students.name AS student_name,
                students.rate AS student_rate,
+               students.rateType AS student_rateType,
                students.isActive AS student_isActive
         FROM lessons JOIN students ON lessons.studentId = students.id
         WHERE lessons.date BETWEEN :startDate AND :endDate
@@ -118,6 +121,7 @@ interface LessonDao {
                students.id AS student_id,
                students.name AS student_name,
                students.rate AS student_rate,
+               students.rateType AS student_rateType,
                students.isActive AS student_isActive
         FROM lessons JOIN students ON lessons.studentId = students.id
         WHERE lessons.studentId = :studentId AND lessons.date BETWEEN :startDate AND :endDate
