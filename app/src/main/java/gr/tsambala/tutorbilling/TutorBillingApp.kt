@@ -8,7 +8,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import gr.tsambala.tutorbilling.Screen
 import gr.tsambala.tutorbilling.ui.home.HomeMenuScreen
 import gr.tsambala.tutorbilling.ui.lesson.LessonScreen
 import gr.tsambala.tutorbilling.ui.lesson.LessonViewModel
