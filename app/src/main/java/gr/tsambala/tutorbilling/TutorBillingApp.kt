@@ -18,8 +18,6 @@ import gr.tsambala.tutorbilling.ui.invoice.InvoiceScreen
 import gr.tsambala.tutorbilling.ui.invoice.PastInvoicesScreen
 import gr.tsambala.tutorbilling.ui.settings.SettingsScreen
 import gr.tsambala.tutorbilling.navigation.studentGraph
-import gr.tsambala.tutorbilling.ui.student.StudentScreen
-import gr.tsambala.tutorbilling.ui.student.StudentViewModel
 
 @Composable
 fun TutorBillingApp() {
@@ -88,41 +86,6 @@ fun TutorBillingApp() {
         // Settings screen
         composable(Screen.Settings.route) {
             SettingsScreen(onBack = { navController.popBackStack() })
-        }
-
-        // Student Detail/Edit Screen
-        composable(
-            route = Screen.Student.route,
-            arguments = listOf(
-                navArgument("studentId") {
-                    type = NavType.LongType
-                }
-            )
-        ) { backStackEntry ->
-            val viewModel: StudentViewModel = hiltViewModel()
-
-            // Obtain the student id from the nav arguments
-            val studentIdArg = backStackEntry.arguments?.getLong("studentId") ?: 0L
-
-            // Set up navigation callback
-            LaunchedEffect(Unit) {
-                viewModel.setNavigationCallback {
-                    navController.popBackStack()
-                }
-            }
-
-            val studentId = studentIdArg.toString()
-            StudentScreen(
-                studentId = studentId,
-                onNavigateBack = { navController.popBackStack() },
-                onNavigateToLesson = { lessonId ->
-                    navController.navigate(Screen.Lesson.createRoute(lessonId, studentIdArg))
-                },
-                onAddLesson = {
-                    navController.navigate(Screen.Lesson.createRoute(0, studentIdArg))
-                },
-                viewModel = viewModel
-            )
         }
 
         // Lesson Detail/Edit Screen

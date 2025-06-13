@@ -21,7 +21,7 @@ fun NavGraphBuilder.studentGraph(navController: NavHostController) {
                     navController.navigate(Screen.Student.createRoute(id))
                 },
                 onAddStudent = {
-                    navController.navigate(Screen.Student.createRoute(0))
+                    navController.navigate(Screen.Student.createRoute(0L))
                 },
                 onBack = { navController.popBackStack() }
             )
