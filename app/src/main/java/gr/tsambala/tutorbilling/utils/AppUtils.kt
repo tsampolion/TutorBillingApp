@@ -26,7 +26,7 @@ fun Double.formatAsCurrency(symbol: String = "€", decimals: Int = 2): String {
         minimumFractionDigits = safeDecimals
         maximumFractionDigits = safeDecimals
     }
-    return formatter.format(this)
+    return "$symbol${formatter.format(this)}"
 }
 
 fun formatDuration(minutes: Int): String {
