@@ -52,22 +52,46 @@ fun ClassesScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            uiState.studentsByClass.forEach { (className, students) ->
-                item {
-                    Text(
-                        text = className,
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                    HorizontalDivider()
+            uiState.studentsByClass
+                .filterKeys { it != "Unassigned" }
+                .toSortedMap()
+                .forEach { (className, students) ->
+                    item {
+                        Text(
+                            text = className,
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                        HorizontalDivider()
+                    }
+                    items(students) { student ->
+                        Text(
+                            text = student.name,
+                            modifier = Modifier
+                                .padding(horizontal = 32.dp, vertical = 8.dp)
+                                .clickable { onStudentClick(student.id) }
+                        )
+                    }
                 }
-                items(students) { student ->
-                    Text(
-                        text = student.name,
-                        modifier = Modifier
-                            .padding(horizontal = 32.dp, vertical = 8.dp)
-                            .clickable { onStudentClick(student.id) }
-                    )
+
+            if (uiState.hasUnassigned) {
+                uiState.studentsByClass["Unassigned"]?.let { students ->
+                    item {
+                        Text(
+                            text = "Unassigned",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                        HorizontalDivider()
+                    }
+                    items(students) { student ->
+                        Text(
+                            text = student.name,
+                            modifier = Modifier
+                                .padding(horizontal = 32.dp, vertical = 8.dp)
+                                .clickable { onStudentClick(student.id) }
+                        )
+                    }
                 }
             }
         }

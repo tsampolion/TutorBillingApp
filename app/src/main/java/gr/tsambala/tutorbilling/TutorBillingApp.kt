@@ -9,7 +9,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import gr.tsambala.tutorbilling.ui.home.HomeMenuScreen
-import gr.tsambala.tutorbilling.ui.students.StudentsScreen
 import gr.tsambala.tutorbilling.ui.classes.ClassesScreen
 import gr.tsambala.tutorbilling.ui.lessons.LessonsScreen
 import gr.tsambala.tutorbilling.ui.lesson.LessonScreen
@@ -18,8 +17,7 @@ import gr.tsambala.tutorbilling.ui.revenue.RevenueScreen
 import gr.tsambala.tutorbilling.ui.invoice.InvoiceScreen
 import gr.tsambala.tutorbilling.ui.invoice.PastInvoicesScreen
 import gr.tsambala.tutorbilling.ui.settings.SettingsScreen
-import gr.tsambala.tutorbilling.ui.student.StudentScreen
-import gr.tsambala.tutorbilling.ui.student.StudentViewModel
+import gr.tsambala.tutorbilling.navigation.studentGraph
 
 @Composable
 fun TutorBillingApp() {
@@ -42,18 +40,7 @@ fun TutorBillingApp() {
             )
         }
 
-        // Students list screen
-        composable(Screen.Students.route) {
-            StudentsScreen(
-                onNavigateToStudent = { id ->
-                    navController.navigate(Screen.Student.createRoute(id))
-                },
-                onAddStudent = {
-                    navController.navigate(Screen.Student.createRoute(0))
-                },
-                onBack = { navController.popBackStack() }
-            )
-        }
+        studentGraph(navController)
 
         // Classes list screen
         composable(Screen.Classes.route) {
@@ -151,10 +138,15 @@ fun TutorBillingApp() {
         ) { backStackEntry ->
             val viewModel: LessonViewModel = hiltViewModel()
 
-
             val lessonId = backStackEntry.arguments?.getLong("lessonId") ?: 0L
 
             val studentId = backStackEntry.arguments?.getLong("studentId") ?: 0L
+
+            LaunchedEffect(Unit) {
+                viewModel.setNavigationCallback {
+                    navController.popBackStack()
+                }
+            }
 
             LessonScreen(
                 studentId = studentId.takeIf { it != 0L },
