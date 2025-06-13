@@ -9,7 +9,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import gr.tsambala.tutorbilling.ui.home.HomeMenuScreen
-import gr.tsambala.tutorbilling.ui.students.StudentsScreen
 import gr.tsambala.tutorbilling.ui.classes.ClassesScreen
 import gr.tsambala.tutorbilling.ui.lessons.LessonsScreen
 import gr.tsambala.tutorbilling.ui.lesson.LessonScreen
@@ -18,8 +17,7 @@ import gr.tsambala.tutorbilling.ui.revenue.RevenueScreen
 import gr.tsambala.tutorbilling.ui.invoice.InvoiceScreen
 import gr.tsambala.tutorbilling.ui.invoice.PastInvoicesScreen
 import gr.tsambala.tutorbilling.ui.settings.SettingsScreen
-import gr.tsambala.tutorbilling.ui.student.StudentScreen
-import gr.tsambala.tutorbilling.ui.student.StudentViewModel
+import gr.tsambala.tutorbilling.navigation.studentGraph
 
 @Composable
 fun TutorBillingApp() {
@@ -42,18 +40,7 @@ fun TutorBillingApp() {
             )
         }
 
-        // Students list screen
-        composable(Screen.Students.route) {
-            StudentsScreen(
-                onNavigateToStudent = { id ->
-                    navController.navigate(Screen.Student.createRoute(id))
-                },
-                onAddStudent = {
-                    navController.navigate(Screen.Student.createRoute(0))
-                },
-                onBack = { navController.popBackStack() }
-            )
-        }
+        studentGraph(navController)
 
         // Classes list screen
         composable(Screen.Classes.route) {
@@ -101,40 +88,6 @@ fun TutorBillingApp() {
             SettingsScreen(onBack = { navController.popBackStack() })
         }
 
-        // Student Detail/Edit Screen
-        composable(
-            route = Screen.Student.route,
-            arguments = listOf(
-                navArgument("studentId") {
-                    type = NavType.LongType
-                }
-            )
-        ) { backStackEntry ->
-            val viewModel: StudentViewModel = hiltViewModel()
-
-            // Obtain the student id from the nav arguments
-            val studentIdArg = backStackEntry.arguments?.getLong("studentId") ?: 0L
-
-            // Set up navigation callback
-            LaunchedEffect(Unit) {
-                viewModel.setNavigationCallback {
-                    navController.popBackStack()
-                }
-            }
-
-            val studentId = studentIdArg.toString()
-            StudentScreen(
-                studentId = studentId,
-                onNavigateBack = { navController.popBackStack() },
-                onNavigateToLesson = { lessonId ->
-                    navController.navigate(Screen.Lesson.createRoute(lessonId.toString(), studentIdArg))
-                },
-                onAddLesson = {
-                    navController.navigate(Screen.Lesson.createRoute("new", studentIdArg))
-                },
-                viewModel = viewModel
-            )
-        }
 
         // Lesson Detail/Edit Screen
         composable(
