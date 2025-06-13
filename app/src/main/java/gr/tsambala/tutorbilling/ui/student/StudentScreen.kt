@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import android.util.Patterns
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import gr.tsambala.tutorbilling.data.model.RateTypes
@@ -384,7 +385,8 @@ private fun StudentEditForm(
     modifier: Modifier = Modifier
 ) {
     val nameError = uiState.name.isBlank()
-    val rateError = uiState.rate.toDoubleOrNull() == null
+    val rateValue = uiState.rate.toDoubleOrNull()
+    val rateError = rateValue == null || rateValue <= 0.0
 
     Column(
         modifier = modifier
@@ -415,22 +417,27 @@ private fun StudentEditForm(
             singleLine = true
         )
 
-        val mobileError = uiState.parentMobile.isBlank()
+        val mobileError =
+            uiState.parentMobile.length != 10 || uiState.parentMobile.any { !it.isDigit() }
         OutlinedTextField(
             value = uiState.parentMobile,
             onValueChange = viewModel::updateParentMobile,
             label = { Text("Parent's Mobile*") },
             isError = mobileError,
-            supportingText = { if (mobileError) Text("Required") },
+            supportingText = { if (mobileError) Text("10-digit number") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
 
+        val emailError = uiState.parentEmail.isNotBlank() &&
+            !Patterns.EMAIL_ADDRESS.matcher(uiState.parentEmail).matches()
         OutlinedTextField(
             value = uiState.parentEmail,
             onValueChange = viewModel::updateParentEmail,
             label = { Text("Parent's Email") },
+            isError = emailError,
+            supportingText = { if (emailError) Text("Invalid email") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
@@ -545,10 +552,13 @@ private fun StudentEditForm(
                 modifier = Modifier.weight(1f),
                 enabled = uiState.name.isNotBlank() &&
                     uiState.surname.isNotBlank() &&
-                    uiState.parentMobile.isNotBlank() &&
-                    uiState.rate.toDoubleOrNull() != null &&
+                    uiState.parentMobile.length == 10 &&
+                    uiState.parentMobile.all { it.isDigit() } &&
+                    rateValue != null && rateValue > 0 &&
                     uiState.selectedClass.isNotBlank() &&
-                    (uiState.selectedClass != "Custom" || uiState.customClass.isNotBlank())
+                    (uiState.selectedClass != "Custom" || uiState.customClass.isNotBlank()) &&
+                    (uiState.parentEmail.isBlank() ||
+                        Patterns.EMAIL_ADDRESS.matcher(uiState.parentEmail).matches())
             ) {
                 Text("Save")
             }

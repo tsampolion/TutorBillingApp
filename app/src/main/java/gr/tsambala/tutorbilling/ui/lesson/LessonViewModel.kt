@@ -105,7 +105,8 @@ class LessonViewModel @Inject constructor(
 
     fun updateDuration(duration: String) {
         val digits = duration.filter { it.isDigit() }
-        val sanitized = digits.toIntOrNull()?.takeIf { it > 0 }?.toString() ?: ""
+        val number = digits.toIntOrNull()?.coerceIn(0, 180) ?: 0
+        val sanitized = number.takeIf { it > 0 }?.toString() ?: ""
         _uiState.update { it.copy(durationMinutes = sanitized) }
     }
 
@@ -152,7 +153,7 @@ class LessonViewModel @Inject constructor(
             hasStudent && validDateTime
         } else {
             val duration = state.durationMinutes.toIntOrNull() ?: 0
-            hasStudent && validDateTime && duration >= 60
+            hasStudent && validDateTime && duration in 60..180
         }
     }
 
@@ -169,6 +170,7 @@ class LessonViewModel @Inject constructor(
             } else {
                 if (duration <= 0) duration = 60
                 if (duration < 60) duration = 60
+                if (duration > 180) duration = 180
                 _uiState.update { it.copy(durationMinutes = duration.toString()) }
             }
             if (!isFormValid()) return@launch
