@@ -9,7 +9,7 @@ set -euo pipefail
 # ---- 0. Tunables ------------------------------------------------------------
 ANDROID_SDK_ROOT="${HOME}/android-sdk"
 CMDLINE_VERSION="11076708"        # cmdline-tools r12b :contentReference[oaicite:0]{index=0}
-API_LEVEL="34"                    # Android 14
+API_LEVEL="35"                    # Android 15
 BUILD_TOOLS="35.0.0"
 NDK_VERSION="27.0.11718014"
 CMAKE_VERSION=""                  # blank → auto-detect newest stable
@@ -114,7 +114,7 @@ run_sdk sdkmanager --sdk_root="${ANDROID_SDK_ROOT}" \
   "extras;google;m2repository"          # Google & Android repos :contentReference[oaicite:6]{index=6}
 
 echo ">>>> 9 · Accepting SDK licences"
-run_sdk sdkmanager --sdk_root="${ANDROID_SDK_ROOT}" --licenses      :contentReference[oaicite:7]{index=7}
+run_sdk sdkmanager --sdk_root="${ANDROID_SDK_ROOT}" --licenses
 
 
 ###############################################################################
