@@ -2,7 +2,10 @@ package gr.tsambala.tutorbilling.ui.lesson
 
 import gr.tsambala.tutorbilling.R
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
@@ -15,6 +18,7 @@ import androidx.compose.material3.TimePicker
 import gr.tsambala.tutorbilling.ui.components.ClickableReadOnlyField
 import gr.tsambala.tutorbilling.utils.getFullName
 import androidx.compose.runtime.*
+import gr.tsambala.tutorbilling.data.model.RateTypes
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -84,62 +88,41 @@ fun LessonScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
+                .imePadding()
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Student info or picker
-            if (uiState.availableStudents.isEmpty()) {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Text(
-                            text = uiState.studentName,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "€${uiState.studentRate}/hour",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                }
-            } else {
-                var expanded by remember { mutableStateOf(false) }
-                ExposedDropdownMenuBox(
+            // Student picker
+            var expanded by remember { mutableStateOf(false) }
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded }
+            ) {
+                OutlinedTextField(
+                    value = uiState.selectedStudentId?.let { id ->
+                        uiState.availableStudents.firstOrNull { it.id == id }?.getFullName()
+                    } ?: "",
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Student*") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+                    modifier = Modifier
+                        .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
+                        .fillMaxWidth(),
+                )
+                ExposedDropdownMenu(
                     expanded = expanded,
-                    onExpandedChange = { expanded = !expanded }
+                    onDismissRequest = { expanded = false }
                 ) {
-                    OutlinedTextField(
-                        value = uiState.selectedStudentId?.let { id ->
-                            uiState.availableStudents.firstOrNull { it.id == id }?.getFullName()
-                        } ?: "",
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("Student*") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
-                        modifier = Modifier
-                            .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
-                            .fillMaxWidth()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
-                        uiState.availableStudents.forEach { student ->
-                            DropdownMenuItem(
-                                text = { Text(student.getFullName()) },
-                                onClick = {
-                                    viewModel.updateSelectedStudent(student.id)
-                                    expanded = false
-                                }
-                            )
-                        }
+                    uiState.availableStudents.forEach { student ->
+                        DropdownMenuItem(
+                            text = { Text(student.getFullName()) },
+                            onClick = {
+                                viewModel.updateSelectedStudent(student.id)
+                                expanded = false
+                            }
+                        )
                     }
                 }
             }
@@ -213,14 +196,20 @@ fun LessonScreen(
                 )
             }
 
-            OutlinedTextField(
-                value = uiState.durationMinutes,
-                onValueChange = viewModel::updateDuration,
-                label = { Text("Duration (minutes)") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
+            if (uiState.rateType == RateTypes.HOURLY) {
+                OutlinedTextField(
+                    value = uiState.durationMinutes,
+                    onValueChange = viewModel::updateDuration,
+                    label = { Text("Duration (minutes)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    isError = uiState.durationMinutes.toIntOrNull()?.let { it < 60 } ?: false,
+                    supportingText = {
+                        if ((uiState.durationMinutes.toIntOrNull() ?: 0) < 60) Text("Minimum 60")
+                    }
+                )
+            }
 
             // Fee calculation
             Card(
@@ -241,7 +230,7 @@ fun LessonScreen(
                         style = MaterialTheme.typography.titleMedium
                     )
                     Text(
-                        text = "€%.2f".format(viewModel.calculateFee()),
+                        text = "€%.2f".format(if (uiState.rateType == RateTypes.PER_LESSON) uiState.studentRate else viewModel.calculateFee()),
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold
                     )

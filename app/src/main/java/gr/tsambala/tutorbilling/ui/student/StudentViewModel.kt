@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import gr.tsambala.tutorbilling.data.model.Student
+import gr.tsambala.tutorbilling.data.model.RateTypes
 import gr.tsambala.tutorbilling.data.model.calculateFee
 import gr.tsambala.tutorbilling.data.repository.StudentRepository
 import gr.tsambala.tutorbilling.data.dao.LessonDao
@@ -60,6 +61,7 @@ class StudentViewModel @Inject constructor(
                             student = student,
                             name = if (currentState.isEditMode) currentState.name else student?.name ?: "",
                             rate = if (currentState.isEditMode) currentState.rate else student?.rate?.toString() ?: "",
+                            rateType = if (currentState.isEditMode) currentState.rateType else student?.rateType ?: RateTypes.HOURLY,
                             isActive = if (currentState.isEditMode) currentState.isActive else student?.isActive ?: true,
                             lessons = lessons,
                             weekEarnings = week,
@@ -77,6 +79,10 @@ class StudentViewModel @Inject constructor(
 
     fun updateRate(rate: String) {
         _uiState.update { it.copy(rate = rate, hasChanges = true) }
+    }
+
+    fun updateRateType(type: String) {
+        _uiState.update { it.copy(rateType = type, hasChanges = true) }
     }
 
     fun toggleActive() {
@@ -100,12 +106,14 @@ class StudentViewModel @Inject constructor(
                         id = studentId,
                         name = state.name,
                         rate = rate,
+                        rateType = state.rateType,
                         isActive = state.isActive
                     )
                 } else {
                     Student(
                         name = state.name,
                         rate = rate,
+                        rateType = state.rateType,
                         isActive = state.isActive
                     )
                 }
@@ -170,6 +178,7 @@ data class StudentUiState(
     val student: Student? = null,
     val name: String = "",
     val rate: String = "",
+    val rateType: String = RateTypes.HOURLY,
     val isActive: Boolean = true,
     val isEditMode: Boolean = false,
     val isLoading: Boolean = false,

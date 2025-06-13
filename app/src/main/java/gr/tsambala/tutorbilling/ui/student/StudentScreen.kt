@@ -14,6 +14,9 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -22,6 +25,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import gr.tsambala.tutorbilling.data.model.RateTypes
 import gr.tsambala.tutorbilling.data.model.Lesson
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -399,10 +403,46 @@ private fun StudentEditForm(
             singleLine = true
         )
 
+        var typeExpanded by remember { mutableStateOf(false) }
+        ExposedDropdownMenuBox(
+            expanded = typeExpanded,
+            onExpandedChange = { typeExpanded = !typeExpanded }
+        ) {
+            OutlinedTextField(
+                value = if (uiState.rateType == RateTypes.HOURLY) "Hourly" else "Per Lesson",
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Billing Method") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(typeExpanded) },
+                modifier = Modifier
+                    .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
+                    .fillMaxWidth()
+            )
+            ExposedDropdownMenu(
+                expanded = typeExpanded,
+                onDismissRequest = { typeExpanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Hourly") },
+                    onClick = {
+                        viewModel.updateRateType(RateTypes.HOURLY)
+                        typeExpanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Per Lesson") },
+                    onClick = {
+                        viewModel.updateRateType(RateTypes.PER_LESSON)
+                        typeExpanded = false
+                    }
+                )
+            }
+        }
+
         OutlinedTextField(
             value = uiState.rate,
             onValueChange = viewModel::updateRate,
-            label = { Text("Hourly Rate (€)*") },
+            label = { Text(if (uiState.rateType == RateTypes.HOURLY) "Hourly Rate (€)*" else "Lesson Fee (€)*") },
             isError = rateError,
             supportingText = { if (rateError) Text("Required") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),

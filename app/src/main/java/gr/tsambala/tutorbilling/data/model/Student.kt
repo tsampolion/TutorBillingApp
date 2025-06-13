@@ -10,7 +10,9 @@ data class Student(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val name: String,
-    val rate: Double, // Hourly rate in euros
+    val rate: Double,
+    @ColumnInfo(defaultValue = "'hourly'")
+    val rateType: String = RateTypes.HOURLY,
     @ColumnInfo(defaultValue = "1")
     val isActive: Boolean = true // Default to active
 )

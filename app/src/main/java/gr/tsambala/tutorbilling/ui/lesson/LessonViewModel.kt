@@ -9,6 +9,7 @@ import gr.tsambala.tutorbilling.data.model.Lesson
 import gr.tsambala.tutorbilling.data.dao.LessonDao
 import gr.tsambala.tutorbilling.data.dao.StudentDao
 import gr.tsambala.tutorbilling.data.model.Student
+import gr.tsambala.tutorbilling.data.model.RateTypes
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -57,22 +58,17 @@ class LessonViewModel @Inject constructor(
 
     private fun loadStudentInfo() {
         viewModelScope.launch(Dispatchers.IO) {
-            val id = studentId?.takeIf { it != 0L }
-            if (id != null) {
-                studentDao.getStudentById(id).collect { student ->
-                    student?.let { s ->
-                        _uiState.update { state ->
-                            state.copy(
-                                studentName = s.name,
-                                studentRate = s.rate,
-                                selectedStudentId = id
-                            )
-                        }
-                    }
-                }
-            } else {
-                studentDao.getAllActiveStudents().collect { list ->
-                    _uiState.update { it.copy(availableStudents = list) }
+            studentDao.getAllActiveStudents().collect { list ->
+                val selectedId = studentId?.takeIf { it != 0L } ?: _uiState.value.selectedStudentId
+                val selectedStudent = list.firstOrNull { it.id == selectedId }
+                _uiState.update { state ->
+                    state.copy(
+                        availableStudents = list,
+                        selectedStudentId = selectedStudent?.id,
+                        studentName = selectedStudent?.name ?: state.studentName,
+                        studentRate = selectedStudent?.rate ?: state.studentRate,
+                        rateType = selectedStudent?.rateType ?: state.rateType
+                    )
                 }
             }
         }
@@ -121,7 +117,8 @@ class LessonViewModel @Inject constructor(
                         it.copy(
                             selectedStudentId = id,
                             studentName = s.name,
-                            studentRate = s.rate
+                            studentRate = s.rate,
+                            rateType = s.rateType
                         )
                     }
                 }
@@ -149,10 +146,14 @@ class LessonViewModel @Inject constructor(
 
     fun isFormValid(): Boolean {
         val state = _uiState.value
-        val duration = state.durationMinutes.toIntOrNull() ?: 0
         val hasStudent = state.selectedStudentId != null
-        val durationOk = duration >= 60
-        return hasStudent && durationOk && isValidDate(state.date) && isValidTime(state.startTime)
+        val validDateTime = isValidDate(state.date) && isValidTime(state.startTime)
+        return if (state.rateType == RateTypes.PER_LESSON) {
+            hasStudent && validDateTime
+        } else {
+            val duration = state.durationMinutes.toIntOrNull() ?: 0
+            hasStudent && validDateTime && duration >= 60
+        }
     }
 
     fun toggleEditMode() {
@@ -163,9 +164,13 @@ class LessonViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val state = _uiState.value
             var duration = state.durationMinutes.toIntOrNull() ?: 0
-            if (duration <= 0) duration = 60
-            if (duration < 60) duration = 60
-            _uiState.update { it.copy(durationMinutes = duration.toString()) }
+            if (state.rateType == RateTypes.PER_LESSON) {
+                duration = 60
+            } else {
+                if (duration <= 0) duration = 60
+                if (duration < 60) duration = 60
+                _uiState.update { it.copy(durationMinutes = duration.toString()) }
+            }
             if (!isFormValid()) return@launch
 
             val sId = state.selectedStudentId
@@ -221,8 +226,11 @@ class LessonViewModel @Inject constructor(
     fun calculateFee(): Double {
         val state = _uiState.value
         val duration = state.durationMinutes.toIntOrNull() ?: 0
-
-        return (duration / 60.0) * state.studentRate
+        return if (state.rateType == RateTypes.PER_LESSON) {
+            state.studentRate
+        } else {
+            (duration.coerceAtLeast(60) / 60.0) * state.studentRate
+        }
     }
 }
 
@@ -233,6 +241,7 @@ data class LessonUiState(
     val notes: String = "",
     val studentName: String = "",
     val studentRate: Double = 0.0,
+    val rateType: String = RateTypes.HOURLY,
     val availableStudents: List<Student> = emptyList(),
     val selectedStudentId: Long? = null,
     val isEditMode: Boolean = true,
