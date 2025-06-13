@@ -29,4 +29,7 @@ interface StudentDao {
 
     @Query("SELECT COUNT(*) FROM students WHERE isActive = 1")
     suspend fun getActiveStudentCount(): Int
+
+    @Query("SELECT COUNT(*) FROM students WHERE LOWER(className) = LOWER(:name)")
+    suspend fun classNameExists(name: String): Int
 }

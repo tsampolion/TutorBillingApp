@@ -27,6 +27,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import gr.tsambala.tutorbilling.data.model.RateTypes
 import gr.tsambala.tutorbilling.data.model.Lesson
+import gr.tsambala.tutorbilling.utils.ClassOptions
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -403,6 +404,82 @@ private fun StudentEditForm(
             singleLine = true
         )
 
+        val surnameError = uiState.surname.isBlank()
+        OutlinedTextField(
+            value = uiState.surname,
+            onValueChange = viewModel::updateSurname,
+            label = { Text("Surname*") },
+            isError = surnameError,
+            supportingText = { if (surnameError) Text("Required") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+
+        val mobileError = uiState.parentMobile.isBlank()
+        OutlinedTextField(
+            value = uiState.parentMobile,
+            onValueChange = viewModel::updateParentMobile,
+            label = { Text("Parent's Mobile*") },
+            isError = mobileError,
+            supportingText = { if (mobileError) Text("Required") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+
+        OutlinedTextField(
+            value = uiState.parentEmail,
+            onValueChange = viewModel::updateParentEmail,
+            label = { Text("Parent's Email") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+
+        var classExpanded by remember { mutableStateOf(false) }
+        ExposedDropdownMenuBox(
+            expanded = classExpanded,
+            onExpandedChange = { classExpanded = !classExpanded }
+        ) {
+            OutlinedTextField(
+                value = uiState.selectedClass,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Class*") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(classExpanded) },
+                modifier = Modifier
+                    .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
+                    .fillMaxWidth()
+            )
+            ExposedDropdownMenu(
+                expanded = classExpanded,
+                onDismissRequest = { classExpanded = false }
+            ) {
+                ClassOptions.DEFAULT.forEach { option ->
+                    DropdownMenuItem(
+                        text = { Text(option) },
+                        onClick = {
+                            viewModel.updateSelectedClass(option)
+                            classExpanded = false
+                        }
+                    )
+                }
+            }
+        }
+
+        val customClassError = uiState.selectedClass == "Custom" && uiState.customClass.isBlank()
+        if (uiState.selectedClass == "Custom") {
+            OutlinedTextField(
+                value = uiState.customClass,
+                onValueChange = viewModel::updateCustomClass,
+                label = { Text("Class Description*") },
+                isError = customClassError,
+                supportingText = { if (customClassError) Text("Required") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+        }
+
         var typeExpanded by remember { mutableStateOf(false) }
         ExposedDropdownMenuBox(
             expanded = typeExpanded,
@@ -466,7 +543,12 @@ private fun StudentEditForm(
             Button(
                 onClick = onSave,
                 modifier = Modifier.weight(1f),
-                enabled = uiState.name.isNotBlank() && uiState.rate.toDoubleOrNull() != null
+                enabled = uiState.name.isNotBlank() &&
+                    uiState.surname.isNotBlank() &&
+                    uiState.parentMobile.isNotBlank() &&
+                    uiState.rate.toDoubleOrNull() != null &&
+                    uiState.selectedClass.isNotBlank() &&
+                    (uiState.selectedClass != "Custom" || uiState.customClass.isNotBlank())
             ) {
                 Text("Save")
             }

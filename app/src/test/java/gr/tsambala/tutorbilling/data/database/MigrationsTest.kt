@@ -26,9 +26,9 @@ class MigrationsTest {
     @Test
     fun migrateAllVersionsToLatest() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        for (version in 1..7) {
+        for (version in 1..8) {
             helper.createDatabase(TEST_DB, version).close()
-            helper.runMigrationsAndValidate(TEST_DB, 8, true)
+            helper.runMigrationsAndValidate(TEST_DB, 9, true)
             context.deleteDatabase(TEST_DB)
         }
     }
