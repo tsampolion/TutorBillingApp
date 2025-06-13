@@ -18,6 +18,8 @@ import gr.tsambala.tutorbilling.ui.invoice.InvoiceScreen
 import gr.tsambala.tutorbilling.ui.invoice.PastInvoicesScreen
 import gr.tsambala.tutorbilling.ui.settings.SettingsScreen
 import gr.tsambala.tutorbilling.navigation.studentGraph
+import gr.tsambala.tutorbilling.ui.student.StudentScreen
+import gr.tsambala.tutorbilling.ui.student.StudentViewModel
 
 @Composable
 fun TutorBillingApp() {
