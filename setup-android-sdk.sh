@@ -41,16 +41,23 @@ apt-get install -y --no-install-recommends \
 ###############################################################################
 # 5. Download Android command-line tools and flatten the directory layout
 ###############################################################################
+
 echo ">>>> 5. Fetching Android command-line tools r${CMDLINE_VERSION}"
 mkdir -p "${ANDROID_SDK_ROOT}/cmdline-tools"
 cd /tmp
 curl -sSLo cmdline-tools.zip \
   "https://dl.google.com/android/repository/commandlinetools-linux-${CMDLINE_VERSION}_latest.zip"
-unzip -q cmdline-tools.zip
+unzip -q cmdline-tools.zip            # creates ./cmdline-tools/...
 mv cmdline-tools "${ANDROID_SDK_ROOT}/cmdline-tools/latest"
-mv "${ANDROID_SDK_ROOT}/cmdline-tools/latest/cmdline-tools"/* \
-   "${ANDROID_SDK_ROOT}/cmdline-tools/latest/"
-rmdir "${ANDROID_SDK_ROOT}/cmdline-tools/latest/cmdline-tools"
+
+# ---- NEW: only flatten if an inner "cmdline-tools" actually exists ----
+if [ -d "${ANDROID_SDK_ROOT}/cmdline-tools/latest/cmdline-tools" ]; then
+  mv "${ANDROID_SDK_ROOT}/cmdline-tools/latest/cmdline-tools"/* \
+     "${ANDROID_SDK_ROOT}/cmdline-tools/latest/"
+  rmdir "${ANDROID_SDK_ROOT}/cmdline-tools/latest/cmdline-tools"
+fi
+# -----------------------------------------------------------------------
+
 rm cmdline-tools.zip
 cd -
 
