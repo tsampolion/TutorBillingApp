@@ -67,7 +67,7 @@ fun StudentsScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     OutlinedTextField(
-                        value = viewModel.uiState.value.searchQuery,
+                        value = uiState.searchQuery,
                         onValueChange = viewModel::updateSearchQuery,
                         modifier = Modifier.weight(1f),
                         label = { Text("Search") }
