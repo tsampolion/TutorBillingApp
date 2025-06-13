@@ -24,8 +24,6 @@ interface StudentDao {
     @Query("SELECT * FROM students WHERE isActive = 1 ORDER BY name ASC")
     fun getAllActiveStudents(): Flow<List<Student>>
 
-    @Query("SELECT * FROM students WHERE isActive = 1 AND name LIKE '%' || :query || '%' ORDER BY name ASC")
-    fun searchStudentsByName(query: String): Flow<List<Student>>
 
     @Query("SELECT COUNT(*) FROM students WHERE isActive = 1")
     suspend fun getActiveStudentCount(): Int

@@ -16,7 +16,6 @@ class StudentRepository @Inject constructor(
     suspend fun softDeleteStudent(studentId: Long) = studentDao.softDeleteStudent(studentId)
     fun getStudentById(id: Long): Flow<Student?> = studentDao.getStudentById(id)
     fun getAllActiveStudents(): Flow<List<Student>> = studentDao.getAllActiveStudents()
-    fun searchStudentsByName(query: String): Flow<List<Student>> = studentDao.searchStudentsByName(query)
     suspend fun getActiveStudentCount(): Int = studentDao.getActiveStudentCount()
     suspend fun classNameExists(name: String): Boolean = studentDao.classNameExists(name) > 0
 }
