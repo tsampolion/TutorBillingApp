@@ -55,6 +55,10 @@ interface LessonDao {
                lessons.isPaid AS lesson_isPaid,
                students.id AS student_id,
                students.name AS student_name,
+               students.surname AS student_surname,
+               students.parentMobile AS student_parentMobile,
+               students.parentEmail AS student_parentEmail,
+               students.className AS student_className,
                students.rate AS student_rate,
                students.rateType AS student_rateType,
                students.isActive AS student_isActive
@@ -76,6 +80,10 @@ interface LessonDao {
                lessons.isPaid AS lesson_isPaid,
                students.id AS student_id,
                students.name AS student_name,
+               students.surname AS student_surname,
+               students.parentMobile AS student_parentMobile,
+               students.parentEmail AS student_parentEmail,
+               students.className AS student_className,
                students.rate AS student_rate,
                students.rateType AS student_rateType,
                students.isActive AS student_isActive
@@ -98,6 +106,10 @@ interface LessonDao {
                lessons.isPaid AS lesson_isPaid,
                students.id AS student_id,
                students.name AS student_name,
+               students.surname AS student_surname,
+               students.parentMobile AS student_parentMobile,
+               students.parentEmail AS student_parentEmail,
+               students.className AS student_className,
                students.rate AS student_rate,
                students.rateType AS student_rateType,
                students.isActive AS student_isActive
@@ -120,6 +132,10 @@ interface LessonDao {
                lessons.isPaid AS lesson_isPaid,
                students.id AS student_id,
                students.name AS student_name,
+               students.surname AS student_surname,
+               students.parentMobile AS student_parentMobile,
+               students.parentEmail AS student_parentEmail,
+               students.className AS student_className,
                students.rate AS student_rate,
                students.rateType AS student_rateType,
                students.isActive AS student_isActive
