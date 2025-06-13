@@ -34,7 +34,7 @@ fun TutorBillingApp() {
                 onClassesClick = { navController.navigate(Screen.Classes.route) },
                 onNavigateToLesson = { navController.navigate(Screen.Lessons.route) },
                 onNavigateToNewStudent = { navController.navigate(Screen.Student.createRoute(0)) },
-                onNavigateToNewLesson = { navController.navigate(Screen.Lesson.createRoute("new")) },
+                onNavigateToNewLesson = { navController.navigate(Screen.Lesson.createRoute(0)) },
                 onRevenue = { navController.navigate(Screen.Revenue.route) },
                 onSettings = { navController.navigate(Screen.Settings.route) }
             )
@@ -58,7 +58,7 @@ fun TutorBillingApp() {
                 onBack = { navController.popBackStack() },
                 onLessonClick = { studentId, lessonId ->
                     navController.navigate(
-                        Screen.Lesson.createRoute(lessonId.toString(), studentId)
+                        Screen.Lesson.createRoute(lessonId, studentId)
                     )
                 }
             )
@@ -88,13 +88,12 @@ fun TutorBillingApp() {
             SettingsScreen(onBack = { navController.popBackStack() })
         }
 
-
         // Lesson Detail/Edit Screen
         composable(
             route = Screen.Lesson.route,
             arguments = listOf(
                 navArgument("lessonId") {
-                    type = NavType.StringType
+                    type = NavType.LongType
                 },
                 navArgument("studentId") {
                     type = NavType.LongType
@@ -104,9 +103,15 @@ fun TutorBillingApp() {
         ) { backStackEntry ->
             val viewModel: LessonViewModel = hiltViewModel()
 
-            val lessonId = backStackEntry.arguments?.getString("lessonId") ?: "new"
-          
+            val lessonId = backStackEntry.arguments?.getLong("lessonId") ?: 0L
+
             val studentId = backStackEntry.arguments?.getLong("studentId") ?: 0L
+
+            LaunchedEffect(Unit) {
+                viewModel.setNavigationCallback {
+                    navController.popBackStack()
+                }
+            }
 
             LessonScreen(
                 studentId = studentId.takeIf { it != 0L },

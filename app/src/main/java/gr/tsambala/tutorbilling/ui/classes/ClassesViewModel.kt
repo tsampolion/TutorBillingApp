@@ -22,8 +22,15 @@ class ClassesViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             studentDao.getAllActiveStudents().map { students ->
-                val grouped = mapOf("All" to students)
-                val hasUnassigned = false
+                val grouped = students.groupBy { student ->
+                    val name = student.className.trim()
+                    if (name.isBlank() || name.equals("unknown", ignoreCase = true)) {
+                        "Unassigned"
+                    } else {
+                        name
+                    }
+                }
+                val hasUnassigned = grouped.containsKey("Unassigned")
                 ClassesUiState(grouped, hasUnassigned)
             }.collect { state ->
                 _uiState.value = state

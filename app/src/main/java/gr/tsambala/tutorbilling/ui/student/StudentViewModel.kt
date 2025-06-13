@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import android.util.Patterns
 import javax.inject.Inject
 
 @HiltViewModel
@@ -96,7 +97,8 @@ class StudentViewModel @Inject constructor(
     }
 
     fun updateParentMobile(value: String) {
-        _uiState.update { it.copy(parentMobile = value, hasChanges = true) }
+        val digitsOnly = value.filter { it.isDigit() }.take(10)
+        _uiState.update { it.copy(parentMobile = digitsOnly, hasChanges = true) }
     }
 
     fun updateParentEmail(value: String) {
@@ -115,7 +117,19 @@ class StudentViewModel @Inject constructor(
     }
 
     fun updateRate(rate: String) {
-        _uiState.update { it.copy(rate = rate, hasChanges = true) }
+        val sanitized = buildString {
+            var dotSeen = false
+            for (ch in rate) {
+                when {
+                    ch.isDigit() -> append(ch)
+                    ch == '.' && !dotSeen -> {
+                        append(ch)
+                        dotSeen = true
+                    }
+                }
+            }
+        }
+        _uiState.update { it.copy(rate = sanitized, hasChanges = true) }
     }
 
     fun updateRateType(type: String) {
@@ -132,7 +146,14 @@ class StudentViewModel @Inject constructor(
 
     fun saveStudent() {
         val state = _uiState.value
-        val rate = state.rate.toDoubleOrNull() ?: return
+        val rate = state.rate.toDoubleOrNull()?.takeIf { it > 0 } ?: return
+
+        if (state.parentMobile.length != 10) return
+
+        if (state.parentEmail.isNotBlank() &&
+            !Patterns.EMAIL_ADDRESS.matcher(state.parentEmail).matches()) {
+            return
+        }
         val className = if (state.selectedClass == "Custom") state.customClass.trim() else state.selectedClass
 
         viewModelScope.launch {
