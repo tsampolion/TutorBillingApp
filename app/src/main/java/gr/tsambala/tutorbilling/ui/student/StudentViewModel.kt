@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import gr.tsambala.tutorbilling.data.model.Student
+import gr.tsambala.tutorbilling.data.model.StudentClasses
+import gr.tsambala.tutorbilling.data.model.RateTypes
 import gr.tsambala.tutorbilling.data.model.calculateFee
 import gr.tsambala.tutorbilling.data.repository.StudentRepository
 import gr.tsambala.tutorbilling.data.dao.LessonDao
@@ -59,7 +61,17 @@ class StudentViewModel @Inject constructor(
                         currentState.copy(
                             student = student,
                             name = if (currentState.isEditMode) currentState.name else student?.name ?: "",
+                            surname = if (currentState.isEditMode) currentState.surname else student?.surname ?: "",
+                            parentMobile = if (currentState.isEditMode) currentState.parentMobile else student?.parentMobile ?: "",
+                            parentEmail = if (currentState.isEditMode) currentState.parentEmail else student?.parentEmail ?: "",
+                            rateType = if (currentState.isEditMode) currentState.rateType else student?.rateType ?: RateTypes.HOURLY,
                             rate = if (currentState.isEditMode) currentState.rate else student?.rate?.toString() ?: "",
+                            selectedClass = if (currentState.isEditMode) currentState.selectedClass else student?.let {
+                                if (StudentClasses.predefined.contains(it.className)) it.className else "Custom"
+                            } ?: "",
+                            customClass = if (currentState.isEditMode) currentState.customClass else student?.let {
+                                if (StudentClasses.predefined.contains(it.className)) "" else it.className
+                            } ?: "",
                             isActive = if (currentState.isEditMode) currentState.isActive else student?.isActive ?: true,
                             lessons = lessons,
                             weekEarnings = week,
@@ -75,8 +87,32 @@ class StudentViewModel @Inject constructor(
         _uiState.update { it.copy(name = name, hasChanges = true) }
     }
 
+    fun updateSurname(value: String) {
+        _uiState.update { it.copy(surname = value, hasChanges = true) }
+    }
+
+    fun updateParentMobile(value: String) {
+        _uiState.update { it.copy(parentMobile = value, hasChanges = true) }
+    }
+
+    fun updateParentEmail(value: String) {
+        _uiState.update { it.copy(parentEmail = value, hasChanges = true) }
+    }
+
+    fun updateRateType(type: String) {
+        _uiState.update { it.copy(rateType = type, hasChanges = true) }
+    }
+
     fun updateRate(rate: String) {
         _uiState.update { it.copy(rate = rate, hasChanges = true) }
+    }
+
+    fun updateSelectedClass(value: String) {
+        _uiState.update { it.copy(selectedClass = value, hasChanges = true) }
+    }
+
+    fun updateCustomClass(value: String) {
+        _uiState.update { it.copy(customClass = value, hasChanges = true) }
     }
 
     fun toggleActive() {
@@ -90,6 +126,7 @@ class StudentViewModel @Inject constructor(
     fun saveStudent() {
         val state = _uiState.value
         val rate = state.rate.toDoubleOrNull() ?: return
+        val className = if (state.selectedClass == "Custom") state.customClass else state.selectedClass
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
@@ -99,13 +136,23 @@ class StudentViewModel @Inject constructor(
                     Student(
                         id = studentId,
                         name = state.name,
+                        surname = state.surname,
+                        parentMobile = state.parentMobile,
+                        parentEmail = state.parentEmail.ifBlank { null },
+                        rateType = state.rateType,
                         rate = rate,
+                        className = className,
                         isActive = state.isActive
                     )
                 } else {
                     Student(
                         name = state.name,
+                        surname = state.surname,
+                        parentMobile = state.parentMobile,
+                        parentEmail = state.parentEmail.ifBlank { null },
+                        rateType = state.rateType,
                         rate = rate,
+                        className = className,
                         isActive = state.isActive
                     )
                 }
@@ -169,7 +216,13 @@ class StudentViewModel @Inject constructor(
 data class StudentUiState(
     val student: Student? = null,
     val name: String = "",
+    val surname: String = "",
+    val parentMobile: String = "",
+    val parentEmail: String = "",
+    val rateType: String = RateTypes.HOURLY,
     val rate: String = "",
+    val selectedClass: String = "",
+    val customClass: String = "",
     val isActive: Boolean = true,
     val isEditMode: Boolean = false,
     val isLoading: Boolean = false,

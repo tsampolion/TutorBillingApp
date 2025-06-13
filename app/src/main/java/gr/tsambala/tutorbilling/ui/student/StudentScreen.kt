@@ -13,6 +13,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import gr.tsambala.tutorbilling.data.model.Lesson
+import gr.tsambala.tutorbilling.data.model.RateTypes
+import gr.tsambala.tutorbilling.data.model.StudentClasses
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -379,7 +383,21 @@ private fun StudentEditForm(
     modifier: Modifier = Modifier
 ) {
     val nameError = uiState.name.isBlank()
+    val surnameError = uiState.surname.isBlank()
+    val mobileError = uiState.parentMobile.isBlank()
     val rateError = uiState.rate.toDoubleOrNull() == null
+    val classError = uiState.selectedClass.isBlank()
+    val customClassDuplicate = uiState.selectedClass == "Custom" &&
+            StudentClasses.predefined.any { it.equals(uiState.customClass, ignoreCase = true) }
+    val customClassError = uiState.selectedClass == "Custom" && uiState.customClass.isBlank()
+
+    val saveEnabled = uiState.name.isNotBlank() &&
+            uiState.surname.isNotBlank() &&
+            uiState.parentMobile.isNotBlank() &&
+            uiState.rate.toDoubleOrNull() != null &&
+            uiState.selectedClass.isNotBlank() &&
+            (uiState.selectedClass != "Custom" ||
+                    (uiState.customClass.isNotBlank() && !customClassDuplicate))
 
     Column(
         modifier = modifier
@@ -400,9 +418,53 @@ private fun StudentEditForm(
         )
 
         OutlinedTextField(
+            value = uiState.surname,
+            onValueChange = viewModel::updateSurname,
+            label = { Text("Surname*") },
+            isError = surnameError,
+            supportingText = { if (surnameError) Text("Required") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+
+        OutlinedTextField(
+            value = uiState.parentMobile,
+            onValueChange = viewModel::updateParentMobile,
+            label = { Text("Parent's Mobile*") },
+            isError = mobileError,
+            supportingText = { if (mobileError) Text("Required") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+
+        OutlinedTextField(
+            value = uiState.parentEmail,
+            onValueChange = viewModel::updateParentEmail,
+            label = { Text("Parent's Email") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            RadioButton(
+                selected = uiState.rateType == RateTypes.HOURLY,
+                onClick = { viewModel.updateRateType(RateTypes.HOURLY) }
+            )
+            Text("Hourly")
+            Spacer(Modifier.width(16.dp))
+            RadioButton(
+                selected = uiState.rateType == RateTypes.PER_LESSON,
+                onClick = { viewModel.updateRateType(RateTypes.PER_LESSON) }
+            )
+            Text("Per lesson")
+        }
+
+        OutlinedTextField(
             value = uiState.rate,
             onValueChange = viewModel::updateRate,
-            label = { Text("Hourly Rate (€)*") },
+            label = { Text(if (uiState.rateType == RateTypes.HOURLY) "Hourly Rate (€)*" else "Rate per Lesson (€)*") },
             isError = rateError,
             supportingText = { if (rateError) Text("Required") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -410,6 +472,53 @@ private fun StudentEditForm(
             singleLine = true,
             prefix = { Text("€") }
         )
+
+        var classExpanded by remember { mutableStateOf(false) }
+        ExposedDropdownMenuBox(
+            expanded = classExpanded,
+            onExpandedChange = { classExpanded = it }
+        ) {
+            OutlinedTextField(
+                value = uiState.selectedClass,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Class*") },
+                isError = classError,
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = classExpanded) },
+                modifier = Modifier.fillMaxWidth()
+            )
+            ExposedDropdownMenu(
+                expanded = classExpanded,
+                onDismissRequest = { classExpanded = false }
+            ) {
+                StudentClasses.predefined.forEach { option ->
+                    DropdownMenuItem(
+                        text = { Text(option) },
+                        onClick = {
+                            viewModel.updateSelectedClass(option)
+                            classExpanded = false
+                        }
+                    )
+                }
+            }
+        }
+
+        if (uiState.selectedClass == "Custom") {
+            OutlinedTextField(
+                value = uiState.customClass,
+                onValueChange = viewModel::updateCustomClass,
+                label = { Text("Class Description*") },
+                isError = customClassError || customClassDuplicate,
+                supportingText = {
+                    when {
+                        customClassError -> Text("Required")
+                        customClassDuplicate -> Text("Already exists")
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+        }
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -426,7 +535,7 @@ private fun StudentEditForm(
             Button(
                 onClick = onSave,
                 modifier = Modifier.weight(1f),
-                enabled = uiState.name.isNotBlank() && uiState.rate.toDoubleOrNull() != null
+                enabled = saveEnabled
             ) {
                 Text("Save")
             }
