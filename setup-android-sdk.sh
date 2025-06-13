@@ -87,15 +87,31 @@ run_sdk() {
 }
 
 ###############################################################################
-# 8. Install SDK packages non-interactively
+# 8. Install SDK packages (CMake version chosen dynamically)
 ###############################################################################
-echo ">>>> 7. Installing SDK platforms & tools (may take a few minutes)"
+echo ">>>> 7. Determining best CMake version"
+
+# --- A. Hard-wire a known-good version (uncomment if you prefer) -------------
+# CMAKE_VERSION="3.22.1"
+
+# --- B. Auto-discover the newest version on the requested channel ------------
+if [[ -z "${CMAKE_VERSION:-}" ]]; then
+  # 0 = stable, 3 = canary.  Change CHANNEL if you want previews.
+  CHANNEL=0
+  CMAKE_LATEST=$(sdkmanager --list --channel=${CHANNEL} | \
+                 awk -F'|' '/cmake;[0-9]+\.[0-9]+/ {gsub(/^[ \t]+|[ \t]+$/, "", $1); print $1}' | \
+                 sort -t';' -k2V | tail -n1)
+  CMAKE_VERSION=${CMAKE_LATEST#cmake;}
+  echo ">>>>    Auto-selected CMake ${CMAKE_VERSION} from channel ${CHANNEL}"
+fi
+
+echo ">>>> 8. Installing SDK platforms, tools and CMake ${CMAKE_VERSION}"
 run_sdk sdkmanager --sdk_root="${ANDROID_SDK_ROOT}" \
     "platform-tools" \
     "platforms;android-${API_LEVEL}" \
     "build-tools;${BUILD_TOOLS}" \
-    "ndk;${NDK_VERSION}" \
     "cmake;${CMAKE_VERSION}" \
+    "ndk;${NDK_VERSION}" \
     "extras;android;m2repository" \
     "extras;google;m2repository"
 
