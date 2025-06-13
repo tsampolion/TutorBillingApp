@@ -51,11 +51,11 @@ fun NavGraphBuilder.studentGraph(navController: NavHostController) {
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToLesson = { lessonId ->
                     navController.navigate(
-                        Screen.Lesson.createRoute(lessonId.toString(), studentIdArg)
+                        Screen.Lesson.createRoute(lessonId, studentIdArg)
                     )
                 },
                 onAddLesson = {
-                    navController.navigate(Screen.Lesson.createRoute("new", studentIdArg))
+                    navController.navigate(Screen.Lesson.createRoute(0L, studentIdArg))
                 },
                 viewModel = viewModel
             )
