@@ -6,6 +6,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import gr.tsambala.tutorbilling.data.dao.LessonDao
 import gr.tsambala.tutorbilling.data.dao.StudentDao
 import gr.tsambala.tutorbilling.data.model.calculateFee
+import kotlinx.coroutines.flow.first
+import gr.tsambala.tutorbilling.ui.revenue.StudentDebt
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -76,15 +78,38 @@ class RevenueViewModel @Inject constructor(
                     paidSum to unpaidSum
                 }
 
+                val debts = lessons
+                    .filter { !it.isPaid }
+                    .groupBy { it.studentId }
+                    .mapNotNull { (id, lns) ->
+                        val student = studentMap[id] ?: return@mapNotNull null
+                        val total = lns.sumOf { it.calculateFee(student) }
+                        if (total > 0) StudentDebt(student, total) else null
+                    }
+                    .sortedBy { it.student.name }
+
                 RevenueUiState(
                     dailyRevenue = dayTotal,
                     weeklyRevenue = weekTotal,
                     monthlyRevenue = monthTotal,
                     monthlyPaid = paidTotal,
-                    monthlyUnpaid = unpaidTotal
+                    monthlyUnpaid = unpaidTotal,
+                    debts = debts
                 )
             }.collect { state ->
                 _uiState.value = state
+            }
+        }
+    }
+
+    fun markLessonsPaid(studentId: Long) {
+        viewModelScope.launch {
+            val ids = lessonDao.getLessonsByStudentId(studentId)
+                .first()
+                .filter { !it.isPaid }
+                .map { it.id }
+            if (ids.isNotEmpty()) {
+                lessonDao.updatePaidStatus(ids, true)
             }
         }
     }
@@ -95,5 +120,6 @@ data class RevenueUiState(
     val weeklyRevenue: Double = 0.0,
     val monthlyRevenue: Double = 0.0,
     val monthlyPaid: Double = 0.0,
-    val monthlyUnpaid: Double = 0.0
+    val monthlyUnpaid: Double = 0.0,
+    val debts: List<StudentDebt> = emptyList()
 )

@@ -16,6 +16,7 @@ import gr.tsambala.tutorbilling.ui.lesson.LessonViewModel
 import gr.tsambala.tutorbilling.ui.revenue.RevenueScreen
 import gr.tsambala.tutorbilling.ui.invoice.InvoiceScreen
 import gr.tsambala.tutorbilling.ui.invoice.PastInvoicesScreen
+import gr.tsambala.tutorbilling.ui.invoice.InvoiceViewModel
 import gr.tsambala.tutorbilling.ui.settings.SettingsScreen
 import gr.tsambala.tutorbilling.navigation.studentGraph
 
@@ -68,14 +69,25 @@ fun TutorBillingApp() {
         composable(Screen.Revenue.route) {
             RevenueScreen(
                 onBack = { navController.popBackStack() },
-                onInvoice = { navController.navigate(Screen.Invoice.route) },
+                onInvoice = { id -> navController.navigate(Screen.Invoice.createRoute(id ?: 0L)) },
                 onPastInvoices = { navController.navigate(Screen.PastInvoices.route) }
             )
         }
 
         // Invoice screen
-        composable(Screen.Invoice.route) {
-            InvoiceScreen(onBack = { navController.popBackStack() })
+        composable(
+            route = Screen.Invoice.route,
+            arguments = listOf(
+                navArgument("studentId") {
+                    type = NavType.LongType
+                    defaultValue = 0L
+                }
+            )
+        ) { backStackEntry ->
+            val viewModel: InvoiceViewModel = hiltViewModel()
+            val id = backStackEntry.arguments?.getLong("studentId") ?: 0L
+            LaunchedEffect(id) { if (id != 0L) viewModel.selectStudent(id) }
+            InvoiceScreen(onBack = { navController.popBackStack() }, viewModel = viewModel)
         }
 
         // Past invoices screen
