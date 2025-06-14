@@ -49,8 +49,11 @@ fun LessonsScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onAddLesson) {
-                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_lesson))
+            FloatingActionButton(
+                onClick = onAddLesson,
+                containerColor = MaterialTheme.colorScheme.primary
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Add Lesson")
             }
         }
     ) { padding ->
