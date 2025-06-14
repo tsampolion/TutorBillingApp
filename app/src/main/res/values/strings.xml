@@ -27,7 +27,7 @@
     <string name="hourly_rate">Hourly Rate</string>
     <string name="per_lesson_rate">Per Lesson Rate</string>
     <string name="no_students">No students yet. Tap + to add your first student!</string>
-    <string name="no_students_short">No students</string>
+    <string name="no_classes">No classes yet. Add a student for classes to show up here.</string>
     <string name="archived_students">Archived Students</string>
     <string name="no_archived_students">No archived students</string>
 
