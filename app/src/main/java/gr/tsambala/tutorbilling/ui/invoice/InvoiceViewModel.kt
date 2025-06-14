@@ -1,5 +1,6 @@
 package gr.tsambala.tutorbilling.ui.invoice
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,9 +20,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class InvoiceViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val lessonDao: LessonDao,
     private val studentDao: StudentDao
 ) : ViewModel() {
+
+    private val defaultStudentId: Long? = savedStateHandle.get<Long?>("id")
 
     private val _startDate = MutableStateFlow(LocalDate.now().withDayOfMonth(1))
     private val _endDate = MutableStateFlow(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()))
@@ -42,6 +46,7 @@ class InvoiceViewModel @Inject constructor(
     val selectedLessons: StateFlow<Set<Long>> = _selectedLessons.asStateFlow()
 
     init {
+        defaultStudentId?.let { _selectedStudentId.value = it }
         viewModelScope.launch {
             combine(_startDate, _endDate, _selectedStudentId) { s, e, id -> Triple(s, e, id) }
                 .collect { (start, end, id) ->

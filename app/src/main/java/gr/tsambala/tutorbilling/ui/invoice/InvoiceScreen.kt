@@ -14,6 +14,7 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.DatePicker
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,8 +42,12 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun InvoiceScreen(
     onBack: () -> Unit,
+    defaultStudentId: Long? = null,
     viewModel: InvoiceViewModel = hiltViewModel()
 ) {
+    LaunchedEffect(defaultStudentId) {
+        defaultStudentId?.let { viewModel.selectStudent(it) }
+    }
     val startDate by viewModel.startDate.collectAsStateWithLifecycle()
     val endDate by viewModel.endDate.collectAsStateWithLifecycle()
     val lessons by viewModel.lessons.collectAsStateWithLifecycle()

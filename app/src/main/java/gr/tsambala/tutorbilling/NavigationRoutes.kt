@@ -13,8 +13,9 @@ sealed class Screen(val route: String) {
     }
     object Classes : Screen("classes")
     object Revenue : Screen("revenue")
-    object Invoice : Screen("invoice?studentId={studentId}") {
-        fun createRoute(studentId: Long = 0L) = "invoice?studentId=$studentId"
+    object Invoice : Screen("invoice?studentId={id}") {
+        fun createRoute(studentId: Long? = null) =
+            studentId?.let { "invoice?studentId=$it" } ?: "invoice"
     }
     object PastInvoices : Screen("pastInvoices")
     object Settings : Screen("settings")

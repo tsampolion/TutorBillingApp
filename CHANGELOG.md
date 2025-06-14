@@ -3,7 +3,9 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
-- 
+-
+### Changed
+- Invoice route now supports optional student selection
 
 ## 0.10 - 2025-06-14
 ### Added
