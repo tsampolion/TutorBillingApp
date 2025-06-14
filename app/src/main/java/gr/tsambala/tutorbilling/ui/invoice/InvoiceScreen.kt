@@ -50,6 +50,7 @@ fun InvoiceScreen(
     val selectedStudentId by viewModel.selectedStudentId.collectAsStateWithLifecycle()
     val selectedLessons by viewModel.selectedLessons.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    var showConfirm by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -69,22 +70,12 @@ fun InvoiceScreen(
                     .padding(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                OutlinedButton(onClick = onBack, modifier = Modifier.weight(1f)) { Text("Cancel") }
+                OutlinedButton(onClick = onBack, modifier = Modifier.weight(1f)) { Text("Back") }
                 Button(
-                    onClick = {
-                        val selected = lessons.filter { selectedLessons.contains(it.lesson.id) }
-                        val uri = createInvoicePdf(File(context.filesDir, "invoices"), selected)
-                        val pdfFile = uri.toFile()
-                        val share = Intent(Intent.ACTION_SEND).apply {
-                            type = "application/pdf"
-                            putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(context, "${context.packageName}.provider", pdfFile))
-                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        }
-                        context.startActivity(Intent.createChooser(share, null))
-                    },
+                    onClick = { showConfirm = true },
                     modifier = Modifier.weight(1f),
                     enabled = selectedLessons.isNotEmpty()
-                ) { Text("Share PDF") }
+                ) { Text("Create Invoice") }
             }
         }
     ) { padding ->
@@ -115,6 +106,31 @@ fun InvoiceScreen(
                     }
                 }
             }
+        }
+        if (showConfirm) {
+            AlertDialog(
+                onDismissRequest = { showConfirm = false },
+                title = { Text("Create Invoice") },
+                text = { Text("Generate PDF and mark lessons as paid?") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        val selected = lessons.filter { selectedLessons.contains(it.lesson.id) }
+                        val uri = createInvoicePdf(File(context.filesDir, "invoices"), selected)
+                        viewModel.markAsPaid(selected.map { it.lesson.id })
+                        val pdfFile = uri.toFile()
+                        val share = Intent(Intent.ACTION_SEND).apply {
+                            type = "application/pdf"
+                            putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(context, "${context.packageName}.provider", pdfFile))
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        }
+                        context.startActivity(Intent.createChooser(share, null))
+                        showConfirm = false
+                    }) { Text("Create") }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showConfirm = false }) { Text("Cancel") }
+                }
+            )
         }
     }
 }
