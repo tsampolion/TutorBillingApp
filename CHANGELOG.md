@@ -2,9 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [0.13] - 2025-06-14
 ### Added
 - Student archive and restore flow with Archived Students screen.
+- Add unit test for `RevenueViewModel` debts calculation.
 
 ## [0.12] - 2025-06-14
 ### Changed
