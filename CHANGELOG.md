@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+### Changed
+- Invoice navigation now uses a default `-1` ID for optional student selection.
+
 ## [0.13] - 2025-06-14
 ### Added
 - Student archive and restore flow with Archived Students screen.

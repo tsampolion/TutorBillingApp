@@ -83,13 +83,13 @@ fun TutorBillingApp() {
             arguments = listOf(
                 navArgument("id") {
                     type = NavType.LongType
-                    nullable = true
+                    defaultValue = -1L
                 }
             )
         ) { backStackEntry ->
             val viewModel: InvoiceViewModel = hiltViewModel()
-            val id = backStackEntry.arguments?.getLong("id")
-                ?.takeIf { backStackEntry.arguments?.containsKey("id") == true }
+            val studentIdArg = backStackEntry.arguments?.getLong("id") ?: -1L
+            val id = studentIdArg.takeIf { it != -1L }
             InvoiceScreen(
                 onBack = { navController.popBackStack() },
                 defaultStudentId = id,
