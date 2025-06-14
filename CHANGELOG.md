@@ -2,7 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [0.14] - 2025-06-15
+### Added
+- Display app logo and name on the Home screen.
+
 ### Changed
 - Invoice navigation now uses a default `-1` ID for optional student selection.
 
