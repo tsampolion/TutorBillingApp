@@ -1,5 +1,6 @@
 package gr.tsambala.tutorbilling.ui.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -11,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -97,7 +99,11 @@ fun HomeMenuScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
         ) {
             Spacer(Modifier.height(32.dp))
-            Text("Tutor Billing", style = MaterialTheme.typography.headlineMedium)
+            Image(
+                painterResource(R.drawable.tutorbilling_logo),
+                contentDescription = stringResource(R.string.app_logo_desc),
+                modifier = Modifier.size(200.dp)
+            )
             Button(
                 onClick = onNavigateToStudent,
                 modifier = Modifier.fillMaxWidth(),

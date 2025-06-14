@@ -59,4 +59,5 @@
     <string name="validation_error_empty_name">Please enter a student name</string>
     <string name="validation_error_invalid_rate">Please enter a valid rate</string>
     <string name="validation_error_invalid_duration">Please enter a valid duration</string>
+    <string name="app_logo_desc">App logo</string>
 </resources>
