@@ -62,6 +62,9 @@ class RevenueViewModelTest {
         override suspend fun softDeleteStudent(studentId: Long) {}
         override fun getStudentById(studentId: Long): Flow<Student?> = flow.map { list -> list.find { it.id == studentId } }
         override fun getAllActiveStudents(): Flow<List<Student>> = flow.asStateFlow()
+        override fun getArchivedStudents(): Flow<List<Student>> = flowOf(emptyList())
+        override suspend fun restoreStudent(studentId: Long) {}
+        override fun getStudentByIdAny(studentId: Long): Flow<Student?> = flow.map { list -> list.find { it.id == studentId } }
         override suspend fun getActiveStudentCount(): Int = flow.value.size
         override suspend fun classNameExists(name: String): Int = flow.value.count { it.className.equals(name, true) }
     }
