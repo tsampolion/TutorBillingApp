@@ -72,7 +72,7 @@ fun TutorBillingApp() {
         composable(Screen.Revenue.route) {
             RevenueScreen(
                 onBack = { navController.popBackStack() },
-                onInvoice = { id -> navController.navigate(Screen.Invoice.createRoute(id ?: 0L)) },
+                onInvoice = { id -> navController.navigate(Screen.Invoice.createRoute(id)) },
                 onPastInvoices = { navController.navigate(Screen.PastInvoices.route) }
             )
         }
@@ -81,16 +81,20 @@ fun TutorBillingApp() {
         composable(
             route = Screen.Invoice.route,
             arguments = listOf(
-                navArgument("studentId") {
+                navArgument("id") {
                     type = NavType.LongType
-                    defaultValue = 0L
+                    nullable = true
                 }
             )
         ) { backStackEntry ->
             val viewModel: InvoiceViewModel = hiltViewModel()
-            val id = backStackEntry.arguments?.getLong("studentId") ?: 0L
-            LaunchedEffect(id) { if (id != 0L) viewModel.selectStudent(id) }
-            InvoiceScreen(onBack = { navController.popBackStack() }, viewModel = viewModel)
+            val id = backStackEntry.arguments?.getLong("id")
+                ?.takeIf { backStackEntry.arguments?.containsKey("id") == true }
+            InvoiceScreen(
+                onBack = { navController.popBackStack() },
+                defaultStudentId = id,
+                viewModel = viewModel
+            )
         }
 
         // Past invoices screen
