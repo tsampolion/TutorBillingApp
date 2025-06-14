@@ -1,48 +1,39 @@
 package gr.tsambala.tutorbilling.ui.students
 
-import gr.tsambala.tutorbilling.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Sort
-import androidx.compose.material.icons.filled.Unarchive
 import androidx.compose.material3.*
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import gr.tsambala.tutorbilling.ui.components.StudentCard
+import gr.tsambala.tutorbilling.R
+import gr.tsambala.tutorbilling.ui.components.ArchivedStudentCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StudentsScreen(
-    onNavigateToStudent: (Long) -> Unit,
-    onAddStudent: () -> Unit,
+fun ArchivedStudentsScreen(
     onBack: () -> Unit,
-    onViewArchived: () -> Unit,
-    viewModel: StudentsViewModel = hiltViewModel()
+    onStudentClick: (Long) -> Unit,
+    viewModel: ArchivedStudentsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.students)) },
+                title = { Text(stringResource(R.string.archived_students)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
-                    }
-                },
-                actions = {
-                    IconButton(onClick = onViewArchived) {
-                        Icon(Icons.Default.Unarchive, contentDescription = stringResource(R.string.archived_students))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -50,14 +41,6 @@ fun StudentsScreen(
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = onAddStudent,
-                containerColor = MaterialTheme.colorScheme.primary
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Student")
-            }
         }
     ) { paddingValues ->
         LazyColumn(
@@ -77,10 +60,10 @@ fun StudentsScreen(
                         value = uiState.searchQuery,
                         onValueChange = viewModel::updateSearchQuery,
                         modifier = Modifier.weight(1f),
-                        label = { Text("Search") }
+                        label = { Text(stringResource(R.string.search)) }
                     )
                     IconButton(onClick = { viewModel.toggleSortOrder() }) {
-                        Icon(Icons.AutoMirrored.Filled.Sort, contentDescription = "Sort")
+                        Icon(Icons.AutoMirrored.Filled.Sort, contentDescription = stringResource(R.string.sort))
                     }
                 }
             }
@@ -94,7 +77,7 @@ fun StudentsScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = stringResource(R.string.no_students),
+                            text = stringResource(R.string.no_archived_students),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -105,10 +88,10 @@ fun StudentsScreen(
                     items = uiState.students,
                     key = { it.student.id }
                 ) { studentWithEarnings ->
-                    StudentCard(
+                    ArchivedStudentCard(
                         studentWithEarnings = studentWithEarnings,
-                        onStudentClick = { onNavigateToStudent(studentWithEarnings.student.id) },
-                        onDeleteClick = { viewModel.deleteStudent(studentWithEarnings.student.id) }
+                        onStudentClick = { onStudentClick(studentWithEarnings.student.id) },
+                        onRestoreClick = { viewModel.restoreStudent(studentWithEarnings.student.id) }
                     )
                     HorizontalDivider()
                 }

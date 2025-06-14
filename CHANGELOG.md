@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+### Added
+- Student archive and restore flow with Archived Students screen.
+
 ## [0.12] - 2025-06-14
 ### Changed
 - Invoice route now supports optional student selection

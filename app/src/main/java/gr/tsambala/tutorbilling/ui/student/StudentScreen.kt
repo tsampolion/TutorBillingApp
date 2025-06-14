@@ -10,6 +10,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
@@ -42,7 +43,7 @@ fun StudentScreen(
     viewModel: StudentViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showArchiveDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -66,8 +67,8 @@ fun StudentScreen(
                         IconButton(onClick = { viewModel.toggleEditMode() }) {
                             Icon(Icons.Default.Edit, contentDescription = "Edit")
                         }
-                        IconButton(onClick = { showDeleteDialog = true }) {
-                            Icon(Icons.Default.Delete, contentDescription = "Delete")
+                        IconButton(onClick = { showArchiveDialog = true }) {
+                            Icon(Icons.Default.Archive, contentDescription = stringResource(R.string.archive))
                         }
                     }
                 },
@@ -114,24 +115,24 @@ fun StudentScreen(
         }
     }
 
-    if (showDeleteDialog) {
+    if (showArchiveDialog) {
         AlertDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Delete Student") },
-            text = { Text("Are you sure you want to delete ${uiState.name}? This will also delete all lessons.") },
+            onDismissRequest = { showArchiveDialog = false },
+            title = { Text(stringResource(R.string.archive)) },
+            text = { Text(stringResource(R.string.archive_student_confirmation)) },
             confirmButton = {
                 TextButton(
                     onClick = {
                         viewModel.deleteStudent()
-                        showDeleteDialog = false
+                        showArchiveDialog = false
                     }
                 ) {
-                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.archive))
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("Cancel")
+                TextButton(onClick = { showArchiveDialog = false }) {
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )

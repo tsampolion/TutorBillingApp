@@ -24,6 +24,15 @@ interface StudentDao {
     @Query("SELECT * FROM students WHERE isActive = 1 ORDER BY name ASC")
     fun getAllActiveStudents(): Flow<List<Student>>
 
+    @Query("SELECT * FROM students WHERE isActive = 0 ORDER BY name ASC")
+    fun getArchivedStudents(): Flow<List<Student>>
+
+    @Query("UPDATE students SET isActive = 1 WHERE id = :studentId")
+    suspend fun restoreStudent(studentId: Long)
+
+    @Query("SELECT * FROM students WHERE id = :studentId")
+    fun getStudentByIdAny(studentId: Long): Flow<Student?>
+
 
     @Query("SELECT COUNT(*) FROM students WHERE isActive = 1")
     suspend fun getActiveStudentCount(): Int

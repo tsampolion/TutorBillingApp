@@ -12,6 +12,7 @@ import gr.tsambala.tutorbilling.Screen
 import gr.tsambala.tutorbilling.ui.student.StudentScreen
 import gr.tsambala.tutorbilling.ui.student.StudentViewModel
 import gr.tsambala.tutorbilling.ui.students.StudentsScreen
+import gr.tsambala.tutorbilling.ui.students.ArchivedStudentsScreen
 
 fun NavGraphBuilder.studentGraph(navController: NavHostController) {
     navigation(startDestination = Screen.Students.route, route = "student_graph") {
@@ -23,7 +24,8 @@ fun NavGraphBuilder.studentGraph(navController: NavHostController) {
                 onAddStudent = {
                     navController.navigate(Screen.Student.createRoute(0L))
                 },
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onViewArchived = { navController.navigate(Screen.ArchivedStudents.route) }
             )
         }
 
@@ -58,6 +60,13 @@ fun NavGraphBuilder.studentGraph(navController: NavHostController) {
                     navController.navigate(Screen.Lesson.createRoute(0L, studentIdArg))
                 },
                 viewModel = viewModel
+            )
+        }
+
+        composable(Screen.ArchivedStudents.route) {
+            ArchivedStudentsScreen(
+                onBack = { navController.popBackStack() },
+                onStudentClick = { navController.navigate(Screen.Student.createRoute(it)) }
             )
         }
     }

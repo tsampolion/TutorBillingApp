@@ -3,25 +3,25 @@ package gr.tsambala.tutorbilling.ui.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Archive
+import androidx.compose.material.icons.filled.Unarchive
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.res.stringResource
 import gr.tsambala.tutorbilling.R
 import gr.tsambala.tutorbilling.data.model.StudentWithEarnings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StudentCard(
+fun ArchivedStudentCard(
     studentWithEarnings: StudentWithEarnings,
     onStudentClick: () -> Unit,
-    onDeleteClick: () -> Unit
+    onRestoreClick: () -> Unit
 ) {
-    var showArchiveDialog by remember { mutableStateOf(false) }
+    var showDialog by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier
@@ -48,7 +48,7 @@ fun StudentCard(
                 )
 
                 Text(
-                    text = "€${studentWithEarnings.student.rate}/hour",
+                    text = stringResource(R.string.currency_format, studentWithEarnings.student.rate),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -60,12 +60,12 @@ fun StudentCard(
                 ) {
                     Column {
                         Text(
-                            text = "This week",
+                            text = stringResource(R.string.week_total),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
-                            text = "€%.2f".format(studentWithEarnings.weekEarnings),
+                            text = stringResource(R.string.currency_format, studentWithEarnings.weekEarnings),
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Medium
                         )
@@ -73,12 +73,12 @@ fun StudentCard(
 
                     Column {
                         Text(
-                            text = "This month",
+                            text = stringResource(R.string.month_total),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
-                            text = "€%.2f".format(studentWithEarnings.monthEarnings),
+                            text = stringResource(R.string.currency_format, studentWithEarnings.monthEarnings),
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Medium
                         )
@@ -86,36 +86,33 @@ fun StudentCard(
                 }
             }
 
-            IconButton(onClick = { showArchiveDialog = true }) {
+            IconButton(onClick = { showDialog = true }) {
                 Icon(
-                    Icons.Default.Archive,
-                    contentDescription = stringResource(R.string.archive)
+                    Icons.Default.Unarchive,
+                    contentDescription = stringResource(R.string.restore)
                 )
             }
         }
     }
 
-    if (showArchiveDialog) {
+    if (showDialog) {
         AlertDialog(
-            onDismissRequest = { showArchiveDialog = false },
-            title = { Text(stringResource(R.string.archive)) },
-            text = { Text(stringResource(R.string.archive_student_confirmation)) },
+            onDismissRequest = { showDialog = false },
+            title = { Text(stringResource(R.string.restore)) },
+            text = { Text(stringResource(R.string.restore_student_confirmation)) },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        onDeleteClick()
-                        showArchiveDialog = false
+                        onRestoreClick()
+                        showDialog = false
                     }
-                ) {
-                    Text(stringResource(R.string.archive))
-                }
+                ) { Text(stringResource(R.string.restore)) }
             },
             dismissButton = {
-                TextButton(onClick = { showArchiveDialog = false }) {
+                TextButton(onClick = { showDialog = false }) {
                     Text(stringResource(R.string.cancel))
                 }
             }
         )
     }
 }
-
