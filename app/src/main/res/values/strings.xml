@@ -12,18 +12,24 @@
     <string name="add">Add</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+    <string name="archive">Archive</string>
+    <string name="restore">Restore</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
+    <string name="back">Back</string>
 
     <!-- Student-related strings -->
     <string name="add_student">Add Student</string>
     <string name="edit_student">Edit Student</string>
+    <string name="students">Students</string>
     <string name="student_name">Student Name</string>
     <string name="hourly_rate">Hourly Rate</string>
     <string name="per_lesson_rate">Per Lesson Rate</string>
     <string name="no_students">No students yet. Tap + to add your first student!</string>
     <string name="no_students_short">No students</string>
+    <string name="archived_students">Archived Students</string>
+    <string name="no_archived_students">No archived students</string>
 
     <!-- Lesson-related strings -->
     <string name="add_lesson">Add Lesson</string>
@@ -37,6 +43,8 @@
     <string name="no_lessons_short">No lessons</string>
     <string name="no_invoices">No invoices found</string>
     <string name="lessons">Lessons</string>
+    <string name="search">Search</string>
+    <string name="sort">Sort</string>
 
     <!-- Financial summary strings -->
     <string name="week_total">This Week</string>
@@ -45,6 +53,8 @@
 
     <!-- Dialog messages -->
     <string name="delete_student_confirmation">Delete this student and all their lessons?</string>
+    <string name="archive_student_confirmation">Archive this student? You can restore later.</string>
+    <string name="restore_student_confirmation">Restore this student?</string>
     <string name="delete_lesson_confirmation">Delete this lesson?</string>
     <string name="validation_error_empty_name">Please enter a student name</string>
     <string name="validation_error_invalid_rate">Please enter a valid rate</string>
