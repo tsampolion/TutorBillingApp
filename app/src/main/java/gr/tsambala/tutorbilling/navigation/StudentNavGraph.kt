@@ -55,7 +55,7 @@ fun NavGraphBuilder.studentGraph(navController: NavHostController) {
                     )
                 },
                 onAddLesson = {
-                    navController.navigate(Screen.Lesson.createRoute(0, studentIdArg))
+                    navController.navigate(Screen.Lesson.createRoute(0L, studentIdArg))
                 },
                 viewModel = viewModel
             )
