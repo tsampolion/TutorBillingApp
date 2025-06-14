@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 - 
 
-## 0.1.0 - 2025-06-14
+## 0.10 - 2025-06-14
 ### Added
 - Student management screens with class grouping and detail views.
 - Lesson tracking with billing type support.
