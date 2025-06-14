@@ -95,8 +95,7 @@ fun HomeMenuScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .padding(horizontal = 32.dp, vertical = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(Modifier.height(32.dp))
             Image(
@@ -104,21 +103,32 @@ fun HomeMenuScreen(
                 contentDescription = stringResource(R.string.app_logo_desc),
                 modifier = Modifier.size(200.dp)
             )
-            Button(
-                onClick = onNavigateToStudent,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = studentsColor)
-            ) { Text("Students") }
-            Button(
-                onClick = onClassesClick,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = classesColor)
-            ) { Text("Classes") }
-            Button(
-                onClick = onNavigateToLesson,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = lessonsColor)
-            ) { Text("Lessons") }
+            Text(
+                text = stringResource(R.string.app_name),
+                style = MaterialTheme.typography.headlineMedium
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Button(
+                    onClick = onNavigateToStudent,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = studentsColor)
+                ) { Text("Students") }
+                Button(
+                    onClick = onClassesClick,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = classesColor)
+                ) { Text("Classes") }
+                Button(
+                    onClick = onNavigateToLesson,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = lessonsColor)
+                ) { Text("Lessons") }
+            }
+            Spacer(modifier = Modifier.weight(1f))
         }
     }
 }
