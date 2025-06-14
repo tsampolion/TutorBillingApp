@@ -1,5 +1,6 @@
 package gr.tsambala.tutorbilling.ui.classes
 
+import gr.tsambala.tutorbilling.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,6 +11,8 @@ import androidx.compose.material3.*
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -47,50 +50,65 @@ fun ClassesScreen(
             )
         }
     ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            uiState.studentsByClass
-                .filterKeys { it != "Unassigned" }
-                .toSortedMap()
-                .forEach { (className, students) ->
-                    item {
-                        Text(
-                            text = className,
-                            style = MaterialTheme.typography.titleMedium,
-                            modifier = Modifier.padding(16.dp)
-                        )
-                        HorizontalDivider()
+        if (uiState.studentsByClass.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.no_students_short),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+            ) {
+                uiState.studentsByClass
+                    .filterKeys { it != "Unassigned" }
+                    .toSortedMap()
+                    .forEach { (className, students) ->
+                        item {
+                            Text(
+                                text = className,
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(16.dp)
+                            )
+                            HorizontalDivider()
+                        }
+                        items(students) { student ->
+                            Text(
+                                text = student.name,
+                                modifier = Modifier
+                                    .padding(horizontal = 32.dp, vertical = 8.dp)
+                                    .clickable { onStudentClick(student.id) }
+                            )
+                        }
                     }
-                    items(students) { student ->
-                        Text(
-                            text = student.name,
-                            modifier = Modifier
-                                .padding(horizontal = 32.dp, vertical = 8.dp)
-                                .clickable { onStudentClick(student.id) }
-                        )
-                    }
-                }
 
-            if (uiState.hasUnassigned) {
-                uiState.studentsByClass["Unassigned"]?.let { students ->
-                    item {
-                        Text(
-                            text = "Unassigned",
-                            style = MaterialTheme.typography.titleMedium,
-                            modifier = Modifier.padding(16.dp)
-                        )
-                        HorizontalDivider()
-                    }
-                    items(students) { student ->
-                        Text(
-                            text = student.name,
-                            modifier = Modifier
-                                .padding(horizontal = 32.dp, vertical = 8.dp)
-                                .clickable { onStudentClick(student.id) }
-                        )
+                if (uiState.hasUnassigned) {
+                    uiState.studentsByClass["Unassigned"]?.let { students ->
+                        item {
+                            Text(
+                                text = "Unassigned",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(16.dp)
+                            )
+                            HorizontalDivider()
+                        }
+                        items(students) { student ->
+                            Text(
+                                text = student.name,
+                                modifier = Modifier
+                                    .padding(horizontal = 32.dp, vertical = 8.dp)
+                                    .clickable { onStudentClick(student.id) }
+                            )
+                        }
                     }
                 }
             }

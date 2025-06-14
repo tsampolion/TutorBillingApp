@@ -23,6 +23,7 @@
     <string name="hourly_rate">Hourly Rate</string>
     <string name="per_lesson_rate">Per Lesson Rate</string>
     <string name="no_students">No students yet. Tap + to add your first student!</string>
+    <string name="no_students_short">No students</string>
 
     <!-- Lesson-related strings -->
     <string name="add_lesson">Add Lesson</string>
