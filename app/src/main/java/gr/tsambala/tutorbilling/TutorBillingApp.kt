@@ -61,6 +61,9 @@ fun TutorBillingApp() {
                     navController.navigate(
                         Screen.Lesson.createRoute(lessonId, studentId)
                     )
+                },
+                onAddLesson = {
+                    navController.navigate(Screen.Lesson.createRoute(0))
                 }
             )
         }

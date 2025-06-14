@@ -43,13 +43,13 @@ Run these *exact* commands before proposing code changes:
 
 ## 5. Directory & Naming Conventions
 
-| Path / Pattern                 | Purpose                                                |
 | ------------------------------ | ------------------------------------------------------ |
 | `/app/src/main`                | Production code (namespace `gr.tsambala.tutorbilling`) |
 | `/app/src/test`                | JVM unit tests (Robolectric)                           |
 | `/app/schemas`                 | Room JSON schemas (auto-generated; keep under VC)      |
 | `build/`, `.gradle/`, `.idea/` | **Ignored** – see `.gitignore`                         |
 | `local.properties`             | **Ignored** – SDK path, never commit                   |
+| `CHANGELOG.md`                 | Project changelog; update the Unreleased section |
 
 ## 6. Pull-Request Messaging Template
 
@@ -62,6 +62,7 @@ Run these *exact* commands before proposing code changes:
 ```
 
 Checklist:
+* [ ] `CHANGELOG.md` updated
 
 * [ ] Unit tests passing
 * [ ] Lint shows **0** new warnings
@@ -75,6 +76,9 @@ Checklist:
 3. **Room schema drift** – run `./gradlew test` after changing entities to auto-regenerate `/app/schemas`.
 4. **Accidentally committed build output** – confirm `.gitignore` still excludes `build/`, `.gradle/`, `.idea/`.
 5. **Robolectric memory leaks** – never keep global state in test classes; use `@Config` with `sdk = 34`.
+
+## 8. Changelog
+Update `CHANGELOG.md` under the repository root with a bullet for each pull request under the **Unreleased** section.
 
 ---
 

@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
@@ -27,6 +28,7 @@ import java.time.format.DateTimeFormatter
 fun LessonsScreen(
     onBack: () -> Unit,
     onLessonClick: (Long, Long) -> Unit,
+    onAddLesson: () -> Unit,
     viewModel: LessonsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -45,6 +47,14 @@ fun LessonsScreen(
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onAddLesson,
+                containerColor = MaterialTheme.colorScheme.primary
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Add Lesson")
+            }
         }
     ) { padding ->
         if (uiState.lessons.isEmpty()) {
