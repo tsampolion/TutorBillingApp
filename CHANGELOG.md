@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [0.13] - 2025-06-14
 - Add unit test for `RevenueViewModel` debts calculation.
 
 ## [0.12] - 2025-06-14
